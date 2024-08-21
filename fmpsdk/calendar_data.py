@@ -6,27 +6,50 @@ from .url_methods import __return_json_v3
 API_KEY = os.getenv('FMP_API_KEY')
 
 def earning_calendar(
-    from_date: str = None, to_date: str = None
+    from_date: str = None,
+    to_date: str = None,
+    estimate_required: bool = True,
+    condensed: bool = True,
+    revenue_minimum: float = 1000000000
 ) -> typing.Optional[typing.List[typing.Dict]]:
     """
     Retrieve a list of upcoming and past earnings announcements.
 
     Provides valuable insights into companies' financial performance and outlook.
-    Useful for identifying trading opportunities and tracking company performance.
 
     :param from_date: Start date in 'YYYY-MM-DD' format.
     :param to_date: End date in 'YYYY-MM-DD' format.
-    :return: List of dicts with earnings data, including date, estimated EPS,
-             and actual EPS (if available), or None if request fails.
-    :example: earning_calendar('2023-01-01', '2023-12-31')
+    :param estimate_required: If True, exclude entries where either 'epsEstimated'
+                              or 'revenueEstimated' is null. Defaults to True.
+    :param condensed: If True, return only key fields in each entry. Defaults to True.
+    :param revenue_minimum: Minimum 'revenueEstimated' value to include an entry.
+                            Defaults to 1,000,000,000 (1 billion).
+    :return: List of dicts with earnings data, or None if request fails.
+    :example: earning_calendar('2023-01-01', '2023-12-31', estimate_required=True, 
+                                condensed=True, revenue_minimum=500000000)
     """
-    path = f"earning_calendar"
+    path = "earning_calendar"
     query_vars = {"apikey": API_KEY}
     if from_date:
         query_vars["from"] = from_date
     if to_date:
         query_vars["to"] = to_date
-    return __return_json_v3(path=path, query_vars=query_vars)
+    
+    result = __return_json_v3(path=path, query_vars=query_vars)
+    
+    if result is not None:
+        if estimate_required:
+            result = [entry for entry in result if entry.get('epsEstimated') is not None and entry.get('revenueEstimated') is not None]
+        
+        result = [entry for entry in result if entry.get('revenueEstimated', 0) >= revenue_minimum]
+        
+        if condensed:
+            condensed_fields = ['date', 'eps', 'epsEstimated', 'revenue', 'revenueEstimated', 'symbol']
+            result = [{field: entry.get(field) for field in condensed_fields} for entry in result]
+        
+        return result
+    
+    return None
 
 def historical_earning_calendar(
     symbol: str, limit: int = DEFAULT_LIMIT

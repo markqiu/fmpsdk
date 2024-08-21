@@ -13,7 +13,7 @@ def technical_indicators(
     symbol: str,
     period: int = 10,
     statistics_type: str = "sma",
-    time_delta: str = "daily",
+    time_delta: str = "1day",
 ) -> typing.Optional[typing.List[typing.Dict]]:
     """
     Retrieve technical indicator data for a given stock symbol.
@@ -25,7 +25,7 @@ def technical_indicators(
     :param period: Number of data points for calculation (default: 10)
     :param statistics_type: Indicator type (default: 'sma'). Options:
         'sma', 'ema', 'wma', 'dema', 'tema', 'williams', 'rsi', 'adx', 'standardDeviation'
-    :param time_delta: Time interval (default: 'daily'). Options:
+    :param time_delta: Time interval (default: '1day'). Options:
         '1min', '5min', '15min', '30min', '1hour', '4hour', '1day', '1week', '1month', '1year'
     :return: List of dicts with indicator data or None if request fails
     :example: technical_indicators('AAPL', period=14, statistics_type='rsi', time_delta='1hour')
