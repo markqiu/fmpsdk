@@ -6,21 +6,14 @@ API_KEY = os.getenv('FMP_API_KEY')
 
 def price_targets(symbol: str) -> typing.Optional[typing.List[typing.Dict]]:
     """
-    Query FMP /price-target/ API.
+    Retrieve price targets for a company's stock.
 
-    Get the price target for a company, which is the price at which an analyst believes the company's stock is fairly valued. Price targets can be used to make investment decisions, such as whether to buy, sell, or hold a stock.
+    Provides analyst-estimated fair value prices, useful for investment
+    decisions. Includes target price, analyst name, and publication date.
 
-    :param symbol: The stock symbol (e.g., 'AAPL').
-    :return: A list of dictionaries containing price target information or None if the request fails.
-
-    Example:
-    >>> price_targets('AAPL')
-    [{'symbol': 'AAPL', 'priceTarget': 150.0, 'analyst': 'Goldman Sachs', 'date': '2023-10-01', ...}, ...]
-
-    Users can get price targets for many different companies by providing the appropriate ticker symbol.
-
-    Endpoint:
-    https://financialmodelingprep.com/api/v4/price-target?symbol={symbol}
+    :param symbol: Stock symbol (e.g., 'AAPL')
+    :return: List of dicts with price target data or None if request fails
+    :example: price_targets('AAPL')
     """
     path = "price-target"
     query_vars = {"apikey": API_KEY, "symbol": symbol}
@@ -28,21 +21,14 @@ def price_targets(symbol: str) -> typing.Optional[typing.List[typing.Dict]]:
 
 def price_target_summary(symbol: str) -> typing.Optional[typing.List[typing.Dict]]:
     """
-    Query FMP /price-target-summary/ API.
+    Retrieve a summary of price targets for a company from various analysts.
 
-    Get a summary of the price targets for a company from different analysts. This summary includes the average price target, the high price target, and the low price target. Investors can use this information to get a general idea of what analysts think about a company's stock.
+    Provides average, high, and low price targets, useful for gauging overall
+    analyst sentiment. Includes number of analysts and other relevant metrics.
 
-    :param symbol: The stock symbol (e.g., 'AAPL').
-    :return: A list of dictionaries containing price target summary information or None if the request fails.
-
-    Example:
-    >>> price_target_summary('AAPL')
-    [{'symbol': 'AAPL', 'averagePriceTarget': 150.0, 'highPriceTarget': 160.0, 'lowPriceTarget': 140.0, 'numberOfAnalysts': 10, ...}, ...]
-
-    Users can get price target summaries for many different companies by providing the appropriate ticker symbol.
-
-    Endpoint:
-    https://financialmodelingprep.com/api/v4/price-target-summary?symbol={symbol}
+    :param symbol: Stock symbol (e.g., 'AAPL')
+    :return: List of dicts with price target summary data or None if request fails
+    :example: price_target_summary('AAPL')
     """
     path = "price-target-summary"
     query_vars = {"apikey": API_KEY, "symbol": symbol}
@@ -50,10 +36,14 @@ def price_target_summary(symbol: str) -> typing.Optional[typing.List[typing.Dict
 
 def price_target_by_analyst_name(name: str) -> typing.Optional[typing.List[typing.Dict]]:
     """
-    Query FMP /price-target-analyst-name API for price targets from a specific analyst.
+    Retrieve price targets from a specific analyst for various companies.
 
-    :param name: The name of the analyst (e.g., 'Tim Anderson')
-    :return: A list of dictionaries containing price target information for the specified analyst.
+    Useful for tracking price targets of a particular trusted analyst.
+    Provides target prices, company symbols, and publication dates.
+
+    :param name: Name of the analyst (e.g., 'Tim Anderson')
+    :return: List of dicts with price target data or None if request fails
+    :example: price_target_by_analyst_name('Tim Anderson')
     """
     path = "price-target-analyst-name"
     query_vars = {"apikey": API_KEY, "name": name}
@@ -61,26 +51,14 @@ def price_target_by_analyst_name(name: str) -> typing.Optional[typing.List[typin
 
 def price_target_by_company(company: str) -> typing.Optional[typing.List[typing.Dict]]:
     """
-    Query FMP /price-target-analyst-company/ API for price targets from a specific analyst company.
+    Retrieve price targets from a specific analyst company for various stocks.
 
-    :param company: The name of the analyst company (e.g., 'Goldman Sachs').
-    :return: A list of dictionaries containing price target information issued by the specified company.
+    Useful for comparing price targets across different companies in the same
+    industry or sector. Provides target prices, symbols, and analyst details.
 
-    Example:
-    >>> price_target_by_company('Goldman Sachs')
-    [
-        {
-            'symbol': 'AAPL',
-            'publishedDate': '2023-06-02',
-            'priceTarget': 209.0,
-            'analystName': 'Rod Hall',
-            'analystCompany': 'Goldman Sachs'
-        },
-        ...
-    ]
-
-    Endpoint:
-    https://financialmodelingprep.com/api/v4/price-target-analyst-company?company={company}
+    :param company: Name of the analyst company (e.g., 'Barclays')
+    :return: List of dicts with price target data or None if request fails
+    :example: price_target_by_company('Barclays')
     """
     path = "price-target-analyst-company"
     query_vars = {"apikey": API_KEY, "company": company}
@@ -88,21 +66,14 @@ def price_target_by_company(company: str) -> typing.Optional[typing.List[typing.
 
 def price_target_consensus(symbol: str) -> typing.Optional[typing.List[typing.Dict]]:
     """
-    Query FMP /price-target-consensus/ API for consensus price targets of a specific symbol.
+    Retrieve consensus price target for a company's stock.
 
-    Get the consensus price target for a company, which is the average of all price targets from different analysts. This can be useful if you want to get a general idea of what analysts think about a company's stock.
+    Provides the average of all price targets from different analysts,
+    offering a general view of market expectations for the stock's value.
 
-    :param symbol: The stock symbol (e.g., 'AAPL').
-    :return: A list of dictionaries containing consensus price target information or None if the request fails.
-
-    Example:
-    >>> price_target_consensus('AAPL')
-    [{'symbol': 'AAPL', 'priceTargetAverage': 150.0, 'priceTargetHigh': 160.0, 'priceTargetLow': 140.0, 'numberOfAnalysts': 10, ...}, ...]
-
-    Users can get consensus price targets for many different companies by providing the appropriate ticker symbol.
-
-    Endpoint:
-    https://financialmodelingprep.com/api/v4/price-target-consensus?symbol={symbol}
+    :param symbol: Stock symbol (e.g., 'AAPL')
+    :return: List of dicts with consensus price target data or None if request fails
+    :example: price_target_consensus('AAPL')
     """
     path = "price-target-consensus"
     query_vars = {"apikey": API_KEY, "symbol": symbol}
@@ -110,21 +81,14 @@ def price_target_consensus(symbol: str) -> typing.Optional[typing.List[typing.Di
 
 def price_target_rss_feed(page: int = 0) -> typing.Optional[typing.List[typing.Dict]]:
     """
-    Query FMP /price-target-rss-feed/ API for the latest price target updates.
+    Retrieve an RSS feed of price target updates for companies.
 
-    Get an RSS feed of price target updates for a company. This way, you can stay up-to-date on the latest price targets from analysts.
+    Provides the latest analyst price target updates across various companies.
+    Useful for staying informed about recent changes in market expectations.
 
-    :param page: The page number for pagination (default is 0).
-    :return: A list of dictionaries containing the latest price target updates.
-
-    Example:
-    >>> price_target_rss_feed(page=1)
-    [{'symbol': 'AAPL', 'analyst': 'Goldman Sachs', 'priceTarget': 150.0, 'date': '2023-10-01', ...}, ...]
-
-    Users can get the latest price target updates for many different companies by providing the appropriate page number for pagination.
-
-    Endpoint:
-    https://financialmodelingprep.com/api/v4/price-target-rss-feed?page={page}
+    :param page: Page number for pagination (default is 0)
+    :return: List of dicts with price target updates or None if request fails
+    :example: price_target_rss_feed(page=1)
     """
     path = "price-target-rss-feed"
     query_vars = {"apikey": API_KEY, "page": page}

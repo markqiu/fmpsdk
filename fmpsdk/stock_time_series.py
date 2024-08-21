@@ -8,12 +8,15 @@ API_KEY = os.getenv('FMP_API_KEY')
 
 def quote_short(symbol: str) -> typing.Optional[typing.List[typing.Dict]]:
     """
-    Query FMP /quote-short/ API.
+    Retrieve a simple, real-time stock quote.
 
-    :param symbol: Company ticker.
-    :return: A list of dictionaries containing short quote data.
+    Provides a quick snapshot of a stock's performance, including current price,
+    price change, and trading volume. Useful for rapid market analysis,
+    calculating stock valuations, or making quick investment decisions.
+
+    :param symbol: Company ticker (e.g., 'AAPL').
+    :return: List of dicts with short quote data or None if request fails.
     :example: quote_short('AAPL')
-    :endpoint: https://financialmodelingprep.com/api/v3/quote-short/{symbol}
     """
     path = f"quote-short/{symbol}"
     query_vars = {"apikey": API_KEY}
@@ -26,18 +29,20 @@ def exchange_realtime(exchange: str) -> typing.Optional[typing.List[typing.Dict]
     :param exchange: Exchange symbol.
     :return: A list of dictionaries containing real-time quotes for the exchange.
     :example: exchange_realtime('NASDAQ')
-    :endpoint: https://financialmodelingprep.com/api/v3/quotes/{exchange}
     """
     return __quotes(value=exchange)
 
 def historical_stock_dividend(symbol: str) -> typing.Optional[typing.List[typing.Dict]]:
     """
-    Query FMP /historical-price-full/stock_dividend/ API.
+    Retrieve historical dividend payments for a publicly traded company.
 
-    :param symbol: Company ticker.
-    :return: A list of dictionaries containing historical stock dividend data.
+    Provides valuable insights for dividend analysis, including payment dates,
+    ex-dividend dates, and dividend per share. Useful for analyzing dividend
+    history, identifying consistent dividend payers, and tracking dividend growth.
+
+    :param symbol: Company ticker (e.g., 'AAPL').
+    :return: List of dicts with historical dividend data or None if request fails.
     :example: historical_stock_dividend('AAPL')
-    :endpoint: https://financialmodelingprep.com/api/v3/historical-price-full/stock_dividend/{symbol}
     """
     path = f"historical-price-full/stock_dividend/{symbol}"
     query_vars = {"apikey": API_KEY}
@@ -45,12 +50,15 @@ def historical_stock_dividend(symbol: str) -> typing.Optional[typing.List[typing
 
 def historical_stock_split(symbol: str) -> typing.Optional[typing.List[typing.Dict]]:
     """
-    Query FMP /historical-price-full/stock_split/ API.
+    Retrieve historical stock splits for a publicly traded company.
 
-    :param symbol: Company ticker.
-    :return: A list of dictionaries containing historical stock split data.
+    Provides information on past stock splits, including the date, split ratio,
+    and type of split. Useful for analyzing a company's growth history,
+    identifying rapidly growing companies, and understanding stock price trends.
+
+    :param symbol: Company ticker (e.g., 'AAPL').
+    :return: List of dicts with historical stock split data or None if request fails.
     :example: historical_stock_split('AAPL')
-    :endpoint: https://financialmodelingprep.com/api/v3/historical-price-full/stock_split/{symbol}
     """
     path = f"historical-price-full/stock_split/{symbol}"
     query_vars = {"apikey": API_KEY}

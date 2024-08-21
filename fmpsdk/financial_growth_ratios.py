@@ -7,13 +7,15 @@ API_KEY = os.getenv('FMP_API_KEY')
 
 def income_statement_growth(symbol: str, limit: int = DEFAULT_LIMIT) -> typing.Optional[typing.List[typing.Dict]]:
     """
-    Query FMP /income-statement-growth/ API for company's income statement growth.
+    Retrieve income statement growth metrics for a company.
 
-    :param symbol: Company ticker.
-    :param limit: Number of rows to return. Default is DEFAULT_LIMIT.
-    :return: List of dictionaries with income statement growth data.
+    Provides insights into a company's revenue and profit growth trends.
+    Useful for assessing financial performance and identifying growth patterns.
+
+    :param symbol: Company ticker (e.g., 'AAPL').
+    :param limit: Number of records to retrieve. Default is DEFAULT_LIMIT.
+    :return: List of dicts with income statement growth data or None if request fails.
     :example: income_statement_growth('AAPL', limit=5)
-    :endpoint: https://financialmodelingprep.com/api/v3/income-statement-growth/{symbol}
     """
     path = f"income-statement-growth/{symbol}"
     query_vars = {
@@ -25,13 +27,15 @@ def income_statement_growth(symbol: str, limit: int = DEFAULT_LIMIT) -> typing.O
 
 def balance_sheet_statement_growth(symbol: str, limit: int = DEFAULT_LIMIT) -> typing.Optional[typing.List[typing.Dict]]:
     """
-    Query FMP /balance-sheet-statement-growth/ API for company's balance sheet statement growth.
+    Retrieve balance sheet statement growth metrics for a company.
 
-    :param symbol: Company ticker.
-    :param limit: Number of rows to return. Default is DEFAULT_LIMIT.
-    :return: List of dictionaries with balance sheet statement growth data.
+    Provides insights into a company's assets, liabilities, and equity growth.
+    Useful for assessing financial health and long-term stability.
+
+    :param symbol: Company ticker (e.g., 'AAPL').
+    :param limit: Number of records to retrieve. Default is DEFAULT_LIMIT.
+    :return: List of dicts with balance sheet growth data or None if request fails.
     :example: balance_sheet_statement_growth('AAPL', limit=5)
-    :endpoint: https://financialmodelingprep.com/api/v3/balance-sheet-statement-growth/{symbol}
     """
     path = f"balance-sheet-statement-growth/{symbol}"
     query_vars = {
@@ -43,13 +47,15 @@ def balance_sheet_statement_growth(symbol: str, limit: int = DEFAULT_LIMIT) -> t
 
 def cash_flow_statement_growth(symbol: str, limit: int = DEFAULT_LIMIT) -> typing.Optional[typing.List[typing.Dict]]:
     """
-    Query FMP /cash-flow-statement-growth/ API for company's cash flow statement growth.
+    Retrieve cash flow statement growth metrics for a company.
 
-    :param symbol: Company ticker.
-    :param limit: Number of rows to return. Default is DEFAULT_LIMIT.
-    :return: List of dictionaries with cash flow statement growth data.
+    Provides insights into a company's cash inflows and outflows growth.
+    Useful for assessing liquidity and financial flexibility.
+
+    :param symbol: Company ticker (e.g., 'AAPL').
+    :param limit: Number of records to retrieve. Default is DEFAULT_LIMIT.
+    :return: List of dicts with cash flow statement growth data or None if request fails.
     :example: cash_flow_statement_growth('AAPL', limit=5)
-    :endpoint: https://financialmodelingprep.com/api/v3/cash-flow-statement-growth/{symbol}
     """
     path = f"cash-flow-statement-growth/{symbol}"
     query_vars = {
@@ -61,12 +67,14 @@ def cash_flow_statement_growth(symbol: str, limit: int = DEFAULT_LIMIT) -> typin
 
 def financial_ratios_ttm(symbol: str) -> typing.Optional[typing.List[typing.Dict]]:
     """
-    Query FMP /ratios-ttm/ API for company's trailing twelve months financial ratios.
+    Retrieve trailing twelve months (TTM) financial ratios for a company.
 
-    :param symbol: Company ticker.
-    :return: List of dictionaries with TTM financial ratios data.
+    Provides insights into a company's current financial performance and efficiency.
+    Useful for comparing with industry averages and identifying areas for improvement.
+
+    :param symbol: Company ticker (e.g., 'AAPL').
+    :return: List of dicts with TTM financial ratios data or None if request fails.
     :example: financial_ratios_ttm('AAPL')
-    :endpoint: https://financialmodelingprep.com/api/v3/ratios-ttm/{symbol}
     """
     path = f"ratios-ttm/{symbol}"
     query_vars = {"apikey": API_KEY}
@@ -77,14 +85,16 @@ def financial_ratios(
     symbol: str, period: str = "annual", limit: int = DEFAULT_LIMIT
 ) -> typing.Optional[typing.List[typing.Dict]]:
     """
-    Query FMP /ratios/ API for company's financial ratios.
+    Retrieve financial ratios for a company.
 
-    :param symbol: Company ticker.
-    :param period: 'annual' or 'quarter'. Default is 'annual'.
-    :param limit: Number of rows to return. Default is DEFAULT_LIMIT.
-    :return: List of dictionaries with financial ratios data.
+    Provides insights into a company's financial performance and efficiency.
+    Useful for comparing with industry averages and identifying areas for improvement.
+
+    :param symbol: Company ticker (e.g., 'AAPL').
+    :param period: Reporting period ('annual' or 'quarter'). Default is 'annual'.
+    :param limit: Number of records to retrieve. Default is DEFAULT_LIMIT.
+    :return: List of dicts with financial ratios data or None if request fails.
     :example: financial_ratios('AAPL', period='quarter', limit=5)
-    :endpoint: https://financialmodelingprep.com/api/v3/ratios/{symbol}
     """
     path = f"ratios/{symbol}"
     query_vars = {
@@ -97,14 +107,17 @@ def financial_ratios(
 
 def financial_growth(symbol: str, period: str = "annual", limit: int = DEFAULT_LIMIT) -> typing.Optional[typing.List[typing.Dict]]:
     """
-    Query FMP /financial-growth/ API for company's financial growth metrics.
+    Retrieve financial growth metrics for a company.
 
-    :param symbol: Company ticker.
-    :param period: 'annual' or 'quarter'. Default is 'annual'.
-    :param limit: Number of rows to return. Default is DEFAULT_LIMIT.
-    :return: List of dictionaries with financial growth data.
+    Provides insights into a company's overall financial performance improvement.
+    Useful for assessing growth trends, comparing performance over time, and
+    identifying potential investment opportunities.
+
+    :param symbol: Company ticker (e.g., 'AAPL').
+    :param period: Reporting period ('annual' or 'quarter'). Default is 'annual'.
+    :param limit: Number of records to retrieve. Default is DEFAULT_LIMIT.
+    :return: List of dicts with financial growth data or None if request fails.
     :example: financial_growth('AAPL', period='quarter', limit=5)
-    :endpoint: https://financialmodelingprep.com/api/v3/financial-growth/{symbol}
     """
     path = f"financial-growth/{symbol}"
     query_vars = {

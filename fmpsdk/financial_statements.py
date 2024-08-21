@@ -26,16 +26,20 @@ def income_statement(
     filename: str = INCOME_STATEMENT_FILENAME,
 ) -> typing.Union[typing.List[typing.Dict], None]:
     """
-    Query FMP /income-statement/ API for company's income statement.
+    Retrieve income statement data for a company.
 
-    :param symbol: Company ticker.
+    Provides real-time access to a company's revenue, expenses, and net income.
+    Useful for tracking profitability, comparing with competitors, and
+    identifying business trends. Can be used to calculate financial ratios
+    like P/E ratio and gross margin.
+
+    :param symbol: Company ticker (e.g., 'AAPL').
     :param period: 'quarter' or 'annual'. Default is 'annual'.
-    :param limit: Number of rows to return. Default is DEFAULT_LIMIT.
+    :param limit: Number of statements to retrieve. Default is 10.
     :param download: If True, download data as CSV. Default is False.
     :param filename: Name of saved file. Default is INCOME_STATEMENT_FILENAME.
-    :return: List of dictionaries with income statement data or None if download is True.
+    :return: List of dicts with income statement data or None if download is True.
     :example: income_statement('AAPL', period='quarter', limit=5, download=True)
-    :endpoint: https://financialmodelingprep.com/api/v3/income-statement/{symbol}
     """
     path = f"income-statement/{symbol}"
     query_vars = {"apikey": API_KEY, "limit": limit, "period": __validate_period(period)}
@@ -56,16 +60,20 @@ def balance_sheet_statement(
     filename: str = BALANCE_SHEET_STATEMENT_FILENAME,
 ) -> typing.Union[typing.List[typing.Dict], None]:
     """
-    Query FMP /balance-sheet-statement/ API for company's balance sheet statement.
+    Retrieve balance sheet data for a company.
 
-    :param symbol: Company ticker.
+    Provides real-time access to a company's assets, liabilities, and equity.
+    Useful for assessing financial health, identifying risks, and analyzing
+    debt levels, cash flow, and equity position. Can be used to determine if
+    a company can fund operations, meet debt obligations, and pay dividends.
+
+    :param symbol: Company ticker (e.g., 'AAPL') or CIK (e.g., '0000320193').
     :param period: 'quarter' or 'annual'. Default is 'annual'.
-    :param limit: Number of rows to return. Default is DEFAULT_LIMIT.
+    :param limit: Number of statements to retrieve. Default is 10.
     :param download: If True, download data as CSV. Default is False.
     :param filename: Name of saved file. Default is BALANCE_SHEET_STATEMENT_FILENAME.
-    :return: List of dictionaries with balance sheet data or None if download is True.
+    :return: List of dicts with balance sheet data or None if download is True.
     :example: balance_sheet_statement('AAPL', period='quarter', limit=5, download=True)
-    :endpoint: https://financialmodelingprep.com/api/v3/balance-sheet-statement/{symbol}
     """
     path = f"balance-sheet-statement/{symbol}"
     query_vars = {"apikey": API_KEY, "limit": limit, "period": __validate_period(period)}
@@ -86,16 +94,21 @@ def cash_flow_statement(
     filename: str = CASH_FLOW_STATEMENT_FILENAME,
 ) -> typing.Union[typing.List[typing.Dict], None]:
     """
-    Query FMP /cash-flow-statement/ API for company's cash flow statement.
+    Retrieve cash flow statement data for a company.
 
-    :param symbol: Company ticker.
+    Provides real-time access to a company's cash inflows and outflows,
+    categorized into operating, investing, and financing activities.
+    Useful for assessing cash management, liquidity, and financial health.
+    Helps investors understand if the company is generating or using cash
+    in its business operations.
+
+    :param symbol: Company ticker (e.g., 'AAPL') or CIK (e.g., '0000320193').
     :param period: 'quarter' or 'annual'. Default is 'annual'.
-    :param limit: Number of rows to return. Default is DEFAULT_LIMIT.
+    :param limit: Number of statements to retrieve. Default is 10.
     :param download: If True, download data as CSV. Default is False.
     :param filename: Name of saved file. Default is CASH_FLOW_STATEMENT_FILENAME.
-    :return: List of dictionaries with cash flow data or None if download is True.
+    :return: List of dicts with cash flow data or None if download is True.
     :example: cash_flow_statement('AAPL', period='quarter', limit=5, download=True)
-    :endpoint: https://financialmodelingprep.com/api/v3/cash-flow-statement/{symbol}
     """
     path = f"cash-flow-statement/{symbol}"
     query_vars = {"apikey": API_KEY, "limit": limit, "period": __validate_period(period)}
@@ -124,7 +137,6 @@ def income_statement_as_reported(
     :param filename: Name of saved file. Default is INCOME_STATEMENT_AS_REPORTED_FILENAME.
     :return: List of dictionaries with as-reported income statement data or None if download is True.
     :example: income_statement_as_reported('AAPL', period='quarter', limit=5, download=True)
-    :endpoint: https://financialmodelingprep.com/api/v3/income-statement-as-reported/{symbol}
     """
     path = f"income-statement-as-reported/{symbol}"
     query_vars = {
@@ -158,7 +170,6 @@ def balance_sheet_statement_as_reported(
     :param filename: Name of saved file. Default is BALANCE_SHEET_STATEMENT_AS_REPORTED_FILENAME.
     :return: List of dictionaries with as-reported balance sheet data or None if download is True.
     :example: balance_sheet_statement_as_reported('AAPL', period='quarter', limit=5, download=True)
-    :endpoint: https://financialmodelingprep.com/api/v3/balance-sheet-statement-as-reported/{symbol}
     """
     path = f"balance-sheet-statement-as-reported/{symbol}"
     query_vars = {
@@ -192,7 +203,6 @@ def cash_flow_statement_as_reported(
     :param filename: Name of saved file. Default is CASH_FLOW_STATEMENT_AS_REPORTED_FILENAME.
     :return: List of dictionaries with as-reported cash flow data or None if download is True.
     :example: cash_flow_statement_as_reported('AAPL', period='quarter', limit=5, download=True)
-    :endpoint: https://financialmodelingprep.com/api/v3/cash-flow-statement-as-reported/{symbol}
     """
     path = f"cash-flow-statement-as-reported/{symbol}"
     query_vars = {
@@ -217,7 +227,6 @@ def financial_statement_full_as_reported(symbol: str, period: str = "annual") ->
     :param period: 'quarter' or 'annual'. Default is 'annual'.
     :return: List of dictionaries with full as-reported financial statement data.
     :example: financial_statement_full_as_reported('AAPL', period='quarter')
-    :endpoint: https://financialmodelingprep.com/api/v3/financial-statement-full-as-reported/{symbol}
     """
     path = f"financial-statement-full-as-reported/{symbol}"
     query_vars = {"apikey": API_KEY, "period": __validate_period(value=period)}

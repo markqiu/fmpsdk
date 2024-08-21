@@ -9,13 +9,16 @@ def earning_calendar(
     from_date: str = None, to_date: str = None
 ) -> typing.Optional[typing.List[typing.Dict]]:
     """
-    Query FMP /earning_calendar/ API for upcoming and past earnings announcements.
+    Retrieve a list of upcoming and past earnings announcements.
+
+    Provides valuable insights into companies' financial performance and outlook.
+    Useful for identifying trading opportunities and tracking company performance.
 
     :param from_date: Start date in 'YYYY-MM-DD' format.
     :param to_date: End date in 'YYYY-MM-DD' format.
-    :return: List of dictionaries with earnings calendar data.
+    :return: List of dicts with earnings data, including date, estimated EPS,
+             and actual EPS (if available), or None if request fails.
     :example: earning_calendar('2023-01-01', '2023-12-31')
-    :endpoint: https://financialmodelingprep.com/api/v3/earning_calendar
     """
     path = f"earning_calendar"
     query_vars = {"apikey": API_KEY}
@@ -29,13 +32,17 @@ def historical_earning_calendar(
     symbol: str, limit: int = DEFAULT_LIMIT
 ) -> typing.Optional[typing.List[typing.Dict]]:
     """
-    Query FMP /historical/earning_calendar/ API for historical earnings announcements.
+    Retrieve historical and upcoming earnings announcements for a specific company.
 
-    :param symbol: Ticker symbol of the company.
+    Provides valuable insights into a company's past performance and future outlook.
+    Useful for analyzing earnings trends, identifying surprises, and making
+    informed investment decisions.
+
+    :param symbol: Ticker symbol of the company (e.g., 'AAPL').
     :param limit: Number of records to retrieve. Default is DEFAULT_LIMIT.
-    :return: List of dictionaries with historical earnings data.
-    :example: historical_earning_calendar('AAPL', limit=5)
-    :endpoint: https://financialmodelingprep.com/api/v3/historical/earning_calendar/{symbol}
+    :return: List of dicts with earnings data, including date, estimated EPS,
+             and actual EPS, or None if request fails.
+    :example: historical_earning_calendar('AAPL', limit=10)
     """
     path = f"historical/earning_calendar/{symbol}"
     query_vars = {
@@ -49,14 +56,16 @@ def ipo_calendar(
     from_date: str = None, to_date: str = None
 ) -> typing.Optional[typing.List[typing.Dict]]:
     """
-    Query FMP /ipo_calendar/ API for IPO calendar.
+    Retrieve a list of confirmed upcoming IPOs.
 
-    :param from_date: Start date in 'YYYY-MM-DD' format.
-    :param to_date: End date in 'YYYY-MM-DD' format.
-    :return: List of dictionaries with IPO calendar data.
-    :example: ipo_calendar('2023-01-01', '2023-03-31')
-    :endpoint: https://financialmodelingprep.com/api/v3/ipo_calendar
-    Note: Maximum time interval between from_date and to_date is 3 months.
+    Provides information on scheduled Initial Public Offerings, including
+    company name, symbol, IPO date, exchange, and pricing details. Useful
+    for tracking new investment opportunities and market trends.
+
+    :param from_date: Start date for IPO range (format: YYYY-MM-DD).
+    :param to_date: End date for IPO range (format: YYYY-MM-DD).
+    :return: List of dicts with IPO calendar data.
+    :example: ipo_calendar(from_date='2023-01-01', to_date='2023-12-31')
     """
     path = f"ipo_calendar"
     query_vars = {"apikey": API_KEY}
@@ -70,14 +79,16 @@ def stock_split_calendar(
     from_date: str = None, to_date: str = None
 ) -> typing.Optional[typing.List[typing.Dict]]:
     """
-    Query FMP /stock_split_calendar/ API for stock split calendar.
+    Retrieve upcoming stock split data for publicly traded companies.
 
-    :param from_date: Start date in 'YYYY-MM-DD' format.
-    :param to_date: End date in 'YYYY-MM-DD' format.
-    :return: List of dictionaries with stock split calendar data.
-    :example: stock_split_calendar('2023-01-01', '2023-03-31')
-    :endpoint: https://financialmodelingprep.com/api/v3/stock_split_calendar
-    Note: Maximum time interval between from_date and to_date is 3 months.
+    Provides information on scheduled stock splits, including split date,
+    ratio, and type. Useful for identifying potential investment opportunities,
+    tracking increased liquidity, and monitoring changes in share affordability.
+
+    :param from_date: Start date for the split calendar (format: YYYY-MM-DD).
+    :param to_date: End date for the split calendar (format: YYYY-MM-DD).
+    :return: List of dicts with stock split calendar data.
+    :example: stock_split_calendar(from_date='2023-08-10', to_date='2023-10-10')
     """
     path = f"stock_split_calendar"
     query_vars = {"apikey": API_KEY}
@@ -91,13 +102,17 @@ def dividend_calendar(
     from_date: str = None, to_date: str = None
 ) -> typing.Optional[typing.List[typing.Dict]]:
     """
-    Query FMP /stock_dividend_calendar/ API for dividend calendar.
+    Retrieve upcoming dividend payments for publicly traded companies.
 
-    :param from_date: Start date in 'YYYY-MM-DD' format.
-    :param to_date: End date in 'YYYY-MM-DD' format.
-    :return: List of dictionaries with dividend calendar data.
-    :example: dividend_calendar('2023-01-01', '2023-03-31')
-    :endpoint: https://financialmodelingprep.com/api/v3/stock_dividend_calendar
+    Provides a list of dividend payments within a specified date range,
+    including payment date, ex-dividend date, and dividend per share.
+    Useful for identifying high-yield stocks, tracking dividend histories,
+    and planning income-focused investment strategies.
+
+    :param from_date: Start date for dividend calendar (format: YYYY-MM-DD).
+    :param to_date: End date for dividend calendar (format: YYYY-MM-DD).
+    :return: List of dicts with dividend calendar data.
+    :example: dividend_calendar(from_date='2023-10-01', to_date='2023-10-31')
     Note: Maximum time interval between from_date and to_date is 3 months.
     """
     path = f"stock_dividend_calendar"
@@ -112,13 +127,16 @@ def economic_calendar(
     from_date: str = None, to_date: str = None
 ) -> typing.Optional[typing.List[typing.Dict]]:
     """
-    Query FMP /economic_calendar/ API for economic data releases calendar.
+    Retrieve a calendar of upcoming economic data releases.
+
+    Provides insights into future economic events that may impact markets.
+    Useful for staying informed, preparing for market reactions, and making
+    investment decisions based on economic data releases.
 
     :param from_date: Start date in 'YYYY-MM-DD' format.
     :param to_date: End date in 'YYYY-MM-DD' format.
-    :return: List of dictionaries with economic calendar data.
+    :return: List of dicts with economic calendar data or None if request fails.
     :example: economic_calendar('2023-08-10', '2023-10-10')
-    :endpoint: https://financialmodelingprep.com/api/v3/economic_calendar
     Note: Maximum time interval between from_date and to_date is 3 months.
     """
     path = f"economic_calendar"

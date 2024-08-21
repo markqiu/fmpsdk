@@ -18,7 +18,6 @@ def __quotes(value: str) -> typing.Optional[typing.List[typing.Dict]]:
     :param value: The Ticker(s), Index(es), Commodity(ies), etc. symbol to query for.
     :return: A list of dictionaries containing quote data.
     :example: __quotes('AAPL')
-    :endpoint: https://financialmodelingprep.com/api/v3/quotes/{value}
     """
     path = f"quotes/{value}"
     query_vars = {"apikey": API_KEY}
@@ -29,13 +28,16 @@ def quote(
     symbol: typing.Union[str, typing.List[str]]
 ) -> typing.Optional[typing.List[typing.Dict]]:
     """
-    Query FMP Quote API.
+    Retrieve real-time full quote data for one or multiple stocks.
 
-    :param symbol: The Ticker(s), Index(es), Commodity(ies), etc. symbol to query for. Can be a single symbol or a list of symbols.
-    :return: A list of dictionaries containing quote data.
+    Provides the latest bid and ask prices, volume, and last trade price.
+    Useful for getting a real-time snapshot of stock performance and
+    making informed investment decisions.
+
+    :param symbol: Ticker symbol(s) (e.g., 'AAPL' or ['AAPL', 'GOOGL']).
+    :return: List of dicts with full quote data or None if request fails.
     :example: quote('AAPL')
     :example: quote(['AAPL', 'GOOGL'])
-    :endpoint: https://financialmodelingprep.com/api/v3/quote/{symbol}
     """
     if type(symbol) is list:
         symbol = ",".join(symbol)
@@ -53,19 +55,19 @@ def historical_chart(
     time_delta: str = None,  # For backward compatibility
 ) -> typing.Optional[typing.List[typing.Dict]]:
     """
-    Query FMP Historical Price API.
+    Retrieve historical price data for a specific stock or financial instrument.
+
+    Provides intraday or daily historical price data for analysis and charting.
+    Useful for technical analysis, trend identification, and backtesting strategies.
 
     :param symbol: The Ticker, Index, Commodity, etc. symbol to query for (e.g., 'AAPL').
-    :param timeframe: The string value of time interval ('1min', '5min', '15min', '30min', 
-                                                        '1hour', '4hour', '1day', '1week', 
-                                                        '1month', '1year').
-    :param from_date: The starting date for the API query in 'yyyy-mm-dd' format.
-    :param to_date: The ending date for the API query in 'yyyy-mm-dd' format.
-    :param time_series: The time series parameter, default is 'line'.
+    :param timeframe: Time interval ('1min', '5min', '15min', '30min', '1hour', '4hour', '1day').
+    :param from_date: Start date in 'YYYY-MM-DD' format.
+    :param to_date: End date in 'YYYY-MM-DD' format.
+    :param time_series: Time series parameter, default is 'line'.
     :param time_delta: Deprecated. Use 'timeframe' instead.
-    :return: A list of dictionaries containing historical stock data or None if the request fails.
+    :return: List of dicts with historical price data or None if request fails.
     :example: historical_chart('AAPL', '1day', '2023-08-10', '2023-09-10')
-    :endpoint: https://financialmodelingprep.com/api/v3/historical-chart/{timeframe}/{symbol}
     """
     if time_delta is not None:
         timeframe = time_delta  # For backward compatibility
@@ -87,14 +89,18 @@ def historical_price_full(
     to_date: str = None
 ) -> typing.Optional[typing.List[typing.Dict]]:
     """
-    Query FMP Historical Price Full API.
+    Retrieve daily historical price data for a stock or list of stocks.
 
-    :param symbol: The Ticker, Index, Commodity, etc. symbol to query for. Can be a single symbol or a list of symbols (e.g., 'AAPL' or ['AAPL', 'GOOGL']).
-    :param from_date: The starting date for the API query in 'yyyy-mm-dd' format (e.g., '2020-01-01').
-    :param to_date: The ending date for the API query in 'yyyy-mm-dd' format (e.g., '2023-01-01').
-    :return: A list of dictionaries containing historical stock data or None if the request fails.
-    :example: historical_price_full('AAPL', '2020-01-01', '2023-01-01')
-    :endpoint: https://financialmodelingprep.com/api/v3/historical-price-full/{symbol}
+    Provides up to 5 years of daily stock data by default, including open, high,
+    low, and closing prices. Useful for trend analysis and charting.
+
+    :param symbol: Ticker symbol(s) (e.g., 'AAPL' or ['AAPL', 'GOOGL']).
+    :param from_date: Start date in 'YYYY-MM-DD' format.
+    :param to_date: End date in 'YYYY-MM-DD' format.
+    :return: List of dicts with historical price data or None if request fails.
+    :example: historical_price_full('AAPL', '2023-01-01', '2023-12-31')
+
+    Note: Use from_date and to_date for custom ranges, each limited to 5 years.
     """
     if type(symbol) is list:
         symbol = ",".join(symbol)

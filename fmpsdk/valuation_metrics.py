@@ -7,12 +7,15 @@ API_KEY = os.getenv('FMP_API_KEY')
 
 def discounted_cash_flow(symbol: str) -> typing.Optional[typing.List[typing.Dict]]:
     """
-    Query FMP /discounted-cash-flow/ API for DCF valuation.
+    Retrieve discounted cash flow (DCF) valuation data for a company.
+
+    Provides a method to estimate a company's intrinsic value based on
+    future cash flows. Useful for identifying potential undervalued or
+    overvalued companies.
 
     :param symbol: Company ticker (e.g., 'AAPL').
-    :return: List of dictionaries with DCF valuation data or None if request fails.
+    :return: List of dicts with DCF valuation data or None if request fails.
     :example: discounted_cash_flow('AAPL')
-    :endpoint: https://financialmodelingprep.com/api/v3/discounted-cash-flow/{symbol}
     """
     path = f"discounted-cash-flow/{symbol}"
     query_vars = {"apikey": API_KEY}
@@ -20,12 +23,15 @@ def discounted_cash_flow(symbol: str) -> typing.Optional[typing.List[typing.Dict
 
 def advanced_discounted_cash_flow(symbol: str) -> typing.Optional[typing.List[typing.Dict]]:
     """
-    Query FMP /advanced_discounted_cash_flow/ API for advanced DCF valuation.
+    Retrieve advanced discounted cash flow (DCF) valuation data for a company.
+
+    Provides a more detailed method to estimate a company's intrinsic value
+    based on future cash flows. Useful for identifying potential undervalued
+    or overvalued companies.
 
     :param symbol: Company ticker (e.g., 'AAPL').
-    :return: List of dictionaries with advanced DCF valuation data or None if request fails.
+    :return: List of dicts with advanced DCF valuation data or None if request fails.
     :example: advanced_discounted_cash_flow('AAPL')
-    :endpoint: https://financialmodelingprep.com/api/v4/advanced_discounted_cash_flow?symbol={symbol}
     """
     path = f"advanced_discounted_cash_flow"
     query_vars = {"apikey": API_KEY, "symbol": symbol}
@@ -33,13 +39,16 @@ def advanced_discounted_cash_flow(symbol: str) -> typing.Optional[typing.List[ty
 
 def historical_daily_discounted_cash_flow(symbol: str, limit: int = DEFAULT_LIMIT) -> typing.Optional[typing.List[typing.Dict]]:
     """
-    Query FMP /historical-daily-discounted-cash-flow/ API for daily historical DCF valuation.
+    Retrieve daily historical discounted cash flow (DCF) valuation data for a company.
+
+    Provides a method to analyze a company's historical intrinsic value
+    based on daily cash flows. Useful for identifying trends and patterns
+    in a company's valuation over time.
 
     :param symbol: Company ticker.
     :param limit: Number of rows to return. Default is DEFAULT_LIMIT.
-    :return: List of dictionaries with daily historical DCF valuation data or None if request fails.
+    :return: List of dicts with daily historical DCF valuation data or None if request fails.
     :example: historical_daily_discounted_cash_flow('AAPL', limit=5)
-    :endpoint: https://financialmodelingprep.com/api/v3/historical-daily-discounted-cash-flow/{symbol}
     """
     path = f"historical-daily-discounted-cash-flow/{symbol}"
     query_vars = {"apikey": API_KEY, "limit": limit}
@@ -47,12 +56,14 @@ def historical_daily_discounted_cash_flow(symbol: str, limit: int = DEFAULT_LIMI
 
 def market_capitalization(symbol: str) -> typing.Optional[typing.List[typing.Dict]]:
     """
-    Query FMP /market-capitalization/ API for company's market capitalization.
+    Retrieve a company's current market capitalization.
+
+    Provides the total value of a company's outstanding shares. Useful for
+    identifying large-cap, mid-cap, or small-cap companies.
 
     :param symbol: Company ticker.
-    :return: List of dictionaries with market capitalization data or None if request fails.
+    :return: List of dicts with market capitalization data or None if request fails.
     :example: market_capitalization('AAPL')
-    :endpoint: https://financialmodelingprep.com/api/v3/market-capitalization/{symbol}
     """
     path = f"market-capitalization/{symbol}"
     query_vars = {"apikey": API_KEY}
@@ -60,13 +71,16 @@ def market_capitalization(symbol: str) -> typing.Optional[typing.List[typing.Dic
 
 def historical_market_capitalization(symbol: str, limit: int = DEFAULT_LIMIT) -> typing.Optional[typing.List[typing.Dict]]:
     """
-    Query FMP /historical-market-capitalization/ API for historical market capitalization.
+    Retrieve historical market capitalization data for a company.
 
-    :param symbol: Company ticker.
-    :param limit: Number of rows to return. Default is DEFAULT_LIMIT.
-    :return: List of dictionaries with historical market capitalization data or None if request fails.
-    :example: historical_market_capitalization('AAPL', limit=5)
-    :endpoint: https://financialmodelingprep.com/api/v3/historical-market-capitalization/{symbol}
+    Provides up to five years of data to analyze growth trajectory and
+    performance trends. Useful for tracking company growth over time and
+    identifying potential underperformance relative to the market.
+
+    :param symbol: Company ticker (e.g., 'AAPL').
+    :param limit: Number of records to retrieve. Default is DEFAULT_LIMIT.
+    :return: List of dicts with historical market cap data or None if request fails.
+    :example: historical_market_capitalization('AAPL', limit=100)
     """
     path = f"historical-market-capitalization/{symbol}"
     query_vars = {"apikey": API_KEY, "limit": limit}

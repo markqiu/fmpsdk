@@ -9,9 +9,22 @@ API_KEY = os.getenv('FMP_API_KEY')
 
 def actives() -> typing.Optional[typing.List[typing.Dict]]:
     """
-    Query FMP /actives/ API
+    Retrieve a list of the most actively traded stocks on a given day.
 
-    :return: A list of dictionaries.
+    Provides information on stocks with the highest trading volume,
+    indicating high market interest or significant news events. This data
+    can be used to identify liquid stocks and potential trading opportunities.
+
+    :return: List of dicts with data on most active stocks or None if request fails.
+    :example: actives()
+
+    Each dict in the returned list contains details such as:
+    - symbol: The stock's ticker symbol
+    - name: The company name
+    - change: Price change
+    - price: Current stock price
+    - changesPercentage: Percentage change in price
+    - volume: Trading volume
     """
     path = f"actives"
     query_vars = {"apikey": API_KEY}
@@ -20,9 +33,14 @@ def actives() -> typing.Optional[typing.List[typing.Dict]]:
 
 def gainers() -> typing.Optional[typing.List[typing.Dict]]:
     """
-    Query FMP /gainers/ API
+    Retrieve a list of stocks that have gained the most value on a given day.
 
-    :return: A list of dictionaries.
+    Provides insights into stocks with positive momentum, helping identify
+    potential investment opportunities. Useful for traders looking for
+    stocks with upward trends or significant price movements.
+
+    :return: List of dicts with data on biggest gainers or None if request fails.
+    :example: gainers()
     """
     path = f"gainers"
     query_vars = {"apikey": API_KEY}
@@ -31,9 +49,15 @@ def gainers() -> typing.Optional[typing.List[typing.Dict]]:
 
 def losers() -> typing.Optional[typing.List[typing.Dict]]:
     """
-    Query FMP /losers/ API
+    Retrieve a list of stocks that have lost the most value on a given day.
 
-    :return: A list of dictionaries.
+    Provides insights into stocks with negative momentum, helping identify
+    underperforming stocks and potential trading opportunities. This data
+    can be used to assess market sentiment and identify stocks that may
+    continue to depreciate.
+
+    :return: List of dicts with data on biggest losers or None if request fails.
+    :example: losers()
     """
     path = f"losers"
     query_vars = {"apikey": API_KEY}
@@ -42,9 +66,13 @@ def losers() -> typing.Optional[typing.List[typing.Dict]]:
 
 def market_hours() -> typing.Optional[typing.List[typing.Dict]]:
     """
-    Query FMP /market-hours/ API
+    Retrieve information about market hours for various exchanges.
 
-    :return: A list of dictionaries.
+    Provides data on opening and closing times for different stock markets,
+    helping traders plan their activities around market schedules.
+
+    :return: List of dicts with market hours data or None if request fails.
+    :example: market_hours()
     """
     path = f"market-hours"
     query_vars = {"apikey": API_KEY}
@@ -55,12 +83,14 @@ def sectors_performance(
     limit: int = DEFAULT_LIMIT
 ) -> typing.Optional[typing.List[typing.Dict]]:
     """
-    Query FMP /sectors-performance/ API.
+    Retrieve performance data for various market sectors.
 
-    :param limit: Number of rows to return.
-    :return: A list of dictionaries containing sector performance data.
+    Provides insights into sector-specific performance, helping investors
+    identify trends and make informed decisions about sector allocation.
+
+    :param limit: Number of records to retrieve. Default is DEFAULT_LIMIT.
+    :return: List of dicts with sector performance data or None if request fails.
     :example: sectors_performance(limit=5)
-    :endpoint: https://financialmodelingprep.com/api/v3/sectors-performance
     """
     path = f"sectors-performance"
     query_vars = {"apikey": API_KEY, "limit": limit}
@@ -74,7 +104,6 @@ def fail_to_deliver(symbol: str, page: int = 0) -> typing.Optional[typing.List[t
     :param page: Page number for pagination (default is 0).
     :return: A list of dictionaries containing fail to deliver data.
     :example: fail_to_deliver('AAPL', page=1)
-    :endpoint: https://financialmodelingprep.com/api/v4/fail_to_deliver?symbol={symbol}&page={page}
     """
     path = "fail_to_deliver"
     query_vars = {
@@ -92,7 +121,6 @@ def sector_pe_ratio(date: date, exchange: str = "NYSE") -> typing.Optional[typin
     :param exchange: The stock exchange (default is NYSE).
     :return: A list of dictionaries containing sector PE ratios.
     :example: sector_pe_ratio('2023-01-01', exchange='NASDAQ')
-    :endpoint: https://financialmodelingprep.com/api/v4/sector_price_earning_ratio?date={date}&exchange={exchange}
     """
     path = f"sector_price_earning_ratio"
     query_vars = {
@@ -102,24 +130,24 @@ def sector_pe_ratio(date: date, exchange: str = "NYSE") -> typing.Optional[typin
     }
     return __return_json_v4(path=path, query_vars=query_vars)
 
-def industry_pe_ratio(date: date, exchange: str = "NYSE") -> typing.Optional[typing.List[typing.Dict]]:
+def industry_pe_ratio(date: str, exchange: str = "NYSE") -> typing.Optional[typing.List[typing.Dict]]:
     """
-    Query FMP /industry_price_earning_ratio API for industry-specific PE ratios.
+    Retrieve industry-specific price-to-earnings (PE) ratios.
 
-    Retrieves price-to-earnings (PE) ratios for various industries in the stock market,
-    helping identify overvalued or undervalued industries. The PE ratio measures how
-    expensive stocks are relative to their earnings within each industry.
+    Provides PE ratios for various industries in the stock market, helping to
+    identify potentially overvalued or undervalued sectors. This data is useful
+    for comparing valuations across different industries and making informed
+    investment decisions.
 
-    :param date: The date for which to retrieve the industry PE ratios (format: 'YYYY-MM-DD').
-    :param exchange: The stock exchange (default is NYSE).
-    :return: A list of dictionaries containing industry PE ratios.
+    :param date: Date for which to retrieve industry PE ratios (format: 'YYYY-MM-DD').
+    :param exchange: Stock exchange (default is NYSE).
+    :return: List of dictionaries containing industry PE ratios or None if request fails.
     :example: industry_pe_ratio('2024-08-01', exchange='NYSE')
-    :endpoint: https://financialmodelingprep.com/api/v4/industry_price_earning_ratio
 
-    Use this data to compare PE ratios across industries, identify potential
-    investment opportunities, and assess relative valuations. For instance, if the
-    semiconductor industry has a PE of 25 and software has 30, it might indicate
-    semiconductors are undervalued relative to software.
+    Data can be used to:
+    - Compare PE ratios across industries
+    - Identify potential investment opportunities
+    - Assess relative valuations within the market
     """
     path = "industry_price_earning_ratio"
     query_vars = {
@@ -140,26 +168,40 @@ def batch_eod_prices(date: str) -> typing.Optional[typing.List[typing.Dict]]:
     query_vars = {"apikey": API_KEY, "date": date}
     return __return_json_v4(path=path, query_vars=query_vars)
 
-def multiple_company_prices(symbols: str) -> typing.Optional[typing.List[typing.Dict]]:
+def multiple_company_prices(
+    symbols: typing.Union[str, typing.List[str]]
+) -> typing.Optional[typing.List[typing.Dict]]:
     """
-    Get multiple company prices at once.
+    Retrieve real-time price data for multiple companies in a single request.
 
-    :param symbols: Comma-separated list of stock symbols (e.g., "AAPL,MSFT")
-    :return: A list of dictionaries containing price information for the requested symbols
+    Provides key information such as current price, change, percent change,
+    day low/high, year low/high, market cap, volume, and more for each symbol.
+    Useful for tracking multiple stocks efficiently.
+
+    :param symbols: Single stock symbol as string or list of stock symbols
+                    (e.g., 'AAPL' or ['AAPL', 'MSFT'])
+    :return: List of dicts with price information for the requested symbols
+    :example: multiple_company_prices('AAPL,MSFT')
+              multiple_company_prices(['AAPL', 'MSFT'])
     """
-    path = f"quote/{symbols}"
+    symbols_str = ','.join(symbols) if isinstance(symbols, list) else symbols
+    path = f"quote/{symbols_str}"
     query_vars = {"apikey": API_KEY}
     return __return_json_v3(path=path, query_vars=query_vars)
 
 def historical_sectors_performance(from_date: str, to_date: str) -> typing.Optional[typing.List[typing.Dict]]:
     """
-    Query FMP /historical-sectors-performance API for historical data on sector performance.
+    Retrieve historical performance data for stock market sectors.
+
+    Provides insights into sector trends over time, helping investors identify
+    patterns and make informed decisions. Useful for comparing sector
+    performance and spotting potential investment opportunities.
 
     :param from_date: Start date in format YYYY-MM-DD.
     :param to_date: End date in format YYYY-MM-DD.
-    :return: A list of dictionaries containing historical sector performance data.
+    :return: List of dicts with historical sector performance data,
+             including date and performance for each sector.
     :example: historical_sectors_performance('2024-01-01', '2024-03-01')
-    :endpoint: https://financialmodelingprep.com/api/v3/historical-sectors-performance?from={from_date}&to={to_date}
     """
     path = "historical-sectors-performance"
     query_vars = {

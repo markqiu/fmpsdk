@@ -20,11 +20,12 @@ SEC_USER_AGENT = os.getenv('SEC_USER_AGENT')
 
 def financial_statement_symbol_lists() -> typing.Optional[typing.List[typing.Dict]]:
     """
-    Query FMP /financial-statement-symbol-lists/ API for symbols with financial statements.
+    Retrieve a list of symbols with available financial statements.
 
-    :return: A list of dictionaries containing symbols.
+    Useful for identifying companies with accessible financial data for analysis.
+
+    :return: List of dicts with symbols and their available financial statements.
     :example: financial_statement_symbol_lists()
-    :endpoint: https://financialmodelingprep.com/api/v3/financial-statement-symbol-lists
     """
     path = "financial-statement-symbol-lists"
     query_vars = {"apikey": API_KEY}
@@ -32,14 +33,16 @@ def financial_statement_symbol_lists() -> typing.Optional[typing.List[typing.Dic
 
 def enterprise_values(symbol: str, period: str = "annual", limit: int = DEFAULT_LIMIT) -> typing.Optional[typing.List[typing.Dict]]:
     """
-    Query FMP /enterprise-values/ API for company's enterprise value.
+    Retrieve enterprise value data for a company.
+
+    Provides the total value of a company, including equity and debt.
+    Useful for assessing overall company value and comparing with peers.
 
     :param symbol: Company ticker (e.g., 'AAPL').
     :param period: Reporting period ('annual' or 'quarter'). Default is 'annual'.
-    :param limit: Number of rows to return. Default is DEFAULT_LIMIT.
-    :return: A list of dictionaries with enterprise value data.
+    :param limit: Number of records to retrieve. Default is DEFAULT_LIMIT.
+    :return: List of dicts with enterprise value data or None if request fails.
     :example: enterprise_values('AAPL', period='quarter', limit=5)
-    :endpoint: https://financialmodelingprep.com/api/v3/enterprise-values/{symbol}
     """
     path = f"enterprise-values/{symbol}"
     query_vars = {
@@ -51,13 +54,14 @@ def enterprise_values(symbol: str, period: str = "annual", limit: int = DEFAULT_
 
 def key_metrics_ttm(symbol: str, limit: int = DEFAULT_LIMIT) -> typing.Optional[typing.List[typing.Dict]]:
     """
-    Query FMP /key-metrics-ttm/ API for trailing twelve months key metrics.
+    Retrieve trailing twelve months (TTM) key metrics for a company.
 
-    :param symbol: Company ticker.
-    :param limit: Number of rows to return. Default is DEFAULT_LIMIT.
-    :return: A list of dictionaries with key metrics data.
+    Provides essential financial metrics for recent performance analysis.
+
+    :param symbol: Company ticker (e.g., 'AAPL').
+    :param limit: Number of records to retrieve. Default is DEFAULT_LIMIT.
+    :return: List of dicts with TTM key metrics data or None if request fails.
     :example: key_metrics_ttm('AAPL', limit=5)
-    :endpoint: https://financialmodelingprep.com/api/v3/key-metrics-ttm/{symbol}
     """
     path = f"key-metrics-ttm/{symbol}"
     query_vars = {"apikey": API_KEY, "limit": limit}
@@ -65,14 +69,16 @@ def key_metrics_ttm(symbol: str, limit: int = DEFAULT_LIMIT) -> typing.Optional[
 
 def key_metrics(symbol: str, period: str = "annual", limit: int = DEFAULT_LIMIT) -> typing.Optional[typing.List[typing.Dict]]:
     """
-    Query FMP /key-metrics/ API for company's key financial metrics.
+    Retrieve key financial metrics for a company's performance assessment.
+
+    Provides crucial KPIs including revenue, net income, EPS, and P/E ratio.
+    Useful for financial analysis, competitor comparisons, and goal tracking.
 
     :param symbol: Company ticker (e.g., 'AAPL').
     :param period: Reporting period ('annual' or 'quarter'). Default is 'annual'.
     :param limit: Number of records to retrieve. Default is DEFAULT_LIMIT.
-    :return: A list of dictionaries with key financial metrics data.
+    :return: List of dicts with key financial metrics or None if request fails.
     :example: key_metrics('AAPL', period='quarter', limit=5)
-    :endpoint: https://financialmodelingprep.com/api/v3/key-metrics/{symbol}
     """
     path = f"key-metrics/{symbol}"
     query_vars = {
@@ -84,12 +90,15 @@ def key_metrics(symbol: str, period: str = "annual", limit: int = DEFAULT_LIMIT)
 
 def rating(symbol: str) -> typing.Optional[typing.List[typing.Dict]]:
     """
-    Query FMP /rating/ API for company rating.
+    Retrieve a comprehensive rating for a company based on various financial factors.
 
-    :param symbol: Company ticker.
-    :return: A list of dictionaries with rating data.
+    Provides an assessment of a company's financial health, including ratings
+    derived from financial statements, DCF analysis, ratios, and intrinsic value.
+    Useful for quick company comparisons and identifying investment opportunities.
+
+    :param symbol: Company ticker (e.g., 'AAPL').
+    :return: List of dicts with rating data or None if request fails.
     :example: rating('AAPL')
-    :endpoint: https://financialmodelingprep.com/api/v3/rating/{symbol}
     """
     path = f"rating/{symbol}"
     query_vars = {"apikey": API_KEY}
@@ -97,13 +106,16 @@ def rating(symbol: str) -> typing.Optional[typing.List[typing.Dict]]:
 
 def historical_rating(symbol: str, limit: int = DEFAULT_LIMIT) -> typing.Optional[typing.List[typing.Dict]]:
     """
-    Query FMP /historical-rating/ API for historical company ratings.
+    Retrieve historical ratings for a company over time.
 
-    :param symbol: Company ticker.
-    :param limit: Number of rows to return. Default is DEFAULT_LIMIT.
-    :return: A list of dictionaries with historical rating data.
+    Provides insights into a company's rating changes, helping investors
+    track performance trends and identify potential investment opportunities.
+    Includes rating, recommendation, and DCF score for each time period.
+
+    :param symbol: Company ticker (e.g., 'AAPL').
+    :param limit: Number of records to retrieve. Default is 10.
+    :return: List of dicts with historical rating data or None if request fails.
     :example: historical_rating('AAPL', limit=5)
-    :endpoint: https://financialmodelingprep.com/api/v3/historical-rating/{symbol}
     """
     path = f"historical-rating/{symbol}"
     query_vars = {"apikey": API_KEY, "limit": limit}
@@ -111,12 +123,13 @@ def historical_rating(symbol: str, limit: int = DEFAULT_LIMIT) -> typing.Optiona
 
 def discounted_cash_flow(symbol: str) -> typing.Optional[typing.List[typing.Dict]]:
     """
-    Query FMP /discounted-cash-flow/ API for company's discounted cash flow.
+    Retrieve the discounted cash flow (DCF) valuation for a company.
 
-    :param symbol: Company ticker.
-    :return: A list of dictionaries with discounted cash flow data.
+    Provides a valuation estimate based on future cash flows and a discount rate.
+
+    :param symbol: Company ticker (e.g., 'AAPL').
+    :return: List of dicts with DCF valuation data or None if request fails.
     :example: discounted_cash_flow('AAPL')
-    :endpoint: https://financialmodelingprep.com/api/v3/discounted-cash-flow/{symbol}
     """
     path = f"discounted-cash-flow/{symbol}"
     query_vars = {"apikey": API_KEY}
@@ -124,12 +137,13 @@ def discounted_cash_flow(symbol: str) -> typing.Optional[typing.List[typing.Dict
 
 def advanced_discounted_cash_flow(symbol: str) -> typing.Optional[typing.List[typing.Dict]]:
     """
-    Query FMP /advanced_discounted_cash_flow/ API for advanced DCF valuation.
+    Retrieve advanced DCF valuation data for a company.
+
+    Provides a more comprehensive valuation estimate based on various factors.
 
     :param symbol: Company ticker (e.g., 'AAPL').
-    :return: A list of dictionaries with advanced DCF valuation data.
+    :return: List of dicts with advanced DCF valuation data or None if request fails.
     :example: advanced_discounted_cash_flow('AAPL')
-    :endpoint: https://financialmodelingprep.com/api/v4/advanced_discounted_cash_flow?symbol={symbol}
     """
     path = f"advanced_discounted_cash_flow"
     query_vars = {"apikey": API_KEY, "symbol": symbol}
@@ -137,14 +151,15 @@ def advanced_discounted_cash_flow(symbol: str) -> typing.Optional[typing.List[ty
 
 def historical_discounted_cash_flow(symbol: str, period: str = "annual", limit: int = DEFAULT_LIMIT) -> typing.Optional[typing.List[typing.Dict]]:
     """
-    Query FMP /historical-discounted-cash-flow/ API for historical DCF.
+    Retrieve historical DCF valuation data for a company.
 
-    :param symbol: Company ticker.
-    :param period: 'annual' or 'quarter'. Default is 'annual'.
-    :param limit: Number of rows to return. Default is DEFAULT_LIMIT.
-    :return: A list of dictionaries with historical DCF data.
+    Provides insights into a company's past DCF valuations and trends.
+
+    :param symbol: Company ticker (e.g., 'AAPL').
+    :param period: Reporting period ('annual' or 'quarter'). Default is 'annual'.
+    :param limit: Number of records to retrieve. Default is DEFAULT_LIMIT.
+    :return: List of dicts with historical DCF valuation data or None if request fails.
     :example: historical_discounted_cash_flow('AAPL', period='quarter', limit=5)
-    :endpoint: https://financialmodelingprep.com/api/v3/historical-discounted-cash-flow/{symbol}
     """
     path = f"historical-discounted-cash-flow/{symbol}"
     query_vars = {
@@ -156,13 +171,14 @@ def historical_discounted_cash_flow(symbol: str, period: str = "annual", limit: 
 
 def historical_daily_discounted_cash_flow(symbol: str, limit: int = DEFAULT_LIMIT) -> typing.Optional[typing.List[typing.Dict]]:
     """
-    Query FMP /historical-daily-discounted-cash-flow/ API for daily historical DCF.
+    Retrieve daily historical DCF valuation data for a company.
 
-    :param symbol: Company ticker.
-    :param limit: Number of rows to return. Default is DEFAULT_LIMIT.
-    :return: A list of dictionaries with daily historical DCF data.
+    Provides insights into a company's daily DCF valuations and trends.
+
+    :param symbol: Company ticker (e.g., 'AAPL').
+    :param limit: Number of records to retrieve. Default is DEFAULT_LIMIT.
+    :return: List of dicts with daily historical DCF valuation data or None if request fails.
     :example: historical_daily_discounted_cash_flow('AAPL', limit=5)
-    :endpoint: https://financialmodelingprep.com/api/v3/historical-daily-discounted-cash-flow/{symbol}
     """
     path = f"historical-daily-discounted-cash-flow/{symbol}"
     query_vars = {"apikey": API_KEY, "limit": limit}
@@ -170,11 +186,12 @@ def historical_daily_discounted_cash_flow(symbol: str, limit: int = DEFAULT_LIMI
 
 def symbols_list() -> typing.Optional[typing.List[typing.Dict]]:
     """
-    Query FMP /stock/list/ API for list of all stock symbols.
+    Retrieve a list of all available stock symbols.
 
-    :return: A list of dictionaries with stock symbols data.
+    Useful for exploring and analyzing a wide range of stocks.
+
+    :return: List of dicts with stock symbols data or None if request fails.
     :example: symbols_list()
-    :endpoint: https://financialmodelingprep.com/api/v3/stock/list
     """
     path = f"stock/list"
     query_vars = {"apikey": API_KEY}
@@ -182,11 +199,12 @@ def symbols_list() -> typing.Optional[typing.List[typing.Dict]]:
 
 def etf_list() -> typing.Optional[typing.List[typing.Dict]]:
     """
-    Query FMP /etf/list/ API for list of all ETF symbols.
+    Retrieve a list of all available ETF symbols.
 
-    :return: A list of dictionaries with ETF symbols data.
+    Useful for exploring and analyzing a wide range of ETFs.
+
+    :return: List of dicts with ETF symbols data or None if request fails.
     :example: etf_list()
-    :endpoint: https://financialmodelingprep.com/api/v3/etf/list
     """
     path = "etf/list"
     query_vars = {"apikey": API_KEY}
@@ -194,11 +212,12 @@ def etf_list() -> typing.Optional[typing.List[typing.Dict]]:
 
 def available_traded_list() -> typing.Optional[typing.List[typing.Dict]]:
     """
-    Query FMP /available-traded/list/ API for list of all tradable symbols.
+    Retrieve a list of all available tradable symbols.
 
-    :return: A list of dictionaries with tradable symbols data.
+    Useful for exploring and analyzing a wide range of tradable securities.
+
+    :return: List of dicts with tradable symbols data or None if request fails.
     :example: available_traded_list()
-    :endpoint: https://financialmodelingprep.com/api/v3/available-traded/list
     """
     path = "available-traded/list"
     query_vars = {"apikey": API_KEY}
@@ -206,12 +225,13 @@ def available_traded_list() -> typing.Optional[typing.List[typing.Dict]]:
 
 def delisted_companies(limit: int = DEFAULT_LIMIT) -> typing.Optional[typing.List[typing.Dict]]:
     """
-    Query FMP /delisted-companies/ API for list of delisted companies.
+    Retrieve a list of delisted companies.
 
-    :param limit: Number of rows to return. Default is DEFAULT_LIMIT.
-    :return: A list of dictionaries with delisted companies data.
+    Useful for tracking and analyzing companies that have been delisted from exchanges.
+
+    :param limit: Number of records to retrieve. Default is DEFAULT_LIMIT.
+    :return: List of dicts with delisted companies data or None if request fails.
     :example: delisted_companies(limit=10)
-    :endpoint: https://financialmodelingprep.com/api/v3/delisted-companies
     """
     path = "delisted-companies"
     query_vars = {"apikey": API_KEY}
@@ -219,12 +239,16 @@ def delisted_companies(limit: int = DEFAULT_LIMIT) -> typing.Optional[typing.Lis
 
 def earnings_surprises(symbol: str) -> typing.Optional[typing.List[typing.Dict]]:
     """
-    Query FMP /earnings-surprises/ API for company's earnings surprises.
+    Retrieve earnings surprises for a company.
 
-    :param symbol: Company ticker.
-    :return: A list of dictionaries with earnings surprises data.
+    Provides insights into a company's financial performance vs. market expectations.
+    Useful for identifying earnings beats/misses and analyzing trends that can
+    impact stock prices and investor sentiment.
+
+    :param symbol: Company ticker (e.g., 'AAPL').
+    :return: List of dicts with earnings surprises data, including date,
+             actual EPS, estimated EPS, and surprise percentage.
     :example: earnings_surprises('AAPL')
-    :endpoint: https://financialmodelingprep.com/api/v3/earnings-surprises/{symbol}
     """
     path = f"earnings-surprises/{symbol}"
     query_vars = {"apikey": API_KEY}
@@ -232,14 +256,15 @@ def earnings_surprises(symbol: str) -> typing.Optional[typing.List[typing.Dict]]
 
 def earning_call_transcript(symbol: str, year: int, quarter: int) -> typing.Optional[typing.List[typing.Dict]]:
     """
-    Query FMP /earning_call_transcript/ API for company's earning call transcript.
+    Retrieve the earning call transcript for a specific quarter and year.
 
-    :param symbol: Company ticker.
-    :param year: Year of the transcript.
-    :param quarter: Quarter of the transcript.
-    :return: A list of dictionaries with earning call transcript data.
+    Provides insights into a company's financial performance and management discussions.
+
+    :param symbol: Company ticker (e.g., 'AAPL').
+    :param year: Year of the transcript (e.g., 2023).
+    :param quarter: Quarter of the transcript (1-4).
+    :return: List of dicts with earning call transcript data or None if request fails.
     :example: earning_call_transcript('AAPL', 2023, 1)
-    :endpoint: https://financialmodelingprep.com/api/v3/earning_call_transcript/{symbol}
     """
     path = f"earning_call_transcript/{symbol}"
     query_vars = {"apikey": API_KEY, "year": year, "quarter": quarter}
@@ -247,13 +272,15 @@ def earning_call_transcript(symbol: str, year: int, quarter: int) -> typing.Opti
 
 def batch_earning_call_transcript(symbol: str, year: int) -> typing.Optional[typing.List[typing.Dict]]:
     """
-    Query FMP /batch_earning_call_transcript/ API for company's batch earning call transcripts.
+    Retrieve batch earning call transcripts for a specific year.
 
-    :param symbol: Company ticker.
-    :param year: Year of the transcripts.
-    :return: A list of dictionaries with batch earning call transcript data.
+    Provides insights into a company's financial performance and management discussions
+    for multiple quarters in a single year.
+
+    :param symbol: Company ticker (e.g., 'AAPL').
+    :param year: Year of the transcripts (e.g., 2023).
+    :return: List of dicts with batch earning call transcript data or None if request fails.
     :example: batch_earning_call_transcript('AAPL', 2023)
-    :endpoint: https://financialmodelingprep.com/api/v4/batch_earning_call_transcript/{symbol}
     """
     path = f"batch_earning_call_transcript/{symbol}"
     query_vars = {"apikey": API_KEY, "year": year}
@@ -261,12 +288,13 @@ def batch_earning_call_transcript(symbol: str, year: int) -> typing.Optional[typ
 
 def earning_call_transcripts_available_dates(symbol: str) -> typing.Optional[typing.List[typing.List]]:
     """
-    Query FMP /earning_call_transcript/ API for available dates of earning call transcripts.
+    Retrieve available dates for earning call transcripts.
 
-    :param symbol: Company ticker.
-    :return: A list of lists with available dates for earning call transcripts.
+    Useful for planning and accessing transcripts for specific quarters and years.
+
+    :param symbol: Company ticker (e.g., 'AAPL').
+    :return: List of lists with available dates for earning call transcripts or None if request fails.
     :example: earning_call_transcripts_available_dates('AAPL')
-    :endpoint: https://financialmodelingprep.com/api/v4/earning_call_transcript
     """
     path = f"earning_call_transcript"
     query_vars = {"apikey": API_KEY, "symbol": symbol}
@@ -274,21 +302,15 @@ def earning_call_transcripts_available_dates(symbol: str) -> typing.Optional[typ
 
 def sec_filings(symbol: str, filing_type: str = "", limit: int = DEFAULT_LIMIT) -> typing.Optional[typing.List[typing.Dict]]:
     """
-    Query FMP /sec_filings/ API for links to the company's SEC filings.
+    Retrieve links to a company's SEC filings.
+
+    Provides access to important financial documents and regulatory filings.
 
     :param symbol: Company ticker (e.g., 'AAPL').
-    :param filing_type: SEC filing type (e.g., '10-K', '10-Q', '8-K'). Default is empty string (all types).
-    :param limit: Number of filings to return. Default is DEFAULT_LIMIT.
-    :return: A list of dictionaries with SEC filings data (date, type, title, link, finalLink).
+    :param filing_type: SEC filing type (e.g., '10-K', '10-Q', '8-K'). Default is all types.
+    :param limit: Number of records to retrieve. Default is DEFAULT_LIMIT.
+    :return: List of dicts with SEC filings data or None if request fails.
     :example: sec_filings('AAPL', filing_type='10-K', limit=10)
-    :endpoint: https://financialmodelingprep.com/api/v3/sec_filings/{symbol}
-
-    Output fields:
-    - date: Filing date
-    - type: SEC filing type
-    - title: Filing title
-    - link: Link to the filing on SEC website
-    - finalLink: Direct link to the filing
     """
     path = f"sec_filings/{symbol}"
     query_vars = {"apikey": API_KEY, "type": filing_type, "limit": limit}
@@ -316,16 +338,22 @@ def clean_html_content(soup):
 
     return text
 
-def sec_filings_data(symbol: str, filing_type: str = "", limit: int = DEFAULT_LIMIT) -> typing.Optional[typing.List[typing.Dict]]:
+def sec_filings_data(symbol: str, filing_type: str = "", limit: int = 1) -> typing.Optional[typing.List[typing.Dict]]:
     """
-    Query FMP /sec_filings/ API for company's SEC filings and fetch the content from 'finalLink'.
+    Retrieve a company's SEC filings and fetch the content from 'finalLink'.
+
+    Provides access to important financial documents and regulatory filings,
+    along with the content of the filings.
 
     :param symbol: Company ticker (e.g., 'AAPL').
-    :param filing_type: SEC filing type (e.g., '10-K', '10-Q', '8-K'). Default is empty string (all types).
-    :param limit: Number of filings to return. Default is DEFAULT_LIMIT.
-    :return: A list of dictionaries with SEC filings data including the content from 'finalLink'.
+    :param filing_type: SEC filing type (e.g., '10-K', '10-Q', '8-K'). Default is all types.
+    :param limit: Number of records to retrieve. Default is DEFAULT_LIMIT.
+    :return: List of dicts with SEC filings data, including the content from 'finalLink',
+             or None if request fails.
     :example: sec_filings_data('AAPL', filing_type='10-K', limit=2)
-    :endpoint: https://financialmodelingprep.com/api/v3/sec_filings/{symbol}
+    Note: this function returns unredacted full text of the filings and 
+    may not be suitable for LLM processing in the absense of very long 
+    context windows. e.g. a single 10-K filing can be 50k+ tokens.
     """
     # First, get the SEC filings data using the existing function
     filings = sec_filings(symbol, filing_type, limit)
@@ -362,28 +390,41 @@ def sec_filings_data(symbol: str, filing_type: str = "", limit: int = DEFAULT_LI
 
     return filings
 
-def press_releases(symbol: str, limit: int = DEFAULT_LIMIT) -> typing.Optional[typing.List[typing.Dict]]:
+def press_releases(
+    symbol: str = None,
+    limit: int = DEFAULT_LIMIT,
+    page: int = 0
+) -> typing.Optional[typing.List[typing.Dict]]:
     """
-    Query FMP /press-releases/ API for company's press releases.
+    Retrieve the latest press releases, optionally filtered by company.
 
-    :param symbol: Company ticker.
-    :param limit: Number of rows to return. Default is DEFAULT_LIMIT.
-    :return: A list of dictionaries with press releases data.
-    :example: press_releases('AAPL', limit=10)
-    :endpoint: https://financialmodelingprep.com/api/v3/press-releases/{symbol}
+    Provides detailed information about company announcements, including
+    release date, title, and content. Useful for staying updated on important
+    developments and news from organizations.
+
+    :param symbol: Company ticker (e.g., 'AAPL'). If None, returns releases
+                   for all companies.
+    :param limit: Number of records to retrieve. Default is 10.
+    :param page: Page number for pagination. Default is 0.
+    :return: List of dicts with press releases data or None if request fails.
+    :example: press_releases(symbol='AAPL', limit=10, page=0)
+              press_releases(limit=20, page=1)
     """
-    path = f"press-releases/{symbol}"
-    query_vars = {"apikey": API_KEY, "limit": limit}
+    path = f"press-releases/{symbol}" if symbol else "press-releases"
+    query_vars = {"apikey": API_KEY, "limit": limit, "page": page}
     return __return_json_v3(path=path, query_vars=query_vars)
 
 def stock_peers(symbol: str) -> typing.Optional[typing.List[typing.Dict]]:
     """
-    Query FMP /stock_peers/ API for company's stock peers.
+    Retrieve a group of companies similar to the given stock.
 
-    :param symbol: Company ticker (e.g., 'AAPL').
-    :return: A list of dictionaries with stock peers data.
+    Provides peers trading on the same exchange, in the same sector,
+    with similar market capitalization. Useful for competitor analysis
+    and identifying well-performing companies in the same industry.
+
+    :param symbol: Company ticker (e.g., 'AAPL')
+    :return: List of dicts with stock peers data or None if request fails
     :example: stock_peers('AAPL')
-    :endpoint: https://financialmodelingprep.com/api/v4/stock_peers?symbol={symbol}
     """
     path = f"stock_peers"
     query_vars = {"apikey": API_KEY, "symbol": symbol}
@@ -391,14 +432,17 @@ def stock_peers(symbol: str) -> typing.Optional[typing.List[typing.Dict]]:
 
 def analyst_estimates(symbol: str, period: str = "annual", limit: int = DEFAULT_LIMIT) -> typing.Optional[typing.List[typing.Dict]]:
     """
-    Query FMP /analyst-estimates/ API for company's analyst estimates.
+    Retrieve analyst estimates for a company's future earnings and revenue.
+
+    Provides forecasts to help identify potential investment opportunities.
+    Note that analyst estimates are not always accurate.
 
     :param symbol: Company ticker (e.g., 'AAPL').
     :param period: Reporting period ('annual' or 'quarter'). Default is 'annual'.
     :param limit: Number of records to retrieve. Default is DEFAULT_LIMIT.
-    :return: A list of dictionaries with analyst estimates data.
+    :return: List of dicts with analyst estimates data, including estimated
+             revenue, EBITDA, EBIT, net income, EPS, and more.
     :example: analyst_estimates('AAPL', period='quarter', limit=5)
-    :endpoint: https://financialmodelingprep.com/api/v3/analyst-estimates/{symbol}?period={period}&limit={limit}
     """
     path = f"/analyst-estimates/{symbol}"
     query_vars = {
@@ -409,16 +453,22 @@ def analyst_estimates(symbol: str, period: str = "annual", limit: int = DEFAULT_
     }
     return __return_json_v3(path=path, query_vars=query_vars)
 
-def sales_revenue_by_segments(symbol: str, structure: str = "flat", period: str = "annual") -> typing.Optional[typing.List[typing.Dict]]:
+def sales_revenue_by_segments(
+    symbol: str,
+    structure: str = "flat",
+    period: str = "annual"
+) -> typing.Optional[typing.List[typing.Dict]]:
     """
-    Query FMP /revenue-product-segmentation API for company's sales revenue by segments.
+    Retrieve revenue breakdown by product category for a company.
 
-    :param symbol: Company ticker (e.g., 'AAPL').
-    :param structure: 'flat' or 'segment'. Default is 'flat'.
-    :param period: 'annual' or 'quarter'. Default is 'annual'.
-    :return: A list of dictionaries with sales revenue by segments data.
+    Useful for identifying most profitable products, tracking performance,
+    and making informed investment decisions.
+
+    :param symbol: Company ticker (e.g., 'AAPL')
+    :param structure: Data structure ('flat' or 'segment'). Default is 'flat'
+    :param period: Reporting period ('annual' or 'quarter'). Default is 'annual'
+    :return: List of dicts with revenue segmentation data or None if request fails
     :example: sales_revenue_by_segments('AAPL', structure='segment', period='quarter')
-    :endpoint: https://financialmodelingprep.com/api/v4/revenue-product-segmentation?symbol={symbol}&structure={structure}&period={period}
     """
     path = "revenue-product-segmentation"
     query_vars = {
@@ -429,16 +479,22 @@ def sales_revenue_by_segments(symbol: str, structure: str = "flat", period: str 
     }
     return __return_json_v4(path=path, query_vars=query_vars)
 
-def revenue_geographic_segmentation(symbol: str, structure: str = "flat", period: str = "annual") -> typing.Optional[typing.List[typing.Dict]]:
+def revenue_geographic_segmentation(
+    symbol: str,
+    structure: str = "flat",
+    period: str = "annual"
+) -> typing.Optional[typing.List[typing.Dict]]:
     """
-    Query FMP /revenue-geographic-segmentation API for company's revenue by geographic segments.
+    Retrieve revenue breakdown by geographic region for a company.
 
-    :param symbol: Company ticker (e.g., 'AAPL').
-    :param structure: 'flat' or 'segment'. Default is 'flat'.
-    :param period: 'annual' or 'quarter'. Default is 'annual'.
-    :return: A list of dictionaries with revenue by geographic segments data.
+    Useful for identifying profitable regions, tracking performance over time,
+    and making informed investment decisions.
+
+    :param symbol: Company ticker (e.g., 'AAPL')
+    :param structure: Data structure ('flat' or 'segment'). Default is 'flat'
+    :param period: Reporting period ('annual' or 'quarter'). Default is 'annual'
+    :return: List of dicts with revenue by geographic segments or None if request fails
     :example: revenue_geographic_segmentation('AAPL', structure='segment', period='quarter')
-    :endpoint: https://financialmodelingprep.com/api/v4/revenue-geographic-segmentation?symbol={symbol}&structure={structure}&period={period}
     """
     path = "revenue-geographic-segmentation"
     query_vars = {
@@ -451,38 +507,46 @@ def revenue_geographic_segmentation(symbol: str, structure: str = "flat", period
 
 def esg_score(symbol: str) -> typing.Optional[typing.List[typing.Dict]]:
     """
-    Query FMP /esg-environmental-social-governance-data API for company's ESG score.
+    Retrieve Environmental, Social, and Governance (ESG) ratings for a company.
 
-    :param symbol: Company ticker.
-    :return: A list of dictionaries with ESG score data.
+    Provides insights into a company's sustainability and social responsibility performance.
+    Useful for making informed investment decisions based on ESG factors.
+    Data is sourced from corporate sustainability reports, ESG research firms, and government agencies.
+
+    :param symbol: Company ticker (e.g., 'AAPL').
+    :return: List of dicts with ESG ratings data or None if request fails.
     :example: esg_score('AAPL')
-    :endpoint: https://financialmodelingprep.com/api/v4/esg-environmental-social-governance-data?symbol={symbol}
     """
     path = f"esg-environmental-social-governance-data"
     query_vars = {"apikey": API_KEY, "symbol": symbol}
     return __return_json_v4(path=path, query_vars=query_vars)
 
-def stock_grade(symbol: str) -> typing.Optional[typing.List[typing.Dict]]:
+def stock_grade(symbol: str, limit: int = 50) -> typing.Optional[typing.List[typing.Dict]]:
     """
-    Query FMP /grade/ API for company's stock grade.
+    Retrieve stock grades given by hedge funds, investment firms, and analysts.
 
-    :param symbol: Company ticker.
-    :return: A list of dictionaries with stock grade data.
-    :example: stock_grade('AAPL')
-    :endpoint: https://financialmodelingprep.com/api/v3/grade/{symbol}
+    Provides ratings and insights on a company's financial performance,
+    business model, and competitive landscape. Useful for understanding
+    professional investors' views and identifying investment opportunities.
+
+    :param symbol: Company ticker (e.g., 'AAPL')
+    :param limit: Number of results to return (default: 50)
+    :return: List of dicts with stock grade data or None if request fails
+    :example: stock_grade('AAPL', limit=10)
     """
     path = f"grade/{symbol}"
-    query_vars = {"apikey": API_KEY}
+    query_vars = {"apikey": API_KEY, "limit": limit}
     return __return_json_v3(path=path, query_vars=query_vars)
 
 def financial_score(symbol: str) -> typing.Optional[typing.List[typing.Dict]]:
     """
-    Query FMP /score/ API for company's financial score.
+    Retrieve the financial score for a company.
+
+    Provides an assessment of a company's financial health and performance.
 
     :param symbol: Company ticker (e.g., 'AAPL').
-    :return: A list of dictionaries with financial score data.
+    :return: List of dicts with financial score data or None if request fails.
     :example: financial_score('AAPL')
-    :endpoint: https://financialmodelingprep.com/api/v4/score?symbol={symbol}
     """
     path = "score"
     query_vars = {"apikey": API_KEY, "symbol": symbol}
@@ -490,12 +554,13 @@ def financial_score(symbol: str) -> typing.Optional[typing.List[typing.Dict]]:
 
 def owner_earnings(symbol: str) -> typing.Optional[typing.List[typing.Dict]]:
     """
-    Query FMP /owner_earnings API for company's owner earnings.
+    Retrieve owner earnings data for a company.
+
+    Provides insights into a company's earnings available for common shareholders.
 
     :param symbol: Company ticker (e.g., 'AAPL').
-    :return: A list of dictionaries with owner earnings data.
+    :return: List of dicts with owner earnings data or None if request fails.
     :example: owner_earnings('AAPL')
-    :endpoint: https://financialmodelingprep.com/api/v4/owner_earnings?symbol={symbol}
     """
     path = "owner_earnings"
     query_vars = {"apikey": API_KEY, "symbol": symbol}
@@ -503,12 +568,15 @@ def owner_earnings(symbol: str) -> typing.Optional[typing.List[typing.Dict]]:
 
 def upgrades_downgrades(symbol: str) -> typing.Optional[typing.List[typing.Dict]]:
     """
-    Query FMP /upgrades-downgrades/ API for company's stock upgrades and downgrades.
+    Retrieve a comprehensive list of stock upgrades and downgrades for a company.
+
+    Provides insights into analysts' changing expectations for a stock's performance.
+    Updated daily to offer the most current analyst ratings.
 
     :param symbol: Company ticker (e.g., 'AAPL').
-    :return: A list of dictionaries with stock upgrades and downgrades data.
+    :return: List of dicts with upgrade/downgrade data, including rating changes,
+             analyst firms, and dates, or None if request fails.
     :example: upgrades_downgrades('AAPL')
-    :endpoint: https://financialmodelingprep.com/api/v4/upgrades-downgrades?symbol={symbol}
     """
     path = "upgrades-downgrades"
     query_vars = {"apikey": API_KEY, "symbol": symbol}
@@ -516,12 +584,15 @@ def upgrades_downgrades(symbol: str) -> typing.Optional[typing.List[typing.Dict]
 
 def upgrades_downgrades_rss_feed(page: int = 0) -> typing.Optional[typing.List[typing.Dict]]:
     """
-    Query FMP /upgrades-downgrades-rss-feed/ API for latest stock upgrades and downgrades RSS feed.
+    Retrieve daily-updated RSS feed of stock upgrades and downgrades from various analysts.
+
+    Provides the latest analyst ratings to help investors stay informed about
+    changing market sentiments and potential investment opportunities.
 
     :param page: Page number for pagination. Default is 0.
-    :return: A list of dictionaries with latest stock upgrades and downgrades RSS feed data.
+    :return: List of dicts with latest stock upgrades and downgrades data,
+             including rating changes, analyst firms, and dates.
     :example: upgrades_downgrades_rss_feed(page=1)
-    :endpoint: https://financialmodelingprep.com/api/v4/upgrades-downgrades-rss-feed?page={page}
     """
     path = "upgrades-downgrades-rss-feed"
     query_vars = {"apikey": API_KEY, "page": page}
@@ -529,12 +600,16 @@ def upgrades_downgrades_rss_feed(page: int = 0) -> typing.Optional[typing.List[t
 
 def upgrades_downgrades_consensus(symbol: str) -> typing.Optional[typing.List[typing.Dict]]:
     """
-    Query FMP /upgrades-downgrades-consensus/ API for company's consensus rating.
+    Retrieve the consensus rating for a company's stock.
+
+    Provides an average rating from different analysts, offering a general
+    idea of analysts' opinions about a company's stock. This can be used
+    to make more informed investment decisions.
 
     :param symbol: Company ticker (e.g., 'AAPL').
-    :return: A list of dictionaries with consensus rating data.
+    :return: List of dicts with consensus rating data or None if request fails.
+             Data includes overall rating and individual analyst ratings.
     :example: upgrades_downgrades_consensus('AAPL')
-    :endpoint: https://financialmodelingprep.com/api/v4/upgrades-downgrades-consensus?symbol={symbol}
     """
     path = "upgrades-downgrades-consensus"
     query_vars = {"apikey": API_KEY, "symbol": symbol}
@@ -542,12 +617,17 @@ def upgrades_downgrades_consensus(symbol: str) -> typing.Optional[typing.List[ty
 
 def upgrades_downgrades_by_company(company: str) -> typing.Optional[typing.List[typing.Dict]]:
     """
-    Query FMP /upgrades-downgrades-grading-company/ API for company's stock upgrades and downgrades.
+    Retrieve stock upgrades and downgrades issued by a specific analyst company.
 
-    :param company: Company name (e.g., 'Barclays').
-    :return: A list of dictionaries with stock upgrades and downgrades data for the company.
+    Provides a comprehensive list of rating changes for various stocks,
+    including the rating change, analyst firm, and date. This data can be
+    used to track analyst sentiment and identify potential investment
+    opportunities or risks.
+
+    :param company: Analyst company name (e.g., 'Barclays').
+    :return: List of dicts with stock upgrades and downgrades data, including
+             company symbol, rating change, analyst firm, and date.
     :example: upgrades_downgrades_by_company('Barclays')
-    :endpoint: https://financialmodelingprep.com/api/v4/upgrades-downgrades-grading-company?company={company}
     """
     path = "upgrades-downgrades-grading-company"
     query_vars = {"apikey": API_KEY, "company": company}
@@ -555,12 +635,13 @@ def upgrades_downgrades_by_company(company: str) -> typing.Optional[typing.List[
 
 def mergers_acquisitions_rss_feed(page: int = 0) -> typing.Optional[typing.List[typing.Dict]]:
     """
-    Query FMP /mergers-acquisitions-rss-feed/ API for latest M&A news RSS feed.
+    Retrieve the latest M&A news RSS feed.
+
+    Provides insights into mergers, acquisitions, and other corporate transactions.
 
     :param page: Page number for pagination. Default is 0.
-    :return: A list of dictionaries with latest M&A news RSS feed data.
+    :return: List of dicts with latest M&A news RSS feed data or None if request fails.
     :example: mergers_acquisitions_rss_feed(page=1)
-    :endpoint: https://financialmodelingprep.com/api/v4/mergers-acquisitions-rss-feed?page={page}
     """
     path = "mergers-acquisitions-rss-feed"
     query_vars = {"apikey": API_KEY, "page": page}
@@ -568,12 +649,14 @@ def mergers_acquisitions_rss_feed(page: int = 0) -> typing.Optional[typing.List[
 
 def search_mergers_acquisitions(name: str) -> typing.Optional[typing.List[typing.Dict]]:
     """
-    Query FMP /mergers-acquisitions/search/ API for M&A deals based on company name.
+    Search for M&A deals based on company name.
+
+    Provides insights into mergers, acquisitions, and other corporate transactions
+    for a specific company.
 
     :param name: Company name (e.g., 'Apple').
-    :return: A list of dictionaries with M&A deal data for the company.
+    :return: List of dicts with M&A deal data for the company or None if request fails.
     :example: search_mergers_acquisitions('Apple')
-    :endpoint: https://financialmodelingprep.com/api/v4/mergers-acquisitions/search?name={name}
     """
     path = "mergers-acquisitions/search"
     query_vars = {"apikey": API_KEY, "name": name}
@@ -581,12 +664,13 @@ def search_mergers_acquisitions(name: str) -> typing.Optional[typing.List[typing
 
 def executive_compensation(symbol: str) -> typing.Optional[typing.List[typing.Dict]]:
     """
-    Query FMP /governance/executive_compensation API for company's executive compensation.
+    Retrieve executive compensation data for a company.
 
-    :param symbol: Company ticker.
-    :return: A list of dictionaries with executive compensation data.
+    Provides insights into the compensation of key executives and their impact on shareholder value.
+
+    :param symbol: Company ticker (e.g., 'AAPL').
+    :return: List of dicts with executive compensation data or None if request fails.
     :example: executive_compensation('AAPL')
-    :endpoint: https://financialmodelingprep.com/api/v4/governance/executive_compensation?symbol={symbol}
     """
     path = "governance/executive_compensation"
     query_vars = {"apikey": API_KEY, "symbol": symbol}
@@ -594,12 +678,13 @@ def executive_compensation(symbol: str) -> typing.Optional[typing.List[typing.Di
 
 def compensation_benchmark(year: int) -> typing.Optional[typing.List[typing.Dict]]:
     """
-    Query FMP /executive-compensation-benchmark API for executive compensation benchmark.
+    Retrieve executive compensation benchmark data for a specific year.
 
-    :param year: Year for compensation benchmark data.
-    :return: A list of dictionaries with compensation benchmark data.
+    Provides insights into the compensation trends and benchmarks for key executives in various industries.
+
+    :param year: Year for compensation benchmark data (e.g., 2023).
+    :return: List of dicts with compensation benchmark data or None if request fails.
     :example: compensation_benchmark(2023)
-    :endpoint: https://financialmodelingprep.com/api/v4/executive-compensation-benchmark?year={year}
     """
     path = "executive-compensation-benchmark"
     query_vars = {"apikey": API_KEY, "year": year}
@@ -607,12 +692,13 @@ def compensation_benchmark(year: int) -> typing.Optional[typing.List[typing.Dict
 
 def company_notes(symbol: str) -> typing.Optional[typing.List[typing.Dict]]:
     """
-    Query FMP /company-notes/ API for company's notes.
+    Retrieve company notes for a specific company.
+
+    Provides additional insights and notes about a company's performance and operations.
 
     :param symbol: Company ticker (e.g., 'AAPL').
-    :return: A list of dictionaries with company notes data.
+    :return: List of dicts with company notes data or None if request fails.
     :example: company_notes('AAPL')
-    :endpoint: https://financialmodelingprep.com/api/v4/company-notes?symbol={symbol}
     """
     path = "company-notes"
     query_vars = {"apikey": API_KEY, "symbol": symbol}
@@ -620,12 +706,15 @@ def company_notes(symbol: str) -> typing.Optional[typing.List[typing.Dict]]:
 
 def historical_employee_count(symbol: str) -> typing.Optional[typing.List[typing.Dict]]:
     """
-    Query FMP /historical/employee_count API for company's historical employee count.
+    Retrieve historical employee count data for a company.
+
+    Tracks workforce growth or decline over time, providing insights into
+    company expansion, efficiency, and industry comparisons. Useful for
+    identifying trends in company growth and operational efficiency.
 
     :param symbol: Company ticker (e.g., 'AAPL').
-    :return: A list of dictionaries with historical employee count data.
+    :return: List of dicts with historical employee count data or None if request fails.
     :example: historical_employee_count('AAPL')
-    :endpoint: https://financialmodelingprep.com/api/v4/historical/employee_count?symbol={symbol}
     """
     path = "historical/employee_count"
     query_vars = {"apikey": API_KEY, "symbol": symbol}
@@ -633,12 +722,15 @@ def historical_employee_count(symbol: str) -> typing.Optional[typing.List[typing
 
 def employee_count(symbol: str) -> typing.Optional[typing.List[typing.Dict]]:
     """
-    Query FMP /employee_count API for company's current employee count.
+    Retrieve the current number of employees for a company.
 
-    :param symbol: Company ticker.
-    :return: A list of dictionaries with current employee count data.
+    Provides insights into a company's workforce size and potential growth.
+    Useful for comparing company sizes, assessing growth potential, and
+    analyzing workforce trends.
+
+    :param symbol: Company ticker (e.g., 'AAPL').
+    :return: List of dicts with current employee count data or None if request fails.
     :example: employee_count('AAPL')
-    :endpoint: https://financialmodelingprep.com/api/v4/employee_count?symbol={symbol}
     """
     path = "employee_count"
     query_vars = {"apikey": API_KEY, "symbol": symbol}
@@ -646,12 +738,13 @@ def employee_count(symbol: str) -> typing.Optional[typing.List[typing.Dict]]:
 
 def company_core_information(symbol: str) -> typing.Optional[typing.List[typing.Dict]]:
     """
-    Query FMP /company-core-information/ API for company's core information.
+    Retrieve core information for a company.
+
+    Provides a comprehensive overview of a company's basic information.
 
     :param symbol: Company ticker (e.g., 'AAPL').
-    :return: A list of dictionaries with company core information data.
+    :return: List of dicts with company core information data or None if request fails.
     :example: company_core_information('AAPL')
-    :endpoint: https://financialmodelingprep.com/api/v4/company-core-information?symbol={symbol}
     """
     path = "company-core-information"
     query_vars = {"apikey": API_KEY, "symbol": symbol}
@@ -659,11 +752,12 @@ def company_core_information(symbol: str) -> typing.Optional[typing.List[typing.
 
 def all_countries() -> typing.Optional[typing.List[str]]:
     """
-    Query FMP /get-all-countries API for list of all countries.
+    Retrieve a list of all available countries.
 
-    :return: A list of country names.
+    Useful for exploring and analyzing data from various countries.
+
+    :return: List of country names or None if request fails.
     :example: all_countries()
-    :endpoint: https://financialmodelingprep.com/api/v3/get-all-countries
     """
     path = "get-all-countries"
     query_vars = {"apikey": API_KEY}
@@ -671,12 +765,15 @@ def all_countries() -> typing.Optional[typing.List[str]]:
 
 def analyst_recommendation(symbol: str) -> typing.Optional[typing.List[typing.Dict]]:
     """
-    Query FMP /analyst-stock-recommendations/ API for company's analyst recommendations.
+    Retrieve analyst recommendations for buying, selling, or holding a company's stock.
+
+    Provides insights to help make informed investment decisions. Note that
+    recommendations are not always accurate; investors should do their own research.
 
     :param symbol: Company ticker (e.g., 'AAPL').
-    :return: A list of dictionaries with analyst recommendations data.
+    :return: List of dicts with analyst recommendations data, including
+             analyst firm, rating, price target, and action (buy/sell/hold).
     :example: analyst_recommendation('AAPL')
-    :endpoint: https://financialmodelingprep.com/api/v3/analyst-stock-recommendations/{symbol}
     """
     path = f"analyst-stock-recommendations/{symbol}"
     query_vars = {"apikey": API_KEY}
@@ -684,12 +781,13 @@ def analyst_recommendation(symbol: str) -> typing.Optional[typing.List[typing.Di
 
 def is_market_open(exchange: str = "NASDAQ") -> typing.Optional[typing.Dict]:
     """
-    Query FMP /is-the-market-open API for market open/close status.
+    Check if a specific exchange is currently open or closed.
 
-    :param exchange: Exchange name. Default is 'NASDAQ'.
-    :return: A dictionary with market open/close status.
+    Useful for determining market hours and availability of data.
+
+    :param exchange: Exchange name (e.g., 'NASDAQ'). Default is 'NASDAQ'.
+    :return: Dictionary with market open/close status or None if request fails.
     :example: is_market_open('NYSE')
-    :endpoint: https://financialmodelingprep.com/api/v3/is-the-market-open?exchange={exchange}
     """
     path = "is-the-market-open"
     query_vars = {"apikey": API_KEY, "exchange": exchange}
@@ -697,11 +795,12 @@ def is_market_open(exchange: str = "NASDAQ") -> typing.Optional[typing.Dict]:
 
 def available_sectors() -> typing.Optional[typing.List[str]]:
     """
-    Query FMP /sectors-list API for list of available sectors.
+    Retrieve a list of available sectors.
 
-    :return: A list of sector names.
+    Useful for exploring and analyzing data across various sectors.
+
+    :return: List of sector names or None if request fails.
     :example: available_sectors()
-    :endpoint: https://financialmodelingprep.com/api/v3/sectors-list
     """
     path = "sectors-list"
     query_vars = {"apikey": API_KEY}
@@ -709,11 +808,12 @@ def available_sectors() -> typing.Optional[typing.List[str]]:
 
 def available_industries() -> typing.Optional[typing.List[str]]:
     """
-    Query FMP /industries-list API for list of available industries.
+    Retrieve a list of available industries.
 
-    :return: A list of industry names.
+    Useful for exploring and analyzing data across various industries.
+
+    :return: List of industry names or None if request fails.
     :example: available_industries()
-    :endpoint: https://financialmodelingprep.com/api/v3/industries-list
     """
     path = "industries-list"
     query_vars = {"apikey": API_KEY}
@@ -721,11 +821,12 @@ def available_industries() -> typing.Optional[typing.List[str]]:
 
 def available_exchanges() -> typing.Optional[typing.List[str]]:
     """
-    Query FMP /exchanges-list API for list of available exchanges.
+    Retrieve a list of available exchanges.
 
-    :return: A list of exchange names.
+    Useful for exploring and analyzing data from various exchanges.
+
+    :return: List of exchange names or None if request fails.
     :example: available_exchanges()
-    :endpoint: https://financialmodelingprep.com/api/v3/exchanges-list
     """
     path = "exchanges-list"
     query_vars = {"apikey": API_KEY}
@@ -733,12 +834,13 @@ def available_exchanges() -> typing.Optional[typing.List[str]]:
 
 def company_outlook(symbol: str) -> typing.Optional[typing.Dict]:
     """
-    Query FMP /company-outlook/ API for company's outlook.
+    Retrieve the company outlook for a specific company.
+
+    Provides insights into a company's future outlook and expectations.
 
     :param symbol: Company ticker (e.g., 'AAPL').
-    :return: A dictionary with company outlook data.
+    :return: Dictionary with company outlook data or None if request fails.
     :example: company_outlook('AAPL')
-    :endpoint: https://financialmodelingprep.com/api/v4/company-outlook?symbol={symbol}
     """
     path = "company-outlook"
     query_vars = {"apikey": API_KEY, "symbol": symbol}

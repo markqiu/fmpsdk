@@ -6,11 +6,18 @@ API_KEY = os.getenv('FMP_API_KEY')
 
 def historical_social_sentiment(symbol: str, page: int = 0) -> typing.Optional[typing.List[typing.Dict]]:
     """
-    Get historical social sentiment data for a given ticker or company name.
+    Retrieve historical social sentiment data for a company.
+
+    Provides insights into public perception of a company over time, useful for:
+    - Tracking sentiment trends
+    - Identifying potential market reactions
+    - Informing investment decisions
+
+    Social sentiment is derived from analyzing social media, news, and online content.
 
     :param symbol: The stock symbol (e.g., 'AAPL')
     :param page: The page number for pagination (default: 0)
-    :return: A list of dictionaries containing historical social sentiment data
+    :return: List of dicts with historical social sentiment data, or None if request fails
     """
     path = "historical/social-sentiment"
     query_vars = {"apikey": API_KEY, "symbol": symbol, "page": page}
@@ -18,11 +25,18 @@ def historical_social_sentiment(symbol: str, page: int = 0) -> typing.Optional[t
 
 def trending_social_sentiment(sentiment_type: str = "bullish", source: str = "stocktwits") -> typing.Optional[typing.List[typing.Dict]]:
     """
-    Get trending social sentiment data.
+    Retrieve trending social sentiment data for stocks.
 
-    :param sentiment_type: The type of sentiment (default: 'bullish')
-    :param source: The source of sentiment data (default: 'stocktwits')
-    :return: A list of dictionaries containing trending social sentiment data
+    This function provides insights into current market sentiment trends, useful for:
+    - Identifying popular stocks among social media users
+    - Gauging overall market sentiment
+    - Spotting potential trading opportunities
+
+    :param sentiment_type: Type of sentiment to retrieve (default: 'bullish')
+                           Options: 'bullish' or 'bearish'
+    :param source: Source of sentiment data (default: 'stocktwits')
+                   Options: 'stocktwits' or 'twitter'
+    :return: List of dicts with trending social sentiment data, or None if request fails
     """
     path = "social-sentiments/trending"
     query_vars = {"apikey": API_KEY, "type": sentiment_type, "source": source}
@@ -30,11 +44,18 @@ def trending_social_sentiment(sentiment_type: str = "bullish", source: str = "st
 
 def social_sentiment_changes(sentiment_type: str = "bullish", source: str = "stocktwits") -> typing.Optional[typing.List[typing.Dict]]:
     """
-    Get changes in social sentiment data over a period of time.
+    Retrieve changes in social sentiment data over time for various stocks.
 
-    :param sentiment_type: The type of sentiment (default: 'bullish')
-    :param source: The source of sentiment data (default: 'stocktwits')
-    :return: A list of dictionaries containing social sentiment changes data
+    Useful for:
+    - Identifying shifts in market sentiment
+    - Spotting emerging trends
+    - Comparing sentiment changes across different stocks
+
+    :param sentiment_type: Type of sentiment to analyze (default: 'bullish')
+                           Options: 'bullish' or 'bearish'
+    :param source: Source of sentiment data (default: 'stocktwits')
+                   Options: 'stocktwits' or 'twitter'
+    :return: List of dicts with social sentiment changes data, or None if request fails
     """
     path = "social-sentiments/change"
     query_vars = {"apikey": API_KEY, "type": sentiment_type, "source": source}

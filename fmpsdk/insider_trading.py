@@ -14,15 +14,19 @@ def insider_trading(
     limit: int = DEFAULT_LIMIT,
 ) -> typing.Optional[typing.List[typing.Dict]]:
     """
-    Query FMP /insider-trading/ API.
+    Retrieve insider trading data for a company or individual.
 
-    Get insider trading data for a company or individual. Only one of symbol, company_cik, or reporting_cik should be provided.
+    Provides information on insider trades, including transaction date, insider name,
+    transaction type, shares traded, and price. Useful for tracking insider activity,
+    identifying potential investment opportunities, and assessing company sentiment.
 
-    :param symbol: Company ticker.
+    :param symbol: Company ticker (e.g., 'AAPL').
     :param reporting_cik: CIK of the reporting insider.
     :param company_cik: CIK of the company.
-    :param limit: Number of records to return.
-    :return: A list of dictionaries containing insider trading data.
+    :param limit: Number of records to return. Default is DEFAULT_LIMIT.
+    :return: List of dicts with insider trading data.
+    :note: Provide only one of symbol, reporting_cik, or company_cik.
+    :example: insider_trading(symbol='AAPL', limit=10)
     """
     path = f"insider-trading/"
     query_vars = {"apikey": API_KEY, "limit": limit}
@@ -77,11 +81,16 @@ def insider_trading_rss_feed(
     limit: int = DEFAULT_LIMIT
 ) -> typing.Optional[typing.List[typing.Dict]]:
     """
-    Query FMP /insider-trading-rss-feed/ API.
+    Retrieve real-time RSS feed of insider trades.
 
-    Complete list of all institutional investment managers by cik
-    :param limit: Number of records to return.
-    :return: A list of dictionaries.
+    Provides up-to-date information on insider trading activity, allowing users to
+    track changes in insider ownership of stocks. Useful for identifying companies
+    with high insider activity, monitoring large insider transactions, and spotting
+    potential investment opportunities based on insider behavior.
+
+    :param limit: Number of records to return. Default is DEFAULT_LIMIT.
+    :return: List of dicts with insider trading RSS feed data.
+    :example: insider_trading_rss_feed(limit=20)
     """
     path = f"insider-trading-rss-feed"
     query_vars = {"apikey": API_KEY, "limit": limit}

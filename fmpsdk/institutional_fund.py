@@ -13,10 +13,14 @@ def institutional_holders(
     symbol: str
 ) -> typing.Optional[typing.List[typing.Dict]]:
     """
-    Query FMP /institutional-holder/ API.
+    Retrieve institutional holders for a specific company.
 
-    :param symbol: Company ticker.
-    :return: A list of dictionaries.
+    Provides information on major institutional investors holding the company's stock.
+    Useful for understanding institutional ownership and potential market influences.
+
+    :param symbol: Company ticker symbol (e.g., 'AAPL').
+    :return: List of dicts with institutional holder data or None if request fails.
+    :example: institutional_holders('AAPL')
     """
     path = f"institutional-holder/{symbol}"
     query_vars = {"apikey": API_KEY}
@@ -27,10 +31,14 @@ def mutual_fund_holders(
     symbol: str
 ) -> typing.Optional[typing.List[typing.Dict]]:
     """
-    Query FMP /mutual-fund-holder/ API.
+    Retrieve mutual fund holders for a specific company.
 
-    :param symbol: Company ticker.
-    :return: A list of dictionaries.
+    Provides information on mutual funds holding the company's stock.
+    Useful for understanding mutual fund ownership and investment trends.
+
+    :param symbol: Company ticker symbol (e.g., 'AAPL').
+    :return: List of dicts with mutual fund holder data or None if request fails.
+    :example: mutual_fund_holders('AAPL')
     """
     path = f"mutual-fund-holder/{symbol}"
     query_vars = {"apikey": API_KEY}
@@ -39,10 +47,14 @@ def mutual_fund_holders(
 
 def etf_holders(symbol: str) -> typing.Optional[typing.List[typing.Dict]]:
     """
-    Query FMP /etf-holder/ API.
+    Retrieve ETF holders for a specific company.
 
-    :param symbol: Company ticker.
-    :return: A list of dictionaries.
+    Provides information on ETFs holding the company's stock.
+    Useful for understanding ETF ownership and potential market impacts.
+
+    :param symbol: Company ticker symbol (e.g., 'AAPL').
+    :return: List of dicts with ETF holder data or None if request fails.
+    :example: etf_holders('AAPL')
     """
     path = f"etf-holder/{symbol}"
     query_vars = {"apikey": API_KEY}
@@ -53,10 +65,14 @@ def etf_sector_weightings(
     symbol: str
 ) -> typing.Optional[typing.List[typing.Dict]]:
     """
-    Query FMP /etf-sector-weightings/ API.
+    Retrieve sector weightings for a specific ETF.
 
-    :param symbol: Company ticker.
-    :return: A list of dictionaries.
+    Provides a breakdown of the percentage of an ETF's assets invested in each sector.
+    Useful for understanding ETF risk profiles, sector exposure, and portfolio diversification.
+
+    :param symbol: ETF ticker symbol (e.g., 'SPY').
+    :return: List of dicts with sector weighting data or None if request fails.
+    :example: etf_sector_weightings('SPY')
     """
     path = f"etf-sector-weightings/{symbol}"
     query_vars = {"apikey": API_KEY}
@@ -67,10 +83,15 @@ def etf_country_weightings(
     symbol: str
 ) -> typing.Optional[typing.List[typing.Dict]]:
     """
-    Query FMP /etf-country-weightings/ API.
+    Retrieve country weightings for a specific ETF.
 
-    :param symbol: Company ticker.
-    :return: A list of dictionaries.
+    Provides a breakdown of the percentage of an ETF's assets invested in each country.
+    Useful for understanding geographic exposure, identifying country-specific
+    investment opportunities, and diversifying portfolios.
+
+    :param symbol: ETF ticker symbol (e.g., 'QDVE.DE').
+    :return: List of dicts with country weighting data or None if request fails.
+    :example: etf_country_weightings('QDVE.DE')
     """
     path = f"etf-country-weightings/{symbol}"
     query_vars = {"apikey": API_KEY}

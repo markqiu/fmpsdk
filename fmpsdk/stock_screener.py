@@ -26,29 +26,34 @@ def stock_screener(
     limit: int = DEFAULT_LIMIT,
 ) -> typing.Optional[typing.List[typing.Dict]]:
     """
-    Query FMP /stock-screener/ API for stocks based on various filters.
+    Screen stocks based on various financial and market criteria.
 
-    :param market_cap_more_than: Min market cap.
-    :param market_cap_lower_than: Max market cap.
-    :param beta_more_than: Min beta.
-    :param beta_lower_than: Max beta.
-    :param volume_more_than: Min volume.
-    :param volume_lower_than: Max volume.
-    :param dividend_more_than: Min dividend yield.
-    :param dividend_lower_than: Max dividend yield.
-    :param price_more_than: Min price.
-    :param price_lower_than: Max price.
-    :param is_etf: Filter ETFs.
-    :param is_fund: Filter mutual funds.
-    :param is_actively_trading: Filter active stocks.
-    :param sector: Filter by sector.
-    :param industry: Filter by industry.
-    :param country: Filter by country.
-    :param exchange: Filter by exchange(s).
-    :param limit: Number of results. Default is DEFAULT_LIMIT.
-    :return: List of dicts with stock data or None if request fails.
-    :example: stock_screener(market_cap_more_than=1000000000, limit=10)
-    :endpoint: https://financialmodelingprep.com/api/v3/stock-screener
+    Filters include market cap, beta, volume, dividend, price, asset type,
+    trading status, sector, industry, country, and exchange. Useful for
+    identifying investment opportunities matching specific parameters.
+
+    Parameters are optional. Use None for any parameter to ignore that filter.
+
+    :param market_cap_more_than: Minimum market capitalization
+    :param market_cap_lower_than: Maximum market capitalization
+    :param beta_more_than: Minimum beta value
+    :param beta_lower_than: Maximum beta value
+    :param volume_more_than: Minimum trading volume
+    :param volume_lower_than: Maximum trading volume
+    :param dividend_more_than: Minimum dividend yield
+    :param dividend_lower_than: Maximum dividend yield
+    :param price_more_than: Minimum stock price
+    :param price_lower_than: Maximum stock price
+    :param is_etf: Filter for ETFs (True) or non-ETFs (False)
+    :param is_fund: Filter for funds (True) or non-funds (False)
+    :param is_actively_trading: Filter for actively traded stocks
+    :param sector: Filter by sector
+    :param industry: Filter by industry
+    :param country: Filter by country
+    :param exchange: Filter by exchange(s)
+    :param limit: Maximum number of results (default: DEFAULT_LIMIT)
+    :return: List of dicts with screened stocks data or None if request fails
+    :example: stock_screener(market_cap_more_than=1e9, sector='Technology', limit=10)
     """
     path = "stock-screener"
     query_vars = {"apikey": API_KEY, "limit": limit}
