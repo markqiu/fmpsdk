@@ -88,7 +88,7 @@ def sector_pe_ratio(date: date, exchange: str = "NYSE") -> typing.Optional[typin
     """
     Query FMP /sector_price_earning_ratio API.
 
-    :param date: The date for which to retrieve the sector PE ratios.
+    :param date: The date for which to retrieve the sector PE ratios in 'yyyy-mm-dd' format.
     :param exchange: The stock exchange (default is NYSE).
     :return: A list of dictionaries containing sector PE ratios.
     :example: sector_pe_ratio('2023-01-01', exchange='NASDAQ')
@@ -96,7 +96,7 @@ def sector_pe_ratio(date: date, exchange: str = "NYSE") -> typing.Optional[typin
     """
     path = f"sector_price_earning_ratio"
     query_vars = {
-        "date": date.strftime("%Y-%m-%d"),
+        "date": date,
         "exchange": exchange,
         "apikey": API_KEY
     }
@@ -104,15 +104,26 @@ def sector_pe_ratio(date: date, exchange: str = "NYSE") -> typing.Optional[typin
 
 def industry_pe_ratio(date: date, exchange: str = "NYSE") -> typing.Optional[typing.List[typing.Dict]]:
     """
-    Query FMP /industry_price_earning_ratio API
+    Query FMP /industry_price_earning_ratio API for industry-specific PE ratios.
 
-    :param date: The date for which to retrieve the industry PE ratios
-    :param exchange: The stock exchange (default is NYSE)
-    :return: A list of dictionaries containing industry PE ratios
+    Retrieves price-to-earnings (PE) ratios for various industries in the stock market,
+    helping identify overvalued or undervalued industries. The PE ratio measures how
+    expensive stocks are relative to their earnings within each industry.
+
+    :param date: The date for which to retrieve the industry PE ratios (format: 'YYYY-MM-DD').
+    :param exchange: The stock exchange (default is NYSE).
+    :return: A list of dictionaries containing industry PE ratios.
+    :example: industry_pe_ratio('2024-08-01', exchange='NYSE')
+    :endpoint: https://financialmodelingprep.com/api/v4/industry_price_earning_ratio
+
+    Use this data to compare PE ratios across industries, identify potential
+    investment opportunities, and assess relative valuations. For instance, if the
+    semiconductor industry has a PE of 25 and software has 30, it might indicate
+    semiconductors are undervalued relative to software.
     """
-    path = f"industry_price_earning_ratio"
+    path = "industry_price_earning_ratio"
     query_vars = {
-        "date": date.strftime("%Y-%m-%d"),
+        "date": date, 
         "exchange": exchange,
         "apikey": API_KEY
     }

@@ -2,6 +2,7 @@ import logging
 import typing
 import os
 import requests
+from bs4 import BeautifulSoup
 
 from .settings import DEFAULT_LIMIT
 from .url_methods import (
@@ -13,6 +14,9 @@ from .url_methods import (
 )
 
 API_KEY = os.getenv('FMP_API_KEY')
+
+# Get the SEC User-Agent from environment variable
+SEC_USER_AGENT = os.getenv('SEC_USER_AGENT')
 
 def financial_statement_symbol_lists() -> typing.Optional[typing.List[typing.Dict]]:
     """
@@ -270,18 +274,93 @@ def earning_call_transcripts_available_dates(symbol: str) -> typing.Optional[typ
 
 def sec_filings(symbol: str, filing_type: str = "", limit: int = DEFAULT_LIMIT) -> typing.Optional[typing.List[typing.Dict]]:
     """
-    Query FMP /sec_filings/ API for company's SEC filings.
+    Query FMP /sec_filings/ API for links to the company's SEC filings.
 
-    :param symbol: Company ticker.
-    :param filing_type: Name of filing. Default is empty string.
-    :param limit: Number of rows to return. Default is DEFAULT_LIMIT.
-    :return: A list of dictionaries with SEC filings data.
+    :param symbol: Company ticker (e.g., 'AAPL').
+    :param filing_type: SEC filing type (e.g., '10-K', '10-Q', '8-K'). Default is empty string (all types).
+    :param limit: Number of filings to return. Default is DEFAULT_LIMIT.
+    :return: A list of dictionaries with SEC filings data (date, type, title, link, finalLink).
     :example: sec_filings('AAPL', filing_type='10-K', limit=10)
     :endpoint: https://financialmodelingprep.com/api/v3/sec_filings/{symbol}
+
+    Output fields:
+    - date: Filing date
+    - type: SEC filing type
+    - title: Filing title
+    - link: Link to the filing on SEC website
+    - finalLink: Direct link to the filing
     """
     path = f"sec_filings/{symbol}"
     query_vars = {"apikey": API_KEY, "type": filing_type, "limit": limit}
     return __return_json_v3(path=path, query_vars=query_vars)
+
+def clean_html_content(soup):
+    # Remove script and style elements
+    for script in soup(["script", "style"]):
+        script.decompose()
+
+    # Remove all attributes from HTML tags
+    for tag in soup.recursiveChildGenerator():
+        if hasattr(tag, 'attrs'):
+            tag.attrs = {}
+
+    # Get text
+    text = soup.get_text()
+
+    # Break into lines and remove leading and trailing space on each
+    lines = (line.strip() for line in text.splitlines())
+    # Break multi-headlines into a line each
+    chunks = (phrase.strip() for line in lines for phrase in line.split("  "))
+    # Drop blank lines
+    text = '\n'.join(chunk for chunk in chunks if chunk)
+
+    return text
+
+def sec_filings_data(symbol: str, filing_type: str = "", limit: int = DEFAULT_LIMIT) -> typing.Optional[typing.List[typing.Dict]]:
+    """
+    Query FMP /sec_filings/ API for company's SEC filings and fetch the content from 'finalLink'.
+
+    :param symbol: Company ticker (e.g., 'AAPL').
+    :param filing_type: SEC filing type (e.g., '10-K', '10-Q', '8-K'). Default is empty string (all types).
+    :param limit: Number of filings to return. Default is DEFAULT_LIMIT.
+    :return: A list of dictionaries with SEC filings data including the content from 'finalLink'.
+    :example: sec_filings_data('AAPL', filing_type='10-K', limit=2)
+    :endpoint: https://financialmodelingprep.com/api/v3/sec_filings/{symbol}
+    """
+    # First, get the SEC filings data using the existing function
+    filings = sec_filings(symbol, filing_type, limit)
+    
+    if filings is None:
+        return None
+
+    # Set up headers for SEC requests
+    headers = {
+        'User-Agent': SEC_USER_AGENT
+    }
+
+    # Process each filing to fetch and add the content
+    for filing in filings:
+        final_link = filing.get('finalLink')
+        if final_link:
+            try:
+                response = requests.get(final_link, headers=headers)
+                response.raise_for_status()
+                
+                # Parse the HTML content
+                soup = BeautifulSoup(response.text, 'html.parser')
+                
+                # Clean and extract the text content
+                content = clean_html_content(soup)
+                
+                # Add the content to the filing dictionary
+                filing['content'] = content
+            except requests.RequestException as e:
+                logging.error(f"Error fetching content from {final_link}: {str(e)}")
+                filing['content'] = None
+        else:
+            filing['content'] = None
+
+    return filings
 
 def press_releases(symbol: str, limit: int = DEFAULT_LIMIT) -> typing.Optional[typing.List[typing.Dict]]:
     """

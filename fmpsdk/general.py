@@ -2,11 +2,16 @@ import typing
 import os
 
 from .settings import DEFAULT_LINE_PARAMETER
-from .url_methods import __return_json_v3, __return_json_v4, __validate_series_type, __validate_time_delta
+from .url_methods import (
+    __return_json_v3,
+    __return_json_v4,
+    __validate_series_type,
+    __validate_time_delta,
+)
 
 API_KEY = os.getenv('FMP_API_KEY')
 
-def __quotes(value: str) -> typing.Optional[typing.List[typing.Dict]]: 
+def __quotes(value: str) -> typing.Optional[typing.List[typing.Dict]]:
     """
     Query FMP /quotes/ API.
 
@@ -20,7 +25,9 @@ def __quotes(value: str) -> typing.Optional[typing.List[typing.Dict]]:
     return __return_json_v3(path=path, query_vars=query_vars)
 
 
-def quote(symbol: typing.Union[str, typing.List[str]]) -> typing.Optional[typing.List[typing.Dict]]: 
+def quote(
+    symbol: typing.Union[str, typing.List[str]]
+) -> typing.Optional[typing.List[typing.Dict]]:
     """
     Query FMP Quote API.
 
@@ -37,20 +44,33 @@ def quote(symbol: typing.Union[str, typing.List[str]]) -> typing.Optional[typing
     return __return_json_v3(path=path, query_vars=query_vars)
 
 
-def historical_chart(symbol: str, time_delta: str, from_date: str, to_date: str, time_series: str = DEFAULT_LINE_PARAMETER) -> typing.Optional[typing.List[typing.Dict]]: 
+def historical_chart(
+    symbol: str,
+    timeframe: str,
+    from_date: str,
+    to_date: str,
+    time_series: str = DEFAULT_LINE_PARAMETER,
+    time_delta: str = None,  # For backward compatibility
+) -> typing.Optional[typing.List[typing.Dict]]:
     """
-    Query FMP Historical Chart API.
+    Query FMP Historical Price API.
 
     :param symbol: The Ticker, Index, Commodity, etc. symbol to query for (e.g., 'AAPL').
-    :param time_delta: The string value of time from now to go historical (e.g., '1min', '5min', '15min', '30min', '1hour', '4hour').
+    :param timeframe: The string value of time interval ('1min', '5min', '15min', '30min', 
+                                                        '1hour', '4hour', '1day', '1week', 
+                                                        '1month', '1year').
     :param from_date: The starting date for the API query in 'yyyy-mm-dd' format.
     :param to_date: The ending date for the API query in 'yyyy-mm-dd' format.
     :param time_series: The time series parameter, default is 'line'.
+    :param time_delta: Deprecated. Use 'timeframe' instead.
     :return: A list of dictionaries containing historical stock data or None if the request fails.
-    :example: historical_chart('AAPL', '5min', '2023-08-10', '2023-09-10')
-    :endpoint: https://financialmodelingprep.com/api/v3/historical-chart/{time_delta}/{symbol}
+    :example: historical_chart('AAPL', '1day', '2023-08-10', '2023-09-10')
+    :endpoint: https://financialmodelingprep.com/api/v3/historical-chart/{timeframe}/{symbol}
     """
-    path = f"historical-chart/{__validate_time_delta(time_delta)}/{symbol}"
+    if time_delta is not None:
+        timeframe = time_delta  # For backward compatibility
+
+    path = f"historical-chart/{__validate_time_delta(timeframe)}/{symbol}"
     query_vars = {"apikey": API_KEY}
     if time_series:
         query_vars["timeseries"] = time_series
@@ -61,7 +81,11 @@ def historical_chart(symbol: str, time_delta: str, from_date: str, to_date: str,
     return __return_json_v3(path=path, query_vars=query_vars)
 
 
-def historical_price_full(symbol: typing.Union[str, typing.List], from_date: str = None, to_date: str = None) -> typing.Optional[typing.List[typing.Dict]]: 
+def historical_price_full(
+    symbol: typing.Union[str, typing.List],
+    from_date: str = None,
+    to_date: str = None
+) -> typing.Optional[typing.List[typing.Dict]]:
     """
     Query FMP Historical Price Full API.
 

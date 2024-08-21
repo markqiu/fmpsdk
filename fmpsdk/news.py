@@ -37,22 +37,31 @@ def general_news(page: int = 0) -> typing.Optional[typing.List[typing.Dict]]:
     query_vars = {"apikey": API_KEY, "page": page}
     return __return_json_v4(path=path, query_vars=query_vars)
 
-def stock_news(tickers: typing.Union[str, typing.List] = "", limit: int = DEFAULT_LIMIT) -> typing.Optional[typing.List[typing.Dict]]: 
+def stock_news(
+    tickers: typing.Union[str, typing.List] = "",
+    limit: int = DEFAULT_LIMIT,
+    page: int = 0,
+    from_date: str = "",
+    to_date: str = "",
+) -> typing.Optional[typing.List[typing.Dict]]:
     """
-    Query FMP /stock_news/ API.
+    Query FMP /stock_news/ API for latest stock news articles.
 
-    Get a list of the latest stock news articles from a variety of sources, including the headline, snippet, publication URL, and ticker symbol.
-
-    :param tickers: List of ticker symbols or a single ticker symbol (e.g., 'AAPL' or ['AAPL', 'GOOGL']).
-    :param limit: Number of rows to return. Default is DEFAULT_LIMIT.
-    :return: A list of dictionaries containing stock news articles or None if the request fails.
-    :example: stock_news(['AAPL', 'GOOGL'], limit=10)
-    :endpoint: https://financialmodelingprep.com/api/v3/stock_news?tickers={tickers}&limit={limit}
+    :param tickers: Ticker symbol(s) (e.g., 'AAPL' or ['AAPL', 'GOOGL']).
+    :param limit: Number of results per page. Default is DEFAULT_LIMIT.
+    :param page: Page number for pagination. Default is 0.
+    :param from_date: Start date for news articles (format: YYYY-MM-DD).
+    :param to_date: End date for news articles (format: YYYY-MM-DD).
+    :return: List of dictionaries with stock news articles or None if request fails.
+    :example: stock_news(['AAPL', 'GOOGL'], limit=10, page=1, from_date='2024-01-01', to_date='2024-03-01')
+    :endpoint: https://financialmodelingprep.com/api/v3/stock_news
     """
-    path = f"stock_news"
-    query_vars = {"apikey": API_KEY, "limit": limit}
+    path = "stock_news"
+    query_vars = {"apikey": API_KEY, "limit": limit, "page": page}
     if tickers:
-        if type(tickers) is list:
-            tickers = ",".join(tickers)
-        query_vars["tickers"] = tickers
+        query_vars["tickers"] = ",".join(tickers) if isinstance(tickers, list) else tickers
+    if from_date:
+        query_vars["from"] = from_date
+    if to_date:
+        query_vars["to"] = to_date
     return __return_json_v3(path=path, query_vars=query_vars)

@@ -5,7 +5,7 @@ from .alternative_data import (
     commitment_of_traders_report_analysis,
     commitment_of_traders_report_list,
 )
-from .calendar import (
+from .calendar_data import (
     dividend_calendar,
     earning_calendar,
     economic_calendar,
@@ -55,6 +55,7 @@ from .company_valuation import (
     sales_revenue_by_segments,
     search_mergers_acquisitions,
     sec_filings,
+    sec_filings_data,
     stock_grade,
     stock_peers,
     symbols_list,
@@ -319,6 +320,7 @@ __all__ = [
     "search_mergers_acquisitions",
     "search_ticker",
     "sec_filings",
+    "sec_filings_data",
     "sec_rss_feeds",
     "sector_pe_ratio",
     "sectors_performance",
