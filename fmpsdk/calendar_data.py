@@ -147,25 +147,55 @@ def dividend_calendar(
     return __return_json_v3(path=path, query_vars=query_vars)
 
 def economic_calendar(
-    from_date: str = None, to_date: str = None
+    from_date: str = None,
+    to_date: str = None,
+    condensed: bool = True,
+    impact_filter: typing.Union[str, typing.List[str]] = ['High', 'Medium'],
+    country_filter: typing.Union[str, typing.List[str]] = None,
+    estimate_required: bool = True
 ) -> typing.Optional[typing.List[typing.Dict]]:
     """
-    Retrieve a calendar of upcoming economic data releases.
-
-    Provides insights into future economic events that may impact markets.
-    Useful for staying informed, preparing for market reactions, and making
-    investment decisions based on economic data releases.
+    Retrieve economic calendar events.
 
     :param from_date: Start date in 'YYYY-MM-DD' format.
     :param to_date: End date in 'YYYY-MM-DD' format.
-    :return: List of dicts with economic calendar data or None if request fails.
-    :example: economic_calendar('2023-08-10', '2023-10-10')
-    Note: Maximum time interval between from_date and to_date is 3 months.
+    :param condensed: If True, return only key fields. Defaults to True.
+    :param impact_filter: Filter events by impact. Can be a string ('Low', 'Medium', 'High') 
+                          or list of strings. Defaults to ['High', 'Medium'].
+    :param country_filter: Filter events by country. Can be a string (e.g., ['US', 'EU', 'JP', 'CN']) 
+                           or list of strings. If None, includes all.
+    :param estimate_required: If True, include only events with an estimate. Defaults to True.
+    :return: List of dicts with economic calendar data, or None if request fails.
+    :example: economic_calendar('2024-08-20', '2024-08-21', impact_filter=['High', 'Medium'], 
+                                country_filter=['US', 'EU'], estimate_required=True)
     """
-    path = f"economic_calendar"
+    path = "economic_calendar"
     query_vars = {"apikey": API_KEY}
     if from_date:
         query_vars["from"] = from_date
     if to_date:
         query_vars["to"] = to_date
-    return __return_json_v3(path=path, query_vars=query_vars)
+    
+    result = __return_json_v3(path=path, query_vars=query_vars)
+    
+    if result is not None:
+        if impact_filter:
+            if isinstance(impact_filter, str):
+                impact_filter = [impact_filter]
+            result = [event for event in result if event.get('impact') in impact_filter]
+        
+        if country_filter:
+            if isinstance(country_filter, str):
+                country_filter = [country_filter]
+            result = [event for event in result if event.get('country') in country_filter]
+        
+        if estimate_required:
+            result = [event for event in result if event.get('estimate') is not None]
+        
+        if condensed:
+            condensed_fields = ['date', 'event', 'country', 'actual', 'estimate', 'previous', 'impact']
+            result = [{field: event.get(field) for field in condensed_fields} for event in result]
+        
+        return result
+    
+    return None
