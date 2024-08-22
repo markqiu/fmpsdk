@@ -6,6 +6,7 @@ from .url_methods import (
     __validate_statistics_type,
     __validate_technical_indicators_time_delta,
 )
+from .data_compression import compress_json_to_tuples
 
 API_KEY = os.getenv('FMP_API_KEY')
 
@@ -14,20 +15,19 @@ def technical_indicators(
     period: int = 10,
     statistics_type: str = "sma",
     time_delta: str = "1day",
-) -> typing.Optional[typing.List[typing.Dict]]:
+    condensed: bool = True
+) -> typing.Union[typing.List[typing.Dict], typing.Tuple[typing.Tuple[str, ...], ...]]:
     """
-    Retrieve technical indicator data for a given stock symbol.
+    Get technical indicator data for a stock symbol.
 
-    Calculates various technical indicators based on historical market data.
-    Useful for analyzing price trends and potential trading signals.
-
-    :param symbol: Stock ticker symbol (e.g., 'AAPL')
-    :param period: Number of data points for calculation (default: 10)
-    :param statistics_type: Indicator type (default: 'sma'). Options:
-        'sma', 'ema', 'wma', 'dema', 'tema', 'williams', 'rsi', 'adx', 'standardDeviation'
-    :param time_delta: Time interval (default: '1day'). Options:
-        '1min', '5min', '15min', '30min', '1hour', '4hour', '1day', '1week', '1month', '1year'
-    :return: List of dicts with indicator data or None if request fails
+    :param symbol: Stock ticker (e.g., 'AAPL')
+    :param period: Data points for calculation (default: 10)
+    :param statistics_type: Indicator type (default: 'sma')
+        Options: 'sma', 'ema', 'wma', 'dema', 'tema', 'williams', 'rsi', 'adx', 'standardDeviation'
+    :param time_delta: Time interval (default: '1day')
+        Options: '1min', '5min', '15min', '30min', '1hour', '4hour', '1day', '1week', '1month', '1year'
+    :param condensed: If True, return tuple of tuples; else, list of dicts (default: True)
+    :return: Technical indicator data or None if request fails
     :example: technical_indicators('AAPL', period=14, statistics_type='rsi', time_delta='1hour')
     """
     path = f"technical_indicator/{__validate_technical_indicators_time_delta(time_delta)}/{symbol}"
@@ -36,4 +36,6 @@ def technical_indicators(
         "period": period,
         "type": __validate_statistics_type(statistics_type),
     }
-    return __return_json_v3(path=path, query_vars=query_vars)
+    result = __return_json_v3(path=path, query_vars=query_vars)
+    
+    return compress_json_to_tuples(result, condensed)

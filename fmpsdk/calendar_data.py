@@ -2,8 +2,10 @@ import typing
 import os
 from .settings import DEFAULT_LIMIT
 from .url_methods import __return_json_v3
+from .data_compression import compress_json_to_tuples
 
 API_KEY = os.getenv('FMP_API_KEY')
+
 
 def earning_calendar(
     from_date: str = None,
@@ -11,7 +13,7 @@ def earning_calendar(
     estimate_required: bool = True,
     condensed: bool = True,
     revenue_minimum: float = 1000000000
-) -> typing.Optional[typing.List[typing.Dict]]:
+) -> typing.Union[typing.List[typing.Dict], typing.Tuple[typing.Tuple[str, ...], ...]]:
     """
     Retrieve a list of upcoming and past earnings announcements.
 
@@ -39,21 +41,28 @@ def earning_calendar(
     
     if result is not None:
         if estimate_required:
-            result = [entry for entry in result if entry.get('epsEstimated') is not None and entry.get('revenueEstimated') is not None]
+            result = [
+                entry for entry in result
+                if entry.get('epsEstimated') is not None
+                and entry.get('revenueEstimated') is not None
+            ]
         
-        result = [entry for entry in result if entry.get('revenueEstimated', 0) >= revenue_minimum]
+        result = [
+            entry for entry in result
+            if entry.get('revenueEstimated', 0) >= revenue_minimum
+        ]
         
-        if condensed:
-            condensed_fields = ['date', 'eps', 'epsEstimated', 'revenue', 'revenueEstimated', 'symbol']
-            result = [{field: entry.get(field) for field in condensed_fields} for entry in result]
-        
-        return result
+        fields = ('date', 'symbol', 'eps', 'epsEstimated', 'revenue', 'revenueEstimated')
+        return compress_json_to_tuples(result, condensed, fields)
     
     return None
 
+
 def historical_earning_calendar(
-    symbol: str, limit: int = DEFAULT_LIMIT
-) -> typing.Optional[typing.List[typing.Dict]]:
+    symbol: str,
+    limit: int = DEFAULT_LIMIT,
+    condensed: bool = True
+) -> typing.Union[typing.List[typing.Dict], typing.Tuple[typing.Tuple[str, ...], ...]]:
     """
     Retrieve historical and upcoming earnings announcements for a specific company.
 
@@ -63,6 +72,7 @@ def historical_earning_calendar(
 
     :param symbol: Ticker symbol of the company (e.g., 'AAPL').
     :param limit: Number of records to retrieve. Default is DEFAULT_LIMIT.
+    :param condensed: If True, return only key fields in each entry. Defaults to True.
     :return: List of dicts with earnings data, including date, estimated EPS,
              and actual EPS, or None if request fails.
     :example: historical_earning_calendar('AAPL', limit=10)
@@ -73,11 +83,17 @@ def historical_earning_calendar(
         "symbol": symbol,
         "limit": limit,
     }
-    return __return_json_v3(path=path, query_vars=query_vars)
+    result = __return_json_v3(path=path, query_vars=query_vars)
+    
+    fields = ('date', 'symbol', 'eps', 'epsEstimated', 'revenue', 'revenueEstimated')
+    return compress_json_to_tuples(result, condensed, fields)
+
 
 def ipo_calendar(
-    from_date: str = None, to_date: str = None
-) -> typing.Optional[typing.List[typing.Dict]]:
+    from_date: str = None,
+    to_date: str = None,
+    condensed: bool = True
+) -> typing.Union[typing.List[typing.Dict], typing.Tuple[typing.Tuple[str, ...], ...]]:
     """
     Retrieve a list of confirmed upcoming IPOs.
 
@@ -87,6 +103,7 @@ def ipo_calendar(
 
     :param from_date: Start date for IPO range (format: YYYY-MM-DD).
     :param to_date: End date for IPO range (format: YYYY-MM-DD).
+    :param condensed: If True, return only key fields in each entry. Defaults to True.
     :return: List of dicts with IPO calendar data.
     :example: ipo_calendar(from_date='2023-01-01', to_date='2023-12-31')
     """
@@ -96,11 +113,17 @@ def ipo_calendar(
         query_vars["from"] = from_date
     if to_date:
         query_vars["to"] = to_date
-    return __return_json_v3(path=path, query_vars=query_vars)
+    result = __return_json_v3(path=path, query_vars=query_vars)
+    
+    fields = ('date', 'symbol', 'exchange', 'name', 'ipoPrice', 'priceRange')
+    return compress_json_to_tuples(result, condensed, fields)
+
 
 def stock_split_calendar(
-    from_date: str = None, to_date: str = None
-) -> typing.Optional[typing.List[typing.Dict]]:
+    from_date: str = None,
+    to_date: str = None,
+    condensed: bool = True
+) -> typing.Union[typing.List[typing.Dict], typing.Tuple[typing.Tuple[str, ...], ...]]:
     """
     Retrieve upcoming stock split data for publicly traded companies.
 
@@ -110,6 +133,7 @@ def stock_split_calendar(
 
     :param from_date: Start date for the split calendar (format: YYYY-MM-DD).
     :param to_date: End date for the split calendar (format: YYYY-MM-DD).
+    :param condensed: If True, return only key fields in each entry. Defaults to True.
     :return: List of dicts with stock split calendar data.
     :example: stock_split_calendar(from_date='2023-08-10', to_date='2023-10-10')
     """
@@ -119,21 +143,27 @@ def stock_split_calendar(
         query_vars["from"] = from_date
     if to_date:
         query_vars["to"] = to_date
-    return __return_json_v3(path=path, query_vars=query_vars)
+    result = __return_json_v3(path=path, query_vars=query_vars)
+    
+    fields = ('date', 'symbol', 'numerator', 'denominator', 'fromFactor', 'toFactor')
+    return compress_json_to_tuples(result, condensed, fields)
+
 
 def dividend_calendar(
-    from_date: str = None, to_date: str = None
-) -> typing.Optional[typing.List[typing.Dict]]:
+    from_date: str = None,
+    to_date: str = None,
+    condensed: bool = True
+) -> typing.Union[typing.List[typing.Dict], typing.Tuple[typing.Tuple[str, ...], ...]]:
     """
     Retrieve upcoming dividend payments for publicly traded companies.
 
     Provides a list of dividend payments within a specified date range,
     including payment date, ex-dividend date, and dividend per share.
-    Useful for identifying high-yield stocks, tracking dividend histories,
-    and planning income-focused investment strategies.
+    Useful for identifying high-yield stocks and tracking dividend trends.
 
     :param from_date: Start date for dividend calendar (format: YYYY-MM-DD).
     :param to_date: End date for dividend calendar (format: YYYY-MM-DD).
+    :param condensed: If True, return only key fields in each entry. Defaults to True.
     :return: List of dicts with dividend calendar data.
     :example: dividend_calendar(from_date='2023-10-01', to_date='2023-10-31')
     Note: Maximum time interval between from_date and to_date is 3 months.
@@ -144,7 +174,11 @@ def dividend_calendar(
         query_vars["from"] = from_date
     if to_date:
         query_vars["to"] = to_date
-    return __return_json_v3(path=path, query_vars=query_vars)
+    result = __return_json_v3(path=path, query_vars=query_vars)
+    
+    fields = ('date', 'symbol', 'dividend', 'recordDate', 'paymentDate', 'declarationDate')
+    return compress_json_to_tuples(result, condensed, fields)
+
 
 def economic_calendar(
     from_date: str = None,
@@ -152,22 +186,24 @@ def economic_calendar(
     condensed: bool = True,
     impact_filter: typing.Union[str, typing.List[str]] = ['High', 'Medium'],
     country_filter: typing.Union[str, typing.List[str]] = None,
-    estimate_required: bool = True
-) -> typing.Optional[typing.List[typing.Dict]]:
+    currency_filter: typing.Union[str, typing.List[str]] = None
+) -> typing.Optional[typing.Union[typing.List[typing.Dict], typing.Tuple[typing.Tuple[str, ...], ...]]]:
     """
-    Retrieve economic calendar events.
+    Retrieve economic calendar events with flexible filtering options.
+
+    Provides economic event data for analyzing market-moving events and trends.
+    Returns a compact tuple structure for efficient data processing.
 
     :param from_date: Start date in 'YYYY-MM-DD' format.
     :param to_date: End date in 'YYYY-MM-DD' format.
-    :param condensed: If True, return only key fields. Defaults to True.
-    :param impact_filter: Filter events by impact. Can be a string ('Low', 'Medium', 'High') 
-                          or list of strings. Defaults to ['High', 'Medium'].
-    :param country_filter: Filter events by country. Can be a string (e.g., ['US', 'EU', 'JP', 'CN']) 
-                           or list of strings. If None, includes all.
-    :param estimate_required: If True, include only events with an estimate. Defaults to True.
-    :return: List of dicts with economic calendar data, or None if request fails.
-    :example: economic_calendar('2024-08-20', '2024-08-21', impact_filter=['High', 'Medium'], 
-                                country_filter=['US', 'EU'], estimate_required=True)
+    :param condensed: If True, return compact tuple format. Defaults to True.
+    :param impact_filter: Filter by impact level ('Low', 'Medium', 'High' or list).
+    :param country_filter: Filter by country code(s) (e.g., 'US', 'EU' or list).
+    :param currency_filter: Filter by currency code(s) (e.g., 'USD', 'EUR' or list).
+    :return: If condensed, tuple of tuples ((field_names), (event1_data), ...).
+             Otherwise, list of dicts with full event details. None if request fails.
+    :example: economic_calendar('2024-08-20', '2024-08-21', impact_filter=['High', 'Medium'],
+              country_filter=['US', 'EU'], currency_filter=['USD', 'EUR'])
     """
     path = "economic_calendar"
     query_vars = {"apikey": API_KEY}
@@ -189,13 +225,13 @@ def economic_calendar(
                 country_filter = [country_filter]
             result = [event for event in result if event.get('country') in country_filter]
         
-        if estimate_required:
-            result = [event for event in result if event.get('estimate') is not None]
+        if currency_filter:
+            if isinstance(currency_filter, str):
+                currency_filter = [currency_filter]
+            result = [event for event in result if event.get('currency') in currency_filter]
         
-        if condensed:
-            condensed_fields = ['date', 'event', 'country', 'actual', 'estimate', 'previous', 'impact']
-            result = [{field: event.get(field) for field in condensed_fields} for event in result]
-        
-        return result
+        fields = ('date', 'event', 'country', 'actual', 'previous', 'change',
+                  'changePercentage', 'estimate', 'impact')
+        return compress_json_to_tuples(result, condensed, fields)
     
     return None

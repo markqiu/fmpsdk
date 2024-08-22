@@ -14,6 +14,7 @@ from .settings import (
     BASE_URL_v3,
 )
 from .url_methods import __return_json_v3, __validate_period
+from .data_compression import compress_json_to_tuples
 
 API_KEY = os.getenv('FMP_API_KEY')
 
@@ -24,21 +25,22 @@ def income_statement(
     limit: int = DEFAULT_LIMIT,
     download: bool = False,
     filename: str = INCOME_STATEMENT_FILENAME,
-) -> typing.Union[typing.List[typing.Dict], None]:
+    condensed: bool = True
+) -> typing.Union[typing.List[typing.Dict], typing.Tuple[typing.Tuple[str, ...], ...], None]:
     """
     Retrieve income statement data for a company.
 
     Provides real-time access to a company's revenue, expenses, and net income.
     Useful for tracking profitability, comparing with competitors, and
-    identifying business trends. Can be used to calculate financial ratios
-    like P/E ratio and gross margin.
+    identifying business trends. 
 
     :param symbol: Company ticker (e.g., 'AAPL').
     :param period: 'quarter' or 'annual'. Default is 'annual'.
     :param limit: Number of statements to retrieve. Default is 10.
     :param download: If True, download data as CSV. Default is False.
     :param filename: Name of saved file. Default is INCOME_STATEMENT_FILENAME.
-    :return: List of dicts with income statement data or None if download is True.
+    :param condensed: If True, return data as a tuple of tuples. Defaults to True.
+    :return: List of dicts or tuple of tuples with income statement data, or None if download is True.
     :example: income_statement('AAPL', period='quarter', limit=5, download=True)
     """
     path = f"income-statement/{symbol}"
@@ -48,8 +50,10 @@ def income_statement(
         response = requests.get(f"{BASE_URL_v3}{path}", params=query_vars)
         open(filename, "wb").write(response.content)
         logging.info(f"Saving {symbol} financial statement as {filename}.")
+        return None
     else:
-        return __return_json_v3(path=path, query_vars=query_vars)
+        result = __return_json_v3(path=path, query_vars=query_vars)
+        return compress_json_to_tuples(result, condensed)
 
 
 def balance_sheet_statement(
@@ -58,21 +62,22 @@ def balance_sheet_statement(
     limit: int = DEFAULT_LIMIT,
     download: bool = False,
     filename: str = BALANCE_SHEET_STATEMENT_FILENAME,
-) -> typing.Union[typing.List[typing.Dict], None]:
+    condensed: bool = True
+) -> typing.Union[typing.List[typing.Dict], typing.Tuple[typing.Tuple[str, ...], ...], None]:
     """
     Retrieve balance sheet data for a company.
 
     Provides real-time access to a company's assets, liabilities, and equity.
     Useful for assessing financial health, identifying risks, and analyzing
-    debt levels, cash flow, and equity position. Can be used to determine if
-    a company can fund operations, meet debt obligations, and pay dividends.
+    debt levels, cash flow, and equity position. 
 
     :param symbol: Company ticker (e.g., 'AAPL') or CIK (e.g., '0000320193').
     :param period: 'quarter' or 'annual'. Default is 'annual'.
     :param limit: Number of statements to retrieve. Default is 10.
     :param download: If True, download data as CSV. Default is False.
     :param filename: Name of saved file. Default is BALANCE_SHEET_STATEMENT_FILENAME.
-    :return: List of dicts with balance sheet data or None if download is True.
+    :param condensed: If True, return data as a tuple of tuples. Defaults to True.
+    :return: List of dicts or tuple of tuples with balance sheet data, or None if download is True.
     :example: balance_sheet_statement('AAPL', period='quarter', limit=5, download=True)
     """
     path = f"balance-sheet-statement/{symbol}"
@@ -82,8 +87,10 @@ def balance_sheet_statement(
         response = requests.get(f"{BASE_URL_v3}{path}", params=query_vars)
         open(filename, "wb").write(response.content)
         logging.info(f"Saving {symbol} balance sheet statement as {filename}.")
+        return None
     else:
-        return __return_json_v3(path=path, query_vars=query_vars)
+        result = __return_json_v3(path=path, query_vars=query_vars)
+        return compress_json_to_tuples(result, condensed)
 
 
 def cash_flow_statement(
@@ -92,22 +99,22 @@ def cash_flow_statement(
     limit: int = DEFAULT_LIMIT,
     download: bool = False,
     filename: str = CASH_FLOW_STATEMENT_FILENAME,
-) -> typing.Union[typing.List[typing.Dict], None]:
+    condensed: bool = True
+) -> typing.Union[typing.List[typing.Dict], typing.Tuple[typing.Tuple[str, ...], ...], None]:
     """
     Retrieve cash flow statement data for a company.
 
     Provides real-time access to a company's cash inflows and outflows,
     categorized into operating, investing, and financing activities.
     Useful for assessing cash management, liquidity, and financial health.
-    Helps investors understand if the company is generating or using cash
-    in its business operations.
 
     :param symbol: Company ticker (e.g., 'AAPL') or CIK (e.g., '0000320193').
     :param period: 'quarter' or 'annual'. Default is 'annual'.
     :param limit: Number of statements to retrieve. Default is 10.
     :param download: If True, download data as CSV. Default is False.
     :param filename: Name of saved file. Default is CASH_FLOW_STATEMENT_FILENAME.
-    :return: List of dicts with cash flow data or None if download is True.
+    :param condensed: If True, return data as a tuple of tuples. Defaults to True.
+    :return: List of dicts or tuple of tuples with cash flow data, or None if download is True.
     :example: cash_flow_statement('AAPL', period='quarter', limit=5, download=True)
     """
     path = f"cash-flow-statement/{symbol}"
@@ -117,8 +124,11 @@ def cash_flow_statement(
         response = requests.get(f"{BASE_URL_v3}{path}", params=query_vars)
         open(filename, "wb").write(response.content)
         logging.info(f"Saving {symbol} financial statement as {filename}.")
+        return None
     else:
-        return __return_json_v3(path=path, query_vars=query_vars)
+        result = __return_json_v3(path=path, query_vars=query_vars)
+        return compress_json_to_tuples(result, condensed)
+
 
 def income_statement_as_reported(
     symbol: str,
@@ -126,7 +136,8 @@ def income_statement_as_reported(
     limit: int = DEFAULT_LIMIT,
     download: bool = False,
     filename: str = INCOME_STATEMENT_AS_REPORTED_FILENAME,
-) -> typing.Union[typing.List[typing.Dict], None]:
+    condensed: bool = True
+) -> typing.Union[typing.List[typing.Dict], typing.Tuple[typing.Tuple[str, ...], ...], None]:
     """
     Query FMP /income-statement-as-reported/ API for company's as-reported income statement.
 
@@ -135,7 +146,8 @@ def income_statement_as_reported(
     :param limit: Number of rows to return. Default is DEFAULT_LIMIT.
     :param download: If True, download data as CSV. Default is False.
     :param filename: Name of saved file. Default is INCOME_STATEMENT_AS_REPORTED_FILENAME.
-    :return: List of dictionaries with as-reported income statement data or None if download is True.
+    :param condensed: If True, return data as a tuple of tuples. Defaults to True.
+    :return: List of dicts or tuple of tuples with as-reported income statement data, or None if download is True.
     :example: income_statement_as_reported('AAPL', period='quarter', limit=5, download=True)
     """
     path = f"income-statement-as-reported/{symbol}"
@@ -149,8 +161,10 @@ def income_statement_as_reported(
         response = requests.get(f"{BASE_URL_v3}{path}", params=query_vars)
         open(filename, "wb").write(response.content)
         logging.info(f"Saving {symbol} financial statement as {filename}.")
+        return None
     else:
-        return __return_json_v3(path=path, query_vars=query_vars)
+        result = __return_json_v3(path=path, query_vars=query_vars)
+        return compress_json_to_tuples(result, condensed)
 
 
 def balance_sheet_statement_as_reported(
@@ -159,7 +173,8 @@ def balance_sheet_statement_as_reported(
     limit: int = DEFAULT_LIMIT,
     download: bool = False,
     filename: str = BALANCE_SHEET_STATEMENT_AS_REPORTED_FILENAME,
-) -> typing.Union[typing.List[typing.Dict], None]:
+    condensed: bool = True
+) -> typing.Union[typing.List[typing.Dict], typing.Tuple[typing.Tuple[str, ...], ...], None]:
     """
     Query FMP /balance-sheet-statement-as-reported/ API for company's as-reported balance sheet.
 
@@ -168,7 +183,8 @@ def balance_sheet_statement_as_reported(
     :param limit: Number of rows to return. Default is DEFAULT_LIMIT.
     :param download: If True, download data as CSV. Default is False.
     :param filename: Name of saved file. Default is BALANCE_SHEET_STATEMENT_AS_REPORTED_FILENAME.
-    :return: List of dictionaries with as-reported balance sheet data or None if download is True.
+    :param condensed: If True, return data as a tuple of tuples. Defaults to True.
+    :return: List of dicts or tuple of tuples with as-reported balance sheet data, or None if download is True.
     :example: balance_sheet_statement_as_reported('AAPL', period='quarter', limit=5, download=True)
     """
     path = f"balance-sheet-statement-as-reported/{symbol}"
@@ -182,8 +198,10 @@ def balance_sheet_statement_as_reported(
         response = requests.get(f"{BASE_URL_v3}{path}", params=query_vars)
         open(filename, "wb").write(response.content)
         logging.info(f"Saving {symbol} financial statement as {filename}.")
+        return None
     else:
-        return __return_json_v3(path=path, query_vars=query_vars)
+        result = __return_json_v3(path=path, query_vars=query_vars)
+        return compress_json_to_tuples(result, condensed)
 
 
 def cash_flow_statement_as_reported(
@@ -192,7 +210,8 @@ def cash_flow_statement_as_reported(
     limit: int = DEFAULT_LIMIT,
     download: bool = False,
     filename: str = CASH_FLOW_STATEMENT_AS_REPORTED_FILENAME,
-) -> typing.Union[typing.List[typing.Dict], None]:
+    condensed: bool = True
+) -> typing.Union[typing.List[typing.Dict], typing.Tuple[typing.Tuple[str, ...], ...], None]:
     """
     Query FMP /cash-flow-statement-as-reported/ API for company's as-reported cash flow statement.
 
@@ -201,7 +220,8 @@ def cash_flow_statement_as_reported(
     :param limit: Number of rows to return. Default is DEFAULT_LIMIT.
     :param download: If True, download data as CSV. Default is False.
     :param filename: Name of saved file. Default is CASH_FLOW_STATEMENT_AS_REPORTED_FILENAME.
-    :return: List of dictionaries with as-reported cash flow data or None if download is True.
+    :param condensed: If True, return data as a tuple of tuples. Defaults to True.
+    :return: List of dicts or tuple of tuples with as-reported cash flow data, or None if download is True.
     :example: cash_flow_statement_as_reported('AAPL', period='quarter', limit=5, download=True)
     """
     path = f"cash-flow-statement-as-reported/{symbol}"
@@ -215,19 +235,27 @@ def cash_flow_statement_as_reported(
         response = requests.get(f"{BASE_URL_v3}{path}", params=query_vars)
         open(filename, "wb").write(response.content)
         logging.info(f"Saving {symbol} financial statement as {filename}.")
+        return None
     else:
-        return __return_json_v3(path=path, query_vars=query_vars)
+        result = __return_json_v3(path=path, query_vars=query_vars)
+        return compress_json_to_tuples(result, condensed)
 
 
-def financial_statement_full_as_reported(symbol: str, period: str = "annual") -> typing.Optional[typing.List[typing.Dict]]:
+def financial_statement_full_as_reported(
+    symbol: str,
+    period: str = "annual",
+    condensed: bool = True
+) -> typing.Union[typing.List[typing.Dict], typing.Tuple[typing.Tuple[str, ...], ...], None]:
     """
     Query FMP /financial-statement-full-as-reported/ API for company's full as-reported financial statement.
 
     :param symbol: Company ticker.
     :param period: 'quarter' or 'annual'. Default is 'annual'.
-    :return: List of dictionaries with full as-reported financial statement data.
+    :param condensed: If True, return data as a tuple of tuples. Defaults to True.
+    :return: List of dicts or tuple of tuples with full as-reported financial statement data.
     :example: financial_statement_full_as_reported('AAPL', period='quarter')
     """
     path = f"financial-statement-full-as-reported/{symbol}"
     query_vars = {"apikey": API_KEY, "period": __validate_period(value=period)}
-    return __return_json_v3(path=path, query_vars=query_vars)
+    result = __return_json_v3(path=path, query_vars=query_vars)
+    return compress_json_to_tuples(result, condensed)

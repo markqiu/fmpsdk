@@ -265,7 +265,6 @@ __all__ = [
     "general_news",
     "historical_chart",
     "historical_daily_discounted_cash_flow",
-    "historical_discounted_cash_flow",
     "historical_dowjones_constituent",
     "historical_earning_calendar",
     "historical_employee_count",
