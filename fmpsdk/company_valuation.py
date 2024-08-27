@@ -146,9 +146,10 @@ def revenue_geographic_segmentation(
              or None if the request fails
     :example: revenue_geographic_segmentation('AAPL', structure='nested', period='quarterly')
     """
-    path = f"revenue-geographic-segmentation/{symbol}"
+    path = f"revenue-geographic-segmentation/"
     query_vars = {
         "apikey": API_KEY,
+        "symbol": symbol,
         "structure": structure,
         "period": period
     }
