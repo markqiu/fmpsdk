@@ -1,12 +1,18 @@
 import typing
 from .url_methods import __return_json_v3, __return_json_v4
 import os
-from .settings import (
-    DEFAULT_LIMIT,
-)
+from .settings import DEFAULT_LIMIT
+from .data_compression import compress_json_to_tuples
+
 API_KEY = os.getenv('FMP_API_KEY')
 
-def fmp_articles(page: int = 0, size: int = 5) -> typing.Optional[typing.List[typing.Dict]]:
+
+def fmp_articles(
+    page: int = 0,
+    size: int = 5,
+    condensed: bool = True
+) -> typing.Union[typing.List[typing.Dict], 
+                  typing.Tuple[typing.Tuple[str, ...], ...]]:
     """
     Retrieve the latest articles from Financial Modeling Prep.
 
@@ -15,14 +21,20 @@ def fmp_articles(page: int = 0, size: int = 5) -> typing.Optional[typing.List[ty
 
     :param page: Page number for pagination (default: 0).
     :param size: Number of articles per page (default: 5).
-    :return: List of dicts with article data or None if request fails.
+    :param condensed: If True, return compact tuple format. Defaults to True.
+    :return: List of dicts or tuple of tuples with article data.
     :example: fmp_articles(page=1, size=5)
     """
     path = "fmp/articles"
     query_vars = {"apikey": API_KEY, "page": page, "size": size}
-    return __return_json_v3(path=path, query_vars=query_vars)
+    result = __return_json_v3(path=path, query_vars=query_vars)
+    return compress_json_to_tuples(result, condensed)
 
-def general_news(page: int = 0) -> typing.Optional[typing.List[typing.Dict]]:
+
+def general_news(
+    page: int = 0,
+    condensed: bool = True
+) -> typing.Union[typing.List[typing.Dict], typing.Tuple[typing.Tuple[str, ...], ...]]:
     """
     Retrieve the latest general news articles from a variety of sources.
 
@@ -31,12 +43,15 @@ def general_news(page: int = 0) -> typing.Optional[typing.List[typing.Dict]]:
     Each article includes headline, snippet, and publication URL.
 
     :param page: Page number for pagination (default: 0).
-    :return: List of dicts with general news data or None if request fails.
+    :param condensed: If True, return compact tuple format. Defaults to True.
+    :return: List of dicts or tuple of tuples with general news data.
     :example: general_news(page=1)
     """
     path = "general_news"
     query_vars = {"apikey": API_KEY, "page": page}
-    return __return_json_v4(path=path, query_vars=query_vars)
+    result = __return_json_v4(path=path, query_vars=query_vars)
+    return compress_json_to_tuples(result, condensed)
+
 
 def stock_news(
     tickers: typing.Union[str, typing.List] = "",
@@ -44,7 +59,8 @@ def stock_news(
     page: int = 0,
     from_date: str = "",
     to_date: str = "",
-) -> typing.Optional[typing.List[typing.Dict]]:
+    condensed: bool = True
+) -> typing.Union[typing.List[typing.Dict], typing.Tuple[typing.Tuple[str, ...], ...]]:
     """
     Retrieve the latest stock-specific news articles from various sources.
 
@@ -57,7 +73,8 @@ def stock_news(
     :param page: Page number for pagination (default: 0).
     :param from_date: Start date for news articles (format: YYYY-MM-DD).
     :param to_date: End date for news articles (format: YYYY-MM-DD).
-    :return: List of dicts with stock news data or None if request fails.
+    :param condensed: If True, return compact tuple format. Defaults to True.
+    :return: List of dicts or tuple of tuples with stock news data.
     :example: stock_news(['AAPL', 'FB'], limit=10, page=3, from_date='2024-01-01', to_date='2024-03-01')
     """
     path = "stock_news"
@@ -68,4 +85,95 @@ def stock_news(
         query_vars["from"] = from_date
     if to_date:
         query_vars["to"] = to_date
-    return __return_json_v3(path=path, query_vars=query_vars)
+    result = __return_json_v3(path=path, query_vars=query_vars)
+    return compress_json_to_tuples(result, condensed)
+
+
+def mergers_acquisitions_rss_feed(
+    page: int = 0,
+    condensed: bool = True
+) -> typing.Union[typing.List[typing.Dict], typing.Tuple[typing.Tuple[str, ...], ...]]:
+    """
+    Retrieve the latest M&A news RSS feed.
+
+    Provides insights into mergers, acquisitions, and other corporate transactions.
+
+    :param page: Page number for pagination. Default is 0.
+    :param condensed: If True, return compact tuple format. Defaults to True.
+    :return: List of dicts or tuple of tuples with latest M&A news RSS feed data.
+    :example: mergers_acquisitions_rss_feed(page=1)
+    """
+    path = "mergers-acquisitions-rss-feed"
+    query_vars = {"apikey": API_KEY, "page": page}
+    result = __return_json_v4(path=path, query_vars=query_vars)
+    return compress_json_to_tuples(result, condensed)
+
+
+def upgrades_downgrades_rss_feed(
+    page: int = 0,
+    condensed: bool = True
+) -> typing.Union[typing.List[typing.Dict], typing.Tuple[typing.Tuple[str, ...], ...]]:
+    """
+    Retrieve daily-updated RSS feed of stock upgrades and downgrades from various analysts.
+
+    Provides the latest analyst ratings to help investors stay informed about
+    changing market sentiments and potential investment opportunities.
+
+    :param page: Page number for pagination. Default is 0.
+    :param condensed: If True, return compact tuple format. Defaults to True.
+    :return: List of dicts or tuple of tuples with latest stock upgrades and downgrades data.
+    :example: upgrades_downgrades_rss_feed(page=1)
+    """
+    path = "upgrades-downgrades-rss-feed"
+    query_vars = {"apikey": API_KEY, "page": page}
+    result = __return_json_v4(path=path, query_vars=query_vars)
+    return compress_json_to_tuples(result, condensed)
+
+
+def upgrades_downgrades(
+    symbol: str,
+    condensed: bool = True
+) -> typing.Union[typing.List[typing.Dict], 
+                  typing.Tuple[typing.Tuple[str, ...], ...]]:
+    """
+    Retrieve a comprehensive list of stock upgrades and downgrades for a company.
+
+    Provides insights into analysts' changing expectations for a stock's performance.
+    Updated daily to offer the most current analyst ratings.
+
+    :param symbol: Company ticker (e.g., 'AAPL').
+    :param condensed: If True, return compact tuple format. Defaults to True.
+    :return: List of dicts or tuple of tuples with upgrade/downgrade data.
+    :example: upgrades_downgrades('AAPL')
+    """
+    path = "upgrades-downgrades"
+    query_vars = {"apikey": API_KEY, "symbol": symbol}
+    result = __return_json_v4(path=path, query_vars=query_vars)
+    return compress_json_to_tuples(result, condensed)
+
+
+def press_releases(
+    symbol: str = None,
+    limit: int = DEFAULT_LIMIT,
+    page: int = 0,
+    condensed: bool = True
+) -> typing.Union[typing.List[typing.Dict], typing.Tuple[typing.Tuple[str, ...], ...]]:
+    """
+    Retrieve the latest press releases, optionally filtered by company.
+
+    Provides detailed information about company announcements, including
+    release date, title, and content. Useful for staying updated on important
+    developments and news from organizations.
+
+    :param symbol: Company ticker (e.g., 'AAPL'). If None, returns releases for all companies.
+    :param limit: Number of records to retrieve. Default is DEFAULT_LIMIT.
+    :param page: Page number for pagination. Default is 0.
+    :param condensed: If True, return compact tuple format. Defaults to True.
+    :return: List of dicts or tuple of tuples with press releases data.
+    :example: press_releases(symbol='AAPL', limit=10, page=0)
+              press_releases(limit=20, page=1)
+    """
+    path = f"press-releases/{symbol}" if symbol else "press-releases"
+    query_vars = {"apikey": API_KEY, "limit": limit, "page": page}
+    result = __return_json_v3(path=path, query_vars=query_vars)
+    return compress_json_to_tuples(result, condensed)

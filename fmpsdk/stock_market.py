@@ -3,11 +3,12 @@ import os
 from .settings import DEFAULT_LIMIT
 from .url_methods import __return_json_v3, __return_json_v4
 from datetime import date
-from .url_methods import __return_json_v4
+from .data_compression import compress_json_to_tuples
 
 API_KEY = os.getenv('FMP_API_KEY')
 
-def actives() -> typing.Optional[typing.List[typing.Dict]]:
+def actives(condensed: bool = True) -> typing.Union[typing.List[typing.Dict], 
+                                                    typing.Tuple[typing.Tuple[str, ...], ...]]:
     """
     Retrieve a list of the most actively traded stocks on a given day.
 
@@ -15,10 +16,11 @@ def actives() -> typing.Optional[typing.List[typing.Dict]]:
     indicating high market interest or significant news events. This data
     can be used to identify liquid stocks and potential trading opportunities.
 
-    :return: List of dicts with data on most active stocks or None if request fails.
+    :param condensed: If True, return data as a tuple of tuples. Defaults to True.
+    :return: List of dicts or tuple of tuples with data on most active stocks.
     :example: actives()
 
-    Each dict in the returned list contains details such as:
+    Each entry in the returned data contains details such as:
     - symbol: The stock's ticker symbol
     - name: The company name
     - change: Price change
@@ -28,10 +30,11 @@ def actives() -> typing.Optional[typing.List[typing.Dict]]:
     """
     path = f"actives"
     query_vars = {"apikey": API_KEY}
-    return __return_json_v3(path=path, query_vars=query_vars)
+    result = __return_json_v3(path=path, query_vars=query_vars)
+    return compress_json_to_tuples(result, condensed)
 
-
-def gainers() -> typing.Optional[typing.List[typing.Dict]]:
+def gainers(condensed: bool = True) -> typing.Union[typing.List[typing.Dict], 
+                                                    typing.Tuple[typing.Tuple[str, ...], ...]]:
     """
     Retrieve a list of stocks that have gained the most value on a given day.
 
@@ -39,15 +42,16 @@ def gainers() -> typing.Optional[typing.List[typing.Dict]]:
     potential investment opportunities. Useful for traders looking for
     stocks with upward trends or significant price movements.
 
-    :return: List of dicts with data on biggest gainers or None if request fails.
+    :param condensed: If True, return data as a tuple of tuples. Defaults to True.
+    :return: List of dicts or tuple of tuples with data on biggest gainers.
     :example: gainers()
     """
     path = f"gainers"
     query_vars = {"apikey": API_KEY}
-    return __return_json_v3(path=path, query_vars=query_vars)
+    result = __return_json_v3(path=path, query_vars=query_vars)
+    return compress_json_to_tuples(result, condensed)
 
-
-def losers() -> typing.Optional[typing.List[typing.Dict]]:
+def losers(condensed: bool = True) -> typing.Union[typing.List[typing.Dict], typing.Tuple[typing.Tuple[str, ...], ...]]:
     """
     Retrieve a list of stocks that have lost the most value on a given day.
 
@@ -56,32 +60,38 @@ def losers() -> typing.Optional[typing.List[typing.Dict]]:
     can be used to assess market sentiment and identify stocks that may
     continue to depreciate.
 
-    :return: List of dicts with data on biggest losers or None if request fails.
+    :param condensed: If True, return data as a tuple of tuples. Defaults to True.
+    :return: List of dicts or tuple of tuples with data on biggest losers.
     :example: losers()
     """
     path = f"losers"
     query_vars = {"apikey": API_KEY}
-    return __return_json_v3(path=path, query_vars=query_vars)
+    result = __return_json_v3(path=path, query_vars=query_vars)
+    return compress_json_to_tuples(result, condensed)
 
-
-def market_hours() -> typing.Optional[typing.List[typing.Dict]]:
+def market_hours(condensed: bool = True) -> typing.Union[typing.Dict, typing.Tuple[str, ...]]:
     """
     Retrieve information about market hours for various exchanges.
 
     Provides data on opening and closing times for different stock markets,
     helping traders plan their activities around market schedules.
 
-    :return: List of dicts with market hours data or None if request fails.
+    :param condensed: If True, return data as a tuple of key-value pairs. Defaults to True.
+    :return: Dict or tuple of key-value pairs with market hours data.
     :example: market_hours()
     """
     path = f"market-hours"
     query_vars = {"apikey": API_KEY}
-    return __return_json_v3(path=path, query_vars=query_vars)
-
+    result = __return_json_v3(path=path, query_vars=query_vars)
+    
+    if result is not None and condensed:
+        return tuple(result.items())
+    return result
 
 def sectors_performance(
-    limit: int = DEFAULT_LIMIT
-) -> typing.Optional[typing.List[typing.Dict]]:
+    limit: int = DEFAULT_LIMIT,
+    condensed: bool = True
+) -> typing.Union[typing.List[typing.Dict], typing.Tuple[typing.Tuple[str, ...], ...]]:
     """
     Retrieve performance data for various market sectors.
 
@@ -89,20 +99,23 @@ def sectors_performance(
     identify trends and make informed decisions about sector allocation.
 
     :param limit: Number of records to retrieve. Default is DEFAULT_LIMIT.
-    :return: List of dicts with sector performance data or None if request fails.
+    :param condensed: If True, return data as a tuple of tuples. Defaults to True.
+    :return: List of dicts or tuple of tuples with sector performance data.
     :example: sectors_performance(limit=5)
     """
     path = f"sectors-performance"
     query_vars = {"apikey": API_KEY, "limit": limit}
-    return __return_json_v3(path=path, query_vars=query_vars)
+    result = __return_json_v3(path=path, query_vars=query_vars)
+    return compress_json_to_tuples(result, condensed)
 
-def fail_to_deliver(symbol: str, page: int = 0) -> typing.Optional[typing.List[typing.Dict]]:
+def fail_to_deliver(symbol: str, page: int = 0, condensed: bool = True) -> typing.Union[typing.List[typing.Dict], typing.Tuple[typing.Tuple[str, ...], ...]]:
     """
     Query FMP /fail_to_deliver API for fail to deliver data.
 
     :param symbol: Company ticker symbol.
     :param page: Page number for pagination (default is 0).
-    :return: A list of dictionaries containing fail to deliver data.
+    :param condensed: If True, return data as a tuple of tuples. Defaults to True.
+    :return: List of dicts or tuple of tuples containing fail to deliver data.
     :example: fail_to_deliver('AAPL', page=1)
     """
     path = "fail_to_deliver"
@@ -111,15 +124,19 @@ def fail_to_deliver(symbol: str, page: int = 0) -> typing.Optional[typing.List[t
         "symbol": symbol,
         "page": page
     }
-    return __return_json_v4(path=path, query_vars=query_vars)
+    result = __return_json_v4(path=path, query_vars=query_vars)
+    return compress_json_to_tuples(result, condensed)
 
-def sector_pe_ratio(date: date, exchange: str = "NYSE") -> typing.Optional[typing.List[typing.Dict]]:
+def sector_pe_ratio(date: date, exchange: str = "NYSE", 
+                    condensed: bool = True) -> typing.Union[typing.List[typing.Dict], 
+                                                            typing.Tuple[typing.Tuple[str, ...], ...]]:
     """
     Query FMP /sector_price_earning_ratio API.
 
     :param date: The date for which to retrieve the sector PE ratios in 'yyyy-mm-dd' format.
     :param exchange: The stock exchange (default is NYSE).
-    :return: A list of dictionaries containing sector PE ratios.
+    :param condensed: If True, return data as a tuple of tuples. Defaults to True.
+    :return: List of dicts or tuple of tuples containing sector PE ratios.
     :example: sector_pe_ratio('2023-01-01', exchange='NASDAQ')
     """
     path = f"sector_price_earning_ratio"
@@ -128,9 +145,12 @@ def sector_pe_ratio(date: date, exchange: str = "NYSE") -> typing.Optional[typin
         "exchange": exchange,
         "apikey": API_KEY
     }
-    return __return_json_v4(path=path, query_vars=query_vars)
+    result = __return_json_v4(path=path, query_vars=query_vars)
+    return compress_json_to_tuples(result, condensed)
 
-def industry_pe_ratio(date: str, exchange: str = "NYSE") -> typing.Optional[typing.List[typing.Dict]]:
+def industry_pe_ratio(date: str, exchange: str = "NYSE", 
+                      condensed: bool = True) -> typing.Union[typing.List[typing.Dict], 
+                                                              typing.Tuple[typing.Tuple[str, ...], ...]]:
     """
     Retrieve industry-specific price-to-earnings (PE) ratios.
 
@@ -141,7 +161,8 @@ def industry_pe_ratio(date: str, exchange: str = "NYSE") -> typing.Optional[typi
 
     :param date: Date for which to retrieve industry PE ratios (format: 'YYYY-MM-DD').
     :param exchange: Stock exchange (default is NYSE).
-    :return: List of dictionaries containing industry PE ratios or None if request fails.
+    :param condensed: If True, return data as a tuple of tuples. Defaults to True.
+    :return: List of dicts or tuple of tuples containing industry PE ratios.
     :example: industry_pe_ratio('2024-08-01', exchange='NYSE')
 
     Data can be used to:
@@ -155,22 +176,28 @@ def industry_pe_ratio(date: str, exchange: str = "NYSE") -> typing.Optional[typi
         "exchange": exchange,
         "apikey": API_KEY
     }
-    return __return_json_v4(path=path, query_vars=query_vars)
+    result = __return_json_v4(path=path, query_vars=query_vars)
+    return compress_json_to_tuples(result, condensed)
 
-def batch_eod_prices(date: str) -> typing.Optional[typing.List[typing.Dict]]:
+def batch_eod_prices(date: str, 
+                     condensed: bool = True) -> typing.Union[typing.List[typing.Dict], 
+                                                             typing.Tuple[typing.Tuple[str, ...], ...]]:
     """
     Get batch request that contains all end of day prices for a specific date.
 
     :param date: The date in format YYYY-MM-DD
-    :return: A list of dictionaries containing EOD prices for multiple stocks
+    :param condensed: If True, return data as a tuple of tuples. Defaults to True.
+    :return: List of dicts or tuple of tuples containing EOD prices for multiple stocks
     """
     path = "batch-request-end-of-day-prices"
     query_vars = {"apikey": API_KEY, "date": date}
-    return __return_json_v4(path=path, query_vars=query_vars)
+    result = __return_json_v4(path=path, query_vars=query_vars)
+    return compress_json_to_tuples(result, condensed)
 
 def multiple_company_prices(
-    symbols: typing.Union[str, typing.List[str]]
-) -> typing.Optional[typing.List[typing.Dict]]:
+    symbols: typing.Union[str, typing.List[str]],
+    condensed: bool = True
+) -> typing.Union[typing.List[typing.Dict], typing.Tuple[typing.Tuple[str, ...], ...]]:
     """
     Retrieve real-time price data for multiple companies in a single request.
 
@@ -180,16 +207,21 @@ def multiple_company_prices(
 
     :param symbols: Single stock symbol as string or list of stock symbols
                     (e.g., 'AAPL' or ['AAPL', 'MSFT'])
-    :return: List of dicts with price information for the requested symbols
+    :param condensed: If True, return data as a tuple of tuples. Defaults to True.
+    :return: List of dicts or tuple of tuples with price information for the requested symbols
     :example: multiple_company_prices('AAPL,MSFT')
               multiple_company_prices(['AAPL', 'MSFT'])
     """
     symbols_str = ','.join(symbols) if isinstance(symbols, list) else symbols
     path = f"quote/{symbols_str}"
     query_vars = {"apikey": API_KEY}
-    return __return_json_v3(path=path, query_vars=query_vars)
+    result = __return_json_v3(path=path, query_vars=query_vars)
+    return compress_json_to_tuples(result, condensed)
 
-def historical_sectors_performance(from_date: str, to_date: str) -> typing.Optional[typing.List[typing.Dict]]:
+def historical_sectors_performance(from_date: str, 
+                                   to_date: str, 
+                                   condensed: bool = True) -> typing.Union[typing.List[typing.Dict], 
+                                                                           typing.Tuple[typing.Tuple[str, ...], ...]]:
     """
     Retrieve historical performance data for stock market sectors.
 
@@ -199,7 +231,8 @@ def historical_sectors_performance(from_date: str, to_date: str) -> typing.Optio
 
     :param from_date: Start date in format YYYY-MM-DD.
     :param to_date: End date in format YYYY-MM-DD.
-    :return: List of dicts with historical sector performance data,
+    :param condensed: If True, return data as a tuple of tuples. Defaults to True.
+    :return: List of dicts or tuple of tuples with historical sector performance data,
              including date and performance for each sector.
     :example: historical_sectors_performance('2024-01-01', '2024-03-01')
     """
@@ -209,4 +242,5 @@ def historical_sectors_performance(from_date: str, to_date: str) -> typing.Optio
         "from": from_date,
         "to": to_date
     }
-    return __return_json_v3(path=path, query_vars=query_vars)
+    result = __return_json_v3(path=path, query_vars=query_vars)
+    return compress_json_to_tuples(result, condensed)

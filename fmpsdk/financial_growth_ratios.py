@@ -2,10 +2,16 @@ import typing
 import os
 from .settings import DEFAULT_LIMIT
 from .url_methods import __return_json_v3, __validate_period
+from .data_compression import compress_json_to_tuples
 
 API_KEY = os.getenv('FMP_API_KEY')
 
-def income_statement_growth(symbol: str, limit: int = DEFAULT_LIMIT) -> typing.Optional[typing.List[typing.Dict]]:
+
+def income_statement_growth(
+    symbol: str,
+    limit: int = DEFAULT_LIMIT,
+    condensed: bool = True
+) -> typing.Union[typing.List[typing.Dict], typing.Tuple[typing.Tuple[str, ...], ...]]:
     """
     Retrieve income statement growth metrics for a company.
 
@@ -14,7 +20,8 @@ def income_statement_growth(symbol: str, limit: int = DEFAULT_LIMIT) -> typing.O
 
     :param symbol: Company ticker (e.g., 'AAPL').
     :param limit: Number of records to retrieve. Default is DEFAULT_LIMIT.
-    :return: List of dicts with income statement growth data or None if request fails.
+    :param condensed: If True, return compact tuple format. Defaults to True.
+    :return: Income statement growth data or None if request fails.
     :example: income_statement_growth('AAPL', limit=5)
     """
     path = f"income-statement-growth/{symbol}"
@@ -22,10 +29,15 @@ def income_statement_growth(symbol: str, limit: int = DEFAULT_LIMIT) -> typing.O
         "apikey": API_KEY,
         "limit": limit,
     }
-    return __return_json_v3(path=path, query_vars=query_vars)
+    result = __return_json_v3(path=path, query_vars=query_vars)
+    return compress_json_to_tuples(result, condensed)
 
 
-def balance_sheet_statement_growth(symbol: str, limit: int = DEFAULT_LIMIT) -> typing.Optional[typing.List[typing.Dict]]:
+def balance_sheet_statement_growth(
+    symbol: str,
+    limit: int = DEFAULT_LIMIT,
+    condensed: bool = True
+) -> typing.Union[typing.List[typing.Dict], typing.Tuple[typing.Tuple[str, ...], ...]]:
     """
     Retrieve balance sheet statement growth metrics for a company.
 
@@ -34,7 +46,8 @@ def balance_sheet_statement_growth(symbol: str, limit: int = DEFAULT_LIMIT) -> t
 
     :param symbol: Company ticker (e.g., 'AAPL').
     :param limit: Number of records to retrieve. Default is DEFAULT_LIMIT.
-    :return: List of dicts with balance sheet growth data or None if request fails.
+    :param condensed: If True, return compact tuple format. Defaults to True.
+    :return: Balance sheet growth data or None if request fails.
     :example: balance_sheet_statement_growth('AAPL', limit=5)
     """
     path = f"balance-sheet-statement-growth/{symbol}"
@@ -42,10 +55,15 @@ def balance_sheet_statement_growth(symbol: str, limit: int = DEFAULT_LIMIT) -> t
         "apikey": API_KEY,
         "limit": limit,
     }
-    return __return_json_v3(path=path, query_vars=query_vars)
+    result = __return_json_v3(path=path, query_vars=query_vars)
+    return compress_json_to_tuples(result, condensed)
 
 
-def cash_flow_statement_growth(symbol: str, limit: int = DEFAULT_LIMIT) -> typing.Optional[typing.List[typing.Dict]]:
+def cash_flow_statement_growth(
+    symbol: str,
+    limit: int = DEFAULT_LIMIT,
+    condensed: bool = True
+) -> typing.Union[typing.List[typing.Dict], typing.Tuple[typing.Tuple[str, ...], ...]]:
     """
     Retrieve cash flow statement growth metrics for a company.
 
@@ -54,7 +72,8 @@ def cash_flow_statement_growth(symbol: str, limit: int = DEFAULT_LIMIT) -> typin
 
     :param symbol: Company ticker (e.g., 'AAPL').
     :param limit: Number of records to retrieve. Default is DEFAULT_LIMIT.
-    :return: List of dicts with cash flow statement growth data or None if request fails.
+    :param condensed: If True, return compact tuple format. Defaults to True.
+    :return: Cash flow statement growth data or None if request fails.
     :example: cash_flow_statement_growth('AAPL', limit=5)
     """
     path = f"cash-flow-statement-growth/{symbol}"
@@ -62,10 +81,14 @@ def cash_flow_statement_growth(symbol: str, limit: int = DEFAULT_LIMIT) -> typin
         "apikey": API_KEY,
         "limit": limit,
     }
-    return __return_json_v3(path=path, query_vars=query_vars)
+    result = __return_json_v3(path=path, query_vars=query_vars)
+    return compress_json_to_tuples(result, condensed)
 
 
-def financial_ratios_ttm(symbol: str) -> typing.Optional[typing.List[typing.Dict]]:
+def financial_ratios_ttm(
+    symbol: str,
+    condensed: bool = True
+) -> typing.Union[typing.List[typing.Dict], typing.Tuple[typing.Tuple[str, ...], ...]]:
     """
     Retrieve trailing twelve months (TTM) financial ratios for a company.
 
@@ -73,17 +96,22 @@ def financial_ratios_ttm(symbol: str) -> typing.Optional[typing.List[typing.Dict
     Useful for comparing with industry averages and identifying areas for improvement.
 
     :param symbol: Company ticker (e.g., 'AAPL').
-    :return: List of dicts with TTM financial ratios data or None if request fails.
+    :param condensed: If True, return compact tuple format. Defaults to True.
+    :return: TTM financial ratios data or None if request fails.
     :example: financial_ratios_ttm('AAPL')
     """
     path = f"ratios-ttm/{symbol}"
     query_vars = {"apikey": API_KEY}
-    return __return_json_v3(path=path, query_vars=query_vars)
+    result = __return_json_v3(path=path, query_vars=query_vars)
+    return compress_json_to_tuples(result, condensed)
 
 
 def financial_ratios(
-    symbol: str, period: str = "annual", limit: int = DEFAULT_LIMIT
-) -> typing.Optional[typing.List[typing.Dict]]:
+    symbol: str,
+    period: str = "annual",
+    limit: int = DEFAULT_LIMIT,
+    condensed: bool = True
+) -> typing.Union[typing.List[typing.Dict], typing.Tuple[typing.Tuple[str, ...], ...]]:
     """
     Retrieve financial ratios for a company.
 
@@ -93,7 +121,8 @@ def financial_ratios(
     :param symbol: Company ticker (e.g., 'AAPL').
     :param period: Reporting period ('annual' or 'quarter'). Default is 'annual'.
     :param limit: Number of records to retrieve. Default is DEFAULT_LIMIT.
-    :return: List of dicts with financial ratios data or None if request fails.
+    :param condensed: If True, return compact tuple format. Defaults to True.
+    :return: Financial ratios data or None if request fails.
     :example: financial_ratios('AAPL', period='quarter', limit=5)
     """
     path = f"ratios/{symbol}"
@@ -102,10 +131,16 @@ def financial_ratios(
         "period": __validate_period(value=period),
         "limit": limit,
     }
-    return __return_json_v3(path=path, query_vars=query_vars)
+    result = __return_json_v3(path=path, query_vars=query_vars)
+    return compress_json_to_tuples(result, condensed)
 
 
-def financial_growth(symbol: str, period: str = "annual", limit: int = DEFAULT_LIMIT) -> typing.Optional[typing.List[typing.Dict]]:
+def financial_growth(
+    symbol: str,
+    period: str = "annual",
+    limit: int = DEFAULT_LIMIT,
+    condensed: bool = True
+) -> typing.Union[typing.List[typing.Dict], typing.Tuple[typing.Tuple[str, ...], ...]]:
     """
     Retrieve financial growth metrics for a company.
 
@@ -116,7 +151,8 @@ def financial_growth(symbol: str, period: str = "annual", limit: int = DEFAULT_L
     :param symbol: Company ticker (e.g., 'AAPL').
     :param period: Reporting period ('annual' or 'quarter'). Default is 'annual'.
     :param limit: Number of records to retrieve. Default is DEFAULT_LIMIT.
-    :return: List of dicts with financial growth data or None if request fails.
+    :param condensed: If True, return compact tuple format. Defaults to True.
+    :return: Financial growth data or None if request fails.
     :example: financial_growth('AAPL', period='quarter', limit=5)
     """
     path = f"financial-growth/{symbol}"
@@ -125,4 +161,5 @@ def financial_growth(symbol: str, period: str = "annual", limit: int = DEFAULT_L
         "limit": limit,
         "period": __validate_period(value=period),
     }
-    return __return_json_v3(path=path, query_vars=query_vars)
+    result = __return_json_v3(path=path, query_vars=query_vars)
+    return compress_json_to_tuples(result, condensed)

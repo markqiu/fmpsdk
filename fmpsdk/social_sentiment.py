@@ -1,10 +1,16 @@
 import typing
 from .url_methods import __return_json_v4
+from .data_compression import compress_json_to_tuples
 import os
 
 API_KEY = os.getenv('FMP_API_KEY')
 
-def historical_social_sentiment(symbol: str, page: int = 0) -> typing.Optional[typing.List[typing.Dict]]:
+
+def historical_social_sentiment(
+    symbol: str,
+    page: int = 0,
+    condensed: bool = True
+) -> typing.Union[typing.List[typing.Dict], typing.Tuple[typing.Tuple[str, ...], ...]]:
     """
     Retrieve historical social sentiment data for a company.
 
@@ -17,13 +23,21 @@ def historical_social_sentiment(symbol: str, page: int = 0) -> typing.Optional[t
 
     :param symbol: The stock symbol (e.g., 'AAPL')
     :param page: The page number for pagination (default: 0)
-    :return: List of dicts with historical social sentiment data, or None if request fails
+    :param condensed: If True, return data as a tuple of tuples. Defaults to True.
+    :return: List of dicts or tuple of tuples with historical social sentiment data,
+             or None if request fails
     """
     path = "historical/social-sentiment"
     query_vars = {"apikey": API_KEY, "symbol": symbol, "page": page}
-    return __return_json_v4(path=path, query_vars=query_vars)
+    result = __return_json_v4(path=path, query_vars=query_vars)
+    return compress_json_to_tuples(result, condensed)
 
-def trending_social_sentiment(sentiment_type: str = "bullish", source: str = "stocktwits") -> typing.Optional[typing.List[typing.Dict]]:
+
+def trending_social_sentiment(
+    sentiment_type: str = "bullish",
+    source: str = "stocktwits",
+    condensed: bool = True
+) -> typing.Union[typing.List[typing.Dict], typing.Tuple[typing.Tuple[str, ...], ...]]:
     """
     Retrieve trending social sentiment data for stocks.
 
@@ -36,13 +50,21 @@ def trending_social_sentiment(sentiment_type: str = "bullish", source: str = "st
                            Options: 'bullish' or 'bearish'
     :param source: Source of sentiment data (default: 'stocktwits')
                    Options: 'stocktwits' or 'twitter'
-    :return: List of dicts with trending social sentiment data, or None if request fails
+    :param condensed: If True, return data as a tuple of tuples. Defaults to True.
+    :return: List of dicts or tuple of tuples with trending social sentiment data,
+             or None if request fails
     """
     path = "social-sentiments/trending"
     query_vars = {"apikey": API_KEY, "type": sentiment_type, "source": source}
-    return __return_json_v4(path=path, query_vars=query_vars)
+    result = __return_json_v4(path=path, query_vars=query_vars)
+    return compress_json_to_tuples(result, condensed)
 
-def social_sentiment_changes(sentiment_type: str = "bullish", source: str = "stocktwits") -> typing.Optional[typing.List[typing.Dict]]:
+
+def social_sentiment_changes(
+    sentiment_type: str = "bullish",
+    source: str = "stocktwits",
+    condensed: bool = True
+) -> typing.Union[typing.List[typing.Dict], typing.Tuple[typing.Tuple[str, ...], ...]]:
     """
     Retrieve changes in social sentiment data over time for various stocks.
 
@@ -55,8 +77,11 @@ def social_sentiment_changes(sentiment_type: str = "bullish", source: str = "sto
                            Options: 'bullish' or 'bearish'
     :param source: Source of sentiment data (default: 'stocktwits')
                    Options: 'stocktwits' or 'twitter'
-    :return: List of dicts with social sentiment changes data, or None if request fails
+    :param condensed: If True, return data as a tuple of tuples. Defaults to True.
+    :return: List of dicts or tuple of tuples with social sentiment changes data,
+             or None if request fails
     """
     path = "social-sentiments/change"
     query_vars = {"apikey": API_KEY, "type": sentiment_type, "source": source}
-    return __return_json_v4(path=path, query_vars=query_vars)
+    result = __return_json_v4(path=path, query_vars=query_vars)
+    return compress_json_to_tuples(result, condensed)

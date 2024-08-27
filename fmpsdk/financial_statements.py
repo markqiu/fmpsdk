@@ -2,6 +2,8 @@ import typing
 import os
 import requests
 import logging
+from bs4 import BeautifulSoup
+
 from .settings import (
     FINANCIAL_STATEMENT_FILENAME,
     INCOME_STATEMENT_FILENAME,
@@ -13,11 +15,17 @@ from .settings import (
     DEFAULT_LIMIT,
     BASE_URL_v3,
 )
-from .url_methods import __return_json_v3, __validate_period
+from .url_methods import (
+    __return_json_v3,
+    __return_json_v4,
+    __validate_industry,
+    __validate_period,
+    __validate_sector,
+)
 from .data_compression import compress_json_to_tuples
 
 API_KEY = os.getenv('FMP_API_KEY')
-
+SEC_USER_AGENT = os.getenv('SEC_USER_AGENT')
 
 def income_statement(
     symbol: str,
@@ -259,3 +267,179 @@ def financial_statement_full_as_reported(
     query_vars = {"apikey": API_KEY, "period": __validate_period(value=period)}
     result = __return_json_v3(path=path, query_vars=query_vars)
     return compress_json_to_tuples(result, condensed)
+
+def earnings_surprises(
+    symbol: str,
+    condensed: bool = True
+) -> typing.Union[typing.List[typing.Dict], typing.Tuple[typing.Tuple[str, ...], ...]]:
+    """
+    Retrieve earnings surprises for a company.
+
+    Provides insights into a company's financial performance vs. market expectations.
+    Useful for identifying earnings beats/misses and analyzing trends that can
+    impact stock prices and investor sentiment.
+
+    :param symbol: Company ticker (e.g., 'AAPL').
+    :param condensed: If True, return compact tuple format. Defaults to True.
+    :return: List of dicts or tuple of tuples with earnings surprises data.
+    :example: earnings_surprises('AAPL')
+    """
+    path = f"earnings-surprises/{symbol}"
+    query_vars = {"apikey": API_KEY}
+    result = __return_json_v3(path=path, query_vars=query_vars)
+    return compress_json_to_tuples(result, condensed)
+
+def earning_call_transcript(
+    symbol: str,
+    year: int,
+    quarter: int,
+    condensed: bool = True
+) -> typing.Union[typing.List[typing.Dict], typing.Tuple[typing.Tuple[str, ...], ...]]:
+    """
+    Retrieve the earning call transcript for a specific quarter and year.
+
+    Provides insights into a company's financial performance and management discussions.
+
+    :param symbol: Company ticker (e.g., 'AAPL').
+    :param year: Year of the transcript (e.g., 2023).
+    :param quarter: Quarter of the transcript (1-4).
+    :param condensed: If True, return compact tuple format. Defaults to True.
+    :return: List of dicts or tuple of tuples with earning call transcript data.
+    :example: earning_call_transcript('AAPL', 2023, 1)
+    """
+    path = f"earning_call_transcript/{symbol}"
+    query_vars = {"apikey": API_KEY, "year": year, "quarter": quarter}
+    result = __return_json_v3(path=path, query_vars=query_vars)
+    return compress_json_to_tuples(result, condensed)
+
+
+def batch_earning_call_transcript(
+    symbol: str,
+    year: int,
+    condensed: bool = True
+) -> typing.Union[typing.List[typing.Dict], typing.Tuple[typing.Tuple[str, ...], ...]]:
+    """
+    Retrieve batch earning call transcripts for a specific year.
+
+    Provides insights into a company's financial performance and management discussions
+    for multiple quarters in a single year.
+
+    :param symbol: Company ticker (e.g., 'AAPL').
+    :param year: Year of the transcripts (e.g., 2023).
+    :param condensed: If True, return compact tuple format. Defaults to True.
+    :return: List of dicts or tuple of tuples with batch earning call transcript data.
+    :example: batch_earning_call_transcript('AAPL', 2023)
+    """
+    path = f"batch_earning_call_transcript/{symbol}"
+    query_vars = {"apikey": API_KEY, "year": year}
+    result = __return_json_v4(path=path, query_vars=query_vars)
+    return compress_json_to_tuples(result, condensed)
+
+
+def earning_call_transcripts_available_dates(
+    symbol: str
+) -> typing.Optional[typing.List[typing.List]]:
+    """
+    Retrieve available dates for earning call transcripts.
+
+    Useful for planning and accessing transcripts for specific quarters and years.
+
+    :param symbol: Company ticker (e.g., 'AAPL').
+    :return: List of lists with available dates for earning call transcripts.
+    :example: earning_call_transcripts_available_dates('AAPL')
+    """
+    path = f"earning_call_transcript"
+    query_vars = {"apikey": API_KEY, "symbol": symbol}
+    return __return_json_v4(path=path, query_vars=query_vars)
+
+
+def sec_filings(
+    symbol: str,
+    filing_type: str = "",
+    limit: int = DEFAULT_LIMIT
+) -> typing.Optional[typing.List[typing.Dict]]:
+    """
+    Retrieve SEC filing links for a specific company.
+
+    This function provides links to various SEC filings such as 10-K, 10-Q, 8-K, etc.,
+    allowing investors to review important financial and operational information.
+
+    :param symbol: The stock symbol of the company (e.g., 'AAPL' for Apple Inc.)
+    :param filing_type: The type of SEC filing (e.g., '10-K', '10-Q', '8-K', etc.).
+                        If empty, returns all types of filings.
+    :param limit: The maximum number of filings to retrieve (default is DEFAULT_LIMIT)
+    :return: A list of dictionaries containing SEC filing data,
+             or None if the request fails
+    :example: sec_filings('AAPL', filing_type='10-K', limit=5)
+    """
+    path = f"sec_filings/{symbol}"
+    query_vars = {
+        "apikey": API_KEY,
+        "type": filing_type,
+        "limit": limit
+    }
+    return __return_json_v3(path=path, query_vars=query_vars)
+
+
+def clean_html_content(soup):
+    """
+    Clean HTML content by removing scripts, styles, and attributes.
+
+    :param soup: BeautifulSoup object containing HTML content.
+    :return: Cleaned text content.
+    """
+    for script in soup(["script", "style"]):
+        script.decompose()
+
+    for tag in soup.recursiveChildGenerator():
+        if hasattr(tag, 'attrs'):
+            tag.attrs = {}
+
+    text = soup.get_text()
+    lines = (line.strip() for line in text.splitlines())
+    chunks = (phrase.strip() for line in lines for phrase in line.split("  "))
+    text = '\n'.join(chunk for chunk in chunks if chunk)
+
+    return text
+
+def sec_filings_data(
+    symbol: str,
+    filing_type: str = "",
+    limit: int = 1,
+    condensed: bool = True
+) -> typing.Union[typing.List[typing.Dict], typing.Tuple[typing.Tuple[str, ...], ...]]:
+    """
+    Retrieve a company's SEC filings and fetch the content from 'finalLink'.
+
+    Provides access to important financial documents and regulatory filings,
+    along with the content of the filings.
+
+    :param symbol: Company ticker (e.g., 'AAPL').
+    :param filing_type: SEC filing type (e.g., '10-K', '10-Q', '8-K'). Default is all types.
+    :param limit: Number of records to retrieve. Default is 1.
+    :param condensed: If True, return compact tuple format. Defaults to True.
+    :return: List of dicts or tuple of tuples with SEC filings data, including the content.
+    :example: sec_filings_data('AAPL', filing_type='10-K', limit=2)
+    Note: This function returns unredacted full text of the filings and 
+    may not be suitable for LLM processing without very long context windows.
+    """
+    filings = sec_filings(symbol, filing_type, limit)
+    
+    if filings is None:
+        return None
+
+    headers = {'User-Agent': SEC_USER_AGENT}
+
+    for filing in filings:
+        final_link = filing.get('finalLink')
+        if final_link:
+            try:
+                response = requests.get(final_link, headers=headers)
+                response.raise_for_status()
+                
+                soup = BeautifulSoup(response.content, 'html.parser')
+                filing['content'] = clean_html_content(soup)
+            except requests.RequestException as e:
+                filing['content'] = f"Error fetching content: {str(e)}"
+
+    return compress_json_to_tuples(filings, condensed)

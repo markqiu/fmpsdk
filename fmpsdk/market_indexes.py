@@ -4,7 +4,6 @@ import os
 
 import requests
 
-from .general import __quotes
 from .settings import (
     DOWJONES_CONSTITUENTS_FILENAME,
     NASDAQ_CONSTITUENTS_FILENAME,
@@ -22,7 +21,7 @@ def indexes(
 ) -> typing.Union[typing.List[typing.Dict], typing.Tuple[typing.Tuple[str, ...], ...]]:
     """
     Query FMP /quotes/index API for major stock market indices.
-
+ 
     Retrieves a list of all major stock market indices, such as the S&P 500, 
     the Dow Jones Industrial Average, and the Nasdaq Composite Index and 
     returns their performance.
@@ -157,21 +156,6 @@ def historical_dowjones_constituent(
     :return: A list of dictionaries or tuple of tuples if condensed.
     """
     path = f"historical/dowjones_constituent"
-    query_vars = {"apikey": API_KEY}
-    result = __return_json_v3(path=path, query_vars=query_vars)
-    return compress_json_to_tuples(result, condensed)
-
-
-def available_indexes(
-    condensed: bool = True
-) -> typing.Union[typing.List[typing.Dict], typing.Tuple[typing.Tuple[str, ...], ...], None]:
-    """
-    Query FMP /symbol/available-indexes/ API
-
-    :param condensed: If True, return data as a tuple of tuples. Defaults to True.
-    :return: A list of dictionaries or tuple of tuples if condensed.
-    """
-    path = f"symbol/available-indexes"
     query_vars = {"apikey": API_KEY}
     result = __return_json_v3(path=path, query_vars=query_vars)
     return compress_json_to_tuples(result, condensed)

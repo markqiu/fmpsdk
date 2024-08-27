@@ -2,6 +2,7 @@ import typing
 import os
 from .settings import DEFAULT_LIMIT
 from .url_methods import __return_json_v3, __return_json_v4, __validate_period
+from .data_compression import compress_json_to_tuples
 
 API_KEY = os.getenv('FMP_API_KEY')
 
@@ -85,3 +86,93 @@ def historical_market_capitalization(symbol: str, limit: int = DEFAULT_LIMIT) ->
     path = f"historical-market-capitalization/{symbol}"
     query_vars = {"apikey": API_KEY, "limit": limit}
     return __return_json_v3(path=path, query_vars=query_vars)
+
+def discounted_cash_flow(
+    symbol: str,
+    condensed: bool = True
+) -> typing.Union[typing.List[typing.Dict], typing.Tuple[typing.Tuple[str, ...], ...]]:
+    """
+    Retrieve the discounted cash flow (DCF) valuation for a company.
+
+    Provides a valuation estimate based on future cash flows and a discount rate.
+
+    :param symbol: Company ticker (e.g., 'AAPL').
+    :param condensed: If True, return compact tuple format. Defaults to True.
+    :return: List of dicts or tuple of tuples with DCF valuation data.
+    :example: discounted_cash_flow('AAPL')
+    """
+    path = f"discounted-cash-flow/{symbol}"
+    query_vars = {"apikey": API_KEY}
+    result = __return_json_v3(path=path, query_vars=query_vars)
+    return compress_json_to_tuples(result, condensed)
+
+
+def advanced_discounted_cash_flow(
+    symbol: str,
+    condensed: bool = True
+) -> typing.Union[typing.List[typing.Dict], typing.Tuple[typing.Tuple[str, ...], ...]]:
+    """
+    Retrieve advanced DCF valuation data for a company.
+
+    Provides a more comprehensive valuation estimate based on various factors.
+
+    :param symbol: Company ticker (e.g., 'AAPL').
+    :param condensed: If True, return compact tuple format. Defaults to True.
+    :return: List of dicts or tuple of tuples with advanced DCF valuation data.
+    :example: advanced_discounted_cash_flow('AAPL')
+    """
+    path = f"advanced_discounted_cash_flow"
+    query_vars = {"apikey": API_KEY, "symbol": symbol}
+    result = __return_json_v4(path=path, query_vars=query_vars)
+    return compress_json_to_tuples(result, condensed)
+
+
+def historical_discounted_cash_flow(
+    symbol: str,
+    period: str = "annual",
+    limit: int = DEFAULT_LIMIT,
+    condensed: bool = True
+) -> typing.Union[typing.List[typing.Dict], typing.Tuple[typing.Tuple[str, ...], ...]]:
+    """
+    Retrieve historical DCF valuation data for a company.
+
+    Provides insights into a company's past DCF valuations and trends.
+
+    :param symbol: Company ticker (e.g., 'AAPL').
+    :param period: Reporting period ('annual' or 'quarter'). Default is 'annual'.
+    :param limit: Number of records to retrieve. Default is DEFAULT_LIMIT.
+    :param condensed: If True, return compact tuple format. Defaults to True.
+    :return: List of dicts or tuple of tuples with historical DCF valuation data.
+    :example: historical_discounted_cash_flow('AAPL', period='quarter', limit=5)
+    """
+    path = f"historical-discounted-cash-flow/{symbol}"
+    query_vars = {
+        "apikey": API_KEY,
+        "limit": limit,
+        "period": __validate_period(value=period),
+    }
+    result = __return_json_v3(path=path, query_vars=query_vars)
+    return compress_json_to_tuples(result, condensed)
+
+
+def historical_daily_discounted_cash_flow(
+    symbol: str,
+    limit: int = DEFAULT_LIMIT,
+    condensed: bool = True
+) -> typing.Union[typing.List[typing.Dict], typing.Tuple[typing.Tuple[str, ...], ...]]:
+    """
+    Retrieve daily historical DCF valuation data for a company.
+
+    Provides insights into a company's daily DCF valuations and trends.
+
+    :param symbol: Company ticker (e.g., 'AAPL').
+    :param limit: Number of records to retrieve. Default is DEFAULT_LIMIT.
+    :param condensed: If True, return compact tuple format. Defaults to True.
+    :return: List of dicts or tuple of tuples with daily historical DCF data.
+    :example: historical_daily_discounted_cash_flow('AAPL', limit=5)
+    """
+    path = f"historical-daily-discounted-cash-flow/{symbol}"
+    query_vars = {"apikey": API_KEY, "limit": limit}
+    result = __return_json_v3(path=path, query_vars=query_vars)
+    return compress_json_to_tuples(result, condensed)
+
