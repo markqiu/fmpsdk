@@ -1,4 +1,5 @@
 import typing
+from decimal import Decimal, ROUND_HALF_UP
 
 def compress_json_to_tuples(
     result: typing.List[typing.Dict],
@@ -30,3 +31,41 @@ def compress_json_to_tuples(
             return ((),)  # Return an empty tuple of tuples if result is empty
     else:
         return result
+
+def apply_precision(
+    data: typing.Union[typing.List[typing.Dict], typing.Dict],
+    precision: typing.Optional[int]
+) -> typing.Union[typing.List[typing.Dict], typing.Dict]:
+    """
+    Apply precision rounding to numeric values in a dictionary or list of dictionaries.
+    Maintains original precision if less than specified precision.
+
+    :param data: Input data (dictionary or list of dictionaries)
+    :param precision: Maximum number of decimal places to round to, or None for full precision
+    :return: Data with numeric values rounded to specified precision or original precision
+    """
+    if precision is None:
+        return data
+
+    def round_value(value):
+        if isinstance(value, (int, float)):
+            # Convert to string to check original decimal places
+            str_value = str(value)
+            decimal_places = len(str_value.split('.')[-1]) if '.' in str_value else 0
+            
+            # Use the minimum of original decimal places and specified precision
+            actual_precision = min(decimal_places, precision)
+            
+            if actual_precision > 0:
+                return str(Decimal(str_value).quantize(Decimal(f'1.{"0" * actual_precision}'), 
+                                                       rounding=ROUND_HALF_UP))
+            else:
+                return str(int(value))  # Return as integer if no decimal places
+        return value
+
+    if isinstance(data, list):
+        return [apply_precision(item, precision) for item in data]
+    elif isinstance(data, dict):
+        return {key: round_value(value) for key, value in data.items()}
+    else:
+        return data

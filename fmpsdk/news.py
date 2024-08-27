@@ -10,9 +10,7 @@ API_KEY = os.getenv('FMP_API_KEY')
 def fmp_articles(
     page: int = 0,
     size: int = 5,
-    condensed: bool = True
-) -> typing.Union[typing.List[typing.Dict], 
-                  typing.Tuple[typing.Tuple[str, ...], ...]]:
+) -> typing.List[typing.Dict]:
     """
     Retrieve the latest articles from Financial Modeling Prep.
 
@@ -21,14 +19,12 @@ def fmp_articles(
 
     :param page: Page number for pagination (default: 0).
     :param size: Number of articles per page (default: 5).
-    :param condensed: If True, return compact tuple format. Defaults to True.
     :return: List of dicts or tuple of tuples with article data.
     :example: fmp_articles(page=1, size=5)
     """
     path = "fmp/articles"
     query_vars = {"apikey": API_KEY, "page": page, "size": size}
-    result = __return_json_v3(path=path, query_vars=query_vars)
-    return compress_json_to_tuples(result, condensed)
+    return __return_json_v3(path=path, query_vars=query_vars)
 
 
 def general_news(

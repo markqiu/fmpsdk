@@ -142,17 +142,14 @@ def is_market_open(
 
 
 def tsx_list(
-    condensed: bool = True
 ) -> typing.Union[typing.List[typing.Dict], typing.Tuple[typing.Tuple[str, ...], ...]]:
     """
     Query FMP /quotes/tsx/ API
 
-    :param condensed: If True, return compact tuple format. Defaults to True.
     :return: List of TSX stocks data.
     """
     path = f"tsx"
-    result = __quotes(apikey=API_KEY, value=path)
-    return compress_json_to_tuples(result, condensed)
+    return __quotes(value=path)
 
 
 def forex(
@@ -318,7 +315,7 @@ def forex_historical(
     from_date: str,
     to_date: str,
     condensed: bool = True
-) -> typing.Union[typing.List[typing.Dict], typing.Tuple[typing.Tuple[str, ...], ...]]:
+) -> typing.List[typing.Dict]:
     """
     Get historical daily price data for a specific forex currency pair.
 
@@ -329,11 +326,9 @@ def forex_historical(
     :param symbol: Currency pair symbol (e.g., 'EURUSD').
     :param from_date: Start date in 'YYYY-MM-DD' format.
     :param to_date: End date in 'YYYY-MM-DD' format.
-    :param condensed: If True, return compact tuple format. Defaults to True.
     :return: Historical forex data for the specified currency pair.
     :example: forex_historical('EURUSD', '2023-01-01', '2023-12-31')
     """
     path = f"historical-price-full/{symbol}"
     query_vars = {"apikey": API_KEY, "from": from_date, "to": to_date}
-    result = __return_json_v3(path=path, query_vars=query_vars)
-    return compress_json_to_tuples(result, condensed)
+    return __return_json_v3(path=path, query_vars=query_vars)

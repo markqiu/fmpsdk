@@ -100,7 +100,10 @@ from .financial_statements import (
     sec_filings_data,
 )
 from .insider_trading import (
-    insider_trading, insider_trading_rss_feed
+    insider_trading, 
+    insider_trading_rss_feed,
+    mapper_cik_name,
+    mapper_cik_company
 )
 from .institutional_fund import (
     cik,
@@ -199,7 +202,6 @@ from .valuation_metrics import (
     historical_market_capitalization,
     discounted_cash_flow,
     advanced_discounted_cash_flow,
-    historical_discounted_cash_flow,
     historical_daily_discounted_cash_flow,
 )
 

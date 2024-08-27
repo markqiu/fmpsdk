@@ -127,34 +127,6 @@ def advanced_discounted_cash_flow(
     return compress_json_to_tuples(result, condensed)
 
 
-def historical_discounted_cash_flow(
-    symbol: str,
-    period: str = "annual",
-    limit: int = DEFAULT_LIMIT,
-    condensed: bool = True
-) -> typing.Union[typing.List[typing.Dict], typing.Tuple[typing.Tuple[str, ...], ...]]:
-    """
-    Retrieve historical DCF valuation data for a company.
-
-    Provides insights into a company's past DCF valuations and trends.
-
-    :param symbol: Company ticker (e.g., 'AAPL').
-    :param period: Reporting period ('annual' or 'quarter'). Default is 'annual'.
-    :param limit: Number of records to retrieve. Default is DEFAULT_LIMIT.
-    :param condensed: If True, return compact tuple format. Defaults to True.
-    :return: List of dicts or tuple of tuples with historical DCF valuation data.
-    :example: historical_discounted_cash_flow('AAPL', period='quarter', limit=5)
-    """
-    path = f"historical-discounted-cash-flow/{symbol}"
-    query_vars = {
-        "apikey": API_KEY,
-        "limit": limit,
-        "period": __validate_period(value=period),
-    }
-    result = __return_json_v3(path=path, query_vars=query_vars)
-    return compress_json_to_tuples(result, condensed)
-
-
 def historical_daily_discounted_cash_flow(
     symbol: str,
     limit: int = DEFAULT_LIMIT,

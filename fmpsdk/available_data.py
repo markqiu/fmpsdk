@@ -63,91 +63,75 @@ def etf_list(
 
 
 def available_traded_list(
-    condensed: bool = True
-) -> typing.Union[typing.List[typing.Dict], typing.Tuple[typing.Tuple[str, ...], ...]]:
+) -> typing.List[str]:
     """
     Retrieve a list of all available tradable symbols.
 
     Useful for exploring and analyzing a wide range of tradable securities.
 
-    :param condensed: If True, return compact tuple format. Defaults to True.
     :return: List of dicts or tuple of tuples with tradable symbols data.
     :example: available_traded_list()
     """
     path = "available-traded/list"
     query_vars = {"apikey": API_KEY}
-    result = __return_json_v3(path=path, query_vars=query_vars)
-    return compress_json_to_tuples(result, condensed)
+    return __return_json_v3(path=path, query_vars=query_vars)
 
 
 def delisted_companies(
     limit: int = DEFAULT_LIMIT,
-    condensed: bool = True
-) -> typing.Union[typing.List[typing.Dict], typing.Tuple[typing.Tuple[str, ...], ...]]:
+) -> typing.List[str]:
     """
     Retrieve a list of delisted companies.
 
     Useful for tracking and analyzing companies that have been delisted from exchanges.
 
     :param limit: Number of records to retrieve. Default is DEFAULT_LIMIT.
-    :param condensed: If True, return compact tuple format. Defaults to True.
     :return: List of dicts or tuple of tuples with delisted companies data.
     :example: delisted_companies(limit=10)
     """
     path = "delisted-companies"
     query_vars = {"apikey": API_KEY, "limit": limit}
-    result = __return_json_v3(path=path, query_vars=query_vars)
-    return compress_json_to_tuples(result, condensed)
+    return __return_json_v3(path=path, query_vars=query_vars)
 
 
 def available_mutual_funds(
-    condensed: bool = True
-) -> typing.Union[typing.List[typing.Dict], typing.Tuple[typing.Tuple[str, ...], ...]]:
+) -> typing.List[str]:
     """
     Query FMP /symbol/available-mutual-funds/ API
 
-    :param condensed: If True, return compact tuple format. Defaults to True.
     :return: List of dicts or tuple of tuples with available mutual funds data.
     """
     path = f"symbol/available-mutual-funds"
     query_vars = {"apikey": API_KEY}
-    result = __return_json_v3(path=path, query_vars=query_vars)
-    return compress_json_to_tuples(result, condensed)
+    return __return_json_v3(path=path, query_vars=query_vars)
 
 
 def available_tsx(
-    condensed: bool = True
-) -> typing.Union[typing.List[typing.Dict], typing.Tuple[typing.Tuple[str, ...], ...]]:
+) -> typing.List[str]:
     """
     Query FMP /symbol/available-tsx/ API
 
-    :param condensed: If True, return compact tuple format. Defaults to True.
     :return: List of dicts or tuple of tuples with available TSX symbols data.
     """
     path = f"symbol/available-tsx"
     query_vars = {"apikey": API_KEY}
-    result = __return_json_v3(path=path, query_vars=query_vars)
-    return compress_json_to_tuples(result, condensed)
+    return __return_json_v3(path=path, query_vars=query_vars)
 
 
 def available_forex(
-    condensed: bool = True
-) -> typing.Union[typing.List[typing.Dict], typing.Tuple[typing.Tuple[str, ...], ...]]:
+) -> typing.List[str]:
     """
     Get a list of all available forex currency pairs.
 
     Retrieves a comprehensive list of all currency pairs traded on the
     forex market. Useful for identifying available trading options.
 
-    :param condensed: If True, return compact tuple format. Defaults to True.
     :return: List of dicts or tuple of tuples with available forex pairs data.
     :example: available_forex()
     """
     path = "symbol/available-forex-currency-pairs"
     query_vars = {"apikey": API_KEY}
-    result = __return_json_v3(path=path, query_vars=query_vars)
-    return compress_json_to_tuples(result, condensed)
-
+    return __return_json_v3(path=path, query_vars=query_vars)
 
 def cryptocurrencies_list(
     condensed: bool = True
@@ -167,59 +151,50 @@ def cryptocurrencies_list(
 
 
 def all_countries(
-    condensed: bool = True
-) -> typing.Union[typing.List[str], typing.Tuple[typing.Tuple[str, ...], ...]]:
+) -> typing.List[str]:
     """
     Retrieve a list of all available countries.
 
     Useful for exploring and analyzing data from various countries.
 
-    :param condensed: If True, return compact tuple format. Defaults to True.
     :return: List of country names or tuple of tuples with country names.
     :example: all_countries()
     """
     path = "get-all-countries"
     query_vars = {"apikey": API_KEY}
-    result = __return_json_v3(path=path, query_vars=query_vars)
-    return compress_json_to_tuples(result, condensed)
+    return __return_json_v3(path=path, query_vars=query_vars)
 
 
 def available_etfs(
-    condensed: bool = True
-) -> typing.Union[typing.List[typing.Dict], typing.Tuple[typing.Tuple[str, ...], ...]]:
+) -> typing.List[str]:
     """
     Query FMP /symbol/available-etfs/ API.
 
-    :param condensed: If True, return compact tuple format. Defaults to True.
     :return: List of dicts or tuple of tuples containing available ETFs.
     :example: available_etfs()
     :endpoint: https://financialmodelingprep.com/api/v3/symbol/available-etfs
     """
     path = f"symbol/available-etfs"
     query_vars = {"apikey": API_KEY}
-    result = __return_json_v3(path=path, query_vars=query_vars)
-    return compress_json_to_tuples(result, condensed)
+    return __return_json_v3(path=path, query_vars=query_vars)
 
 
 def available_commodities(
-    condensed: bool = True
-) -> typing.Union[typing.List[typing.Dict], typing.Tuple[typing.Tuple[str, ...], ...]]:
+) -> typing.List[str]:
     """
     Query FMP /symbol/available-commodities API
 
-    :param condensed: If True, return compact tuple format. Defaults to True.
     :return: List of dicts or tuple of tuples containing available commodities.
     :example: available_commodities()
     """
     path = "symbol/available-commodities"
     query_vars = {"apikey": API_KEY}
-    result = __return_json_v3(path=path, query_vars=query_vars)
-    return compress_json_to_tuples(result, condensed)
+    return __return_json_v3(path=path, query_vars=query_vars)
+
 
 
 def available_sectors(
-    condensed: bool = True
-) -> typing.Union[typing.List[str], typing.Tuple[typing.Tuple[str, ...], ...]]:
+) -> typing.List[str]:
     """
     Retrieve a list of available sectors.
 
@@ -231,44 +206,37 @@ def available_sectors(
     """
     path = "sectors-list"
     query_vars = {"apikey": API_KEY}
-    result = __return_json_v3(path=path, query_vars=query_vars)
-    return compress_json_to_tuples(result, condensed)
+    return __return_json_v3(path=path, query_vars=query_vars)
 
 
 def available_industries(
-    condensed: bool = True
-) -> typing.Union[typing.List[str], typing.Tuple[typing.Tuple[str, ...], ...]]:
+) -> typing.List[str]:
     """
     Retrieve a list of available industries.
 
     Useful for exploring and analyzing data across various industries.
 
-    :param condensed: If True, return compact tuple format. Defaults to True.
     :return: List of industry names or tuple of tuples with industry names.
     :example: available_industries()
     """
     path = "industries-list"
     query_vars = {"apikey": API_KEY}
-    result = __return_json_v3(path=path, query_vars=query_vars)
-    return compress_json_to_tuples(result, condensed)
+    return __return_json_v3(path=path, query_vars=query_vars)
 
 
 def available_exchanges(
-    condensed: bool = True
-) -> typing.Union[typing.List[str], typing.Tuple[typing.Tuple[str, ...], ...]]:
+) -> typing.List[str]:
     """
     Retrieve a list of available exchanges.
 
     Useful for exploring and analyzing data from various exchanges.
 
-    :param condensed: If True, return compact tuple format. Defaults to True.
     :return: List of exchange names or tuple of tuples with exchange names.
     :example: available_exchanges()
     """
     path = "exchanges-list"
     query_vars = {"apikey": API_KEY}
-    result = __return_json_v3(path=path, query_vars=query_vars)
-    return compress_json_to_tuples(result, condensed)
+    return __return_json_v3(path=path, query_vars=query_vars)
 
 
 def available_cryptocurrencies(

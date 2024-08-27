@@ -1,8 +1,6 @@
 import logging
 import typing
 import os
-import requests
-from bs4 import BeautifulSoup
 
 from .settings import DEFAULT_LIMIT
 from .url_methods import (
@@ -12,7 +10,7 @@ from .url_methods import (
     __validate_period,
     __validate_sector,
 )
-from .data_compression import compress_json_to_tuples
+from .data_compression import compress_json_to_tuples, apply_precision
 
 API_KEY = os.getenv('FMP_API_KEY')
 
@@ -113,7 +111,8 @@ def enterprise_values(
 def key_metrics_ttm(
     symbol: str,
     limit: int = DEFAULT_LIMIT,
-    condensed: bool = True
+    condensed: bool = True,
+    precision: typing.Optional[int] = 5
 ) -> typing.Union[typing.List[typing.Dict], typing.Tuple[typing.Tuple[str, ...], ...]]:
     """
     Retrieve trailing twelve months (TTM) key metrics for a company.
@@ -123,12 +122,15 @@ def key_metrics_ttm(
     :param symbol: Company ticker (e.g., 'AAPL').
     :param limit: Number of records to retrieve. Default is DEFAULT_LIMIT.
     :param condensed: If True, return compact tuple format. Defaults to True.
+    :param precision: Decimal places for rounding. None for full precision. Default is 5.
     :return: List of dicts or tuple of tuples with TTM key metrics data.
-    :example: key_metrics_ttm('AAPL', limit=5)
+    :example: key_metrics_ttm('AAPL', limit=5, precision=3)
     """
     path = f"key-metrics-ttm/{symbol}"
     query_vars = {"apikey": API_KEY, "limit": limit}
     result = __return_json_v3(path=path, query_vars=query_vars)
+    if result:
+        result = apply_precision(result, precision)
     return compress_json_to_tuples(result, condensed)
 
 
@@ -136,7 +138,8 @@ def key_metrics(
     symbol: str,
     period: str = "annual",
     limit: int = DEFAULT_LIMIT,
-    condensed: bool = True
+    condensed: bool = True,
+    precision: typing.Optional[int] = 5
 ) -> typing.Union[typing.List[typing.Dict], typing.Tuple[typing.Tuple[str, ...], ...]]:
     """
     Retrieve key financial metrics for a company's performance assessment.
@@ -148,8 +151,9 @@ def key_metrics(
     :param period: Reporting period ('annual' or 'quarter'). Default is 'annual'.
     :param limit: Number of records to retrieve. Default is DEFAULT_LIMIT.
     :param condensed: If True, return compact tuple format. Defaults to True.
+    :param precision: Decimal places for rounding. None for full precision. Default is 5.
     :return: List of dicts or tuple of tuples with key financial metrics.
-    :example: key_metrics('AAPL', period='quarter', limit=5)
+    :example: key_metrics('AAPL', period='quarter', limit=5, precision=3)
     """
     path = f"key-metrics/{symbol}"
     query_vars = {
@@ -158,6 +162,8 @@ def key_metrics(
         "limit": limit,
     }
     result = __return_json_v3(path=path, query_vars=query_vars)
+    if result:
+        result = apply_precision(result, precision)
     return compress_json_to_tuples(result, condensed)
 
 
