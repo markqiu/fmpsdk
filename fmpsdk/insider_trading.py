@@ -4,7 +4,7 @@ import os
 
 from .settings import DEFAULT_LIMIT
 from .url_methods import __return_json_v4
-from .data_compression import compress_json_to_tuples
+from .data_compression import compress_json_to_tsv
 
 API_KEY = os.getenv('FMP_API_KEY')
 
@@ -14,9 +14,8 @@ def insider_trading(
     reporting_cik: int = None,
     company_cik: int = None,
     limit: int = DEFAULT_LIMIT,
-    condensed: bool = True
-) -> typing.Union[typing.List[typing.Dict], 
-                  typing.Tuple[typing.Tuple[str, ...], ...]]:
+    tsv: bool = True
+) -> typing.Union[typing.List[typing.Dict], str]:
     """
     Retrieve insider trading data for a company or individual.
 
@@ -28,8 +27,8 @@ def insider_trading(
     :param reporting_cik: CIK of the reporting insider.
     :param company_cik: CIK of the company.
     :param limit: Number of records to return. Default is DEFAULT_LIMIT.
-    :param condensed: If True, return data as tuple of tuples. Defaults to True.
-    :return: List of dicts or tuple of tuples with insider trading data.
+    :param tsv: If True, return data in TSV format. Defaults to True.
+    :return: List of dicts or TSV string with insider trading data.
     :note: Provide only one of symbol, reporting_cik, or company_cik.
     :example: insider_trading(symbol='AAPL', limit=10)
     """
@@ -46,54 +45,53 @@ def insider_trading(
     if symbol:
         query_vars["symbol"] = symbol
     result = __return_json_v4(path=path, query_vars=query_vars)
-    return compress_json_to_tuples(result, condensed)
+    return compress_json_to_tsv(result) if tsv else result
 
 
 def mapper_cik_name(
     name: str,
-    condensed: bool = True
-) -> typing.Union[typing.List[typing.Dict], typing.Tuple[typing.Tuple[str, ...], ...]]:
+    tsv: bool = True
+) -> typing.Union[typing.List[typing.Dict], str]:
     """
     Query FMP /mapper-cik-name/ API.
 
     List with names and their CIK
 
     :param name: String of name.
-    :param condensed: If True, return data as tuple of tuples. Defaults to True.
-    :return: List of dicts or tuple of tuples with CIK mapping data.
+    :param tsv: If True, return data in TSV format. Defaults to True.
+    :return: List of dicts or TSV string with CIK mapping data.
     """
     path = f"mapper-cik-name/"
     query_vars = {"apikey": API_KEY}
     if name:
         query_vars["name"] = name
     result = __return_json_v4(path=path, query_vars=query_vars)
-    return compress_json_to_tuples(result, condensed)
+    return compress_json_to_tsv(result) if tsv else result
 
 
 def mapper_cik_company(
     ticker: str,
-    condensed: bool = True
-) -> typing.Union[typing.List[typing.Dict], typing.Tuple[typing.Tuple[str, ...], ...]]:
+    tsv: bool = True
+) -> typing.Union[typing.List[typing.Dict], str]:
     """
     Query FMP /mapper-cik-company/ API.
 
     Company CIK mapper
 
     :param ticker: String of name.
-    :param condensed: If True, return data as tuple of tuples. Defaults to True.
-    :return: List of dicts or tuple of tuples with company CIK mapping data.
+    :param tsv: If True, return data in TSV format. Defaults to True.
+    :return: List of dicts or TSV string with company CIK mapping data.
     """
     path = f"mapper-cik-company/{ticker}"
     query_vars = {"apikey": API_KEY}
     result = __return_json_v4(path=path, query_vars=query_vars)
-    return compress_json_to_tuples(result, condensed)
+    return compress_json_to_tsv(result) if tsv else result
 
 
 def insider_trading_rss_feed(
     limit: int = DEFAULT_LIMIT,
-    condensed: bool = True
-) -> typing.Union[typing.List[typing.Dict], 
-                  typing.Tuple[typing.Tuple[str, ...], ...]]:
+    tsv: bool = True
+) -> typing.Union[typing.List[typing.Dict], str]:
     """
     Retrieve real-time RSS feed of insider trades.
 
@@ -103,11 +101,11 @@ def insider_trading_rss_feed(
     potential investment opportunities based on insider behavior.
 
     :param limit: Number of records to return. Default is DEFAULT_LIMIT.
-    :param condensed: If True, return data as tuple of tuples. Defaults to True.
-    :return: List of dicts or tuple of tuples with insider trading RSS feed data.
+    :param tsv: If True, return data in TSV format. Defaults to True.
+    :return: List of dicts or TSV string with insider trading RSS feed data.
     :example: insider_trading_rss_feed(limit=20)
     """
     path = f"insider-trading-rss-feed"
     query_vars = {"apikey": API_KEY, "limit": limit}
     result = __return_json_v4(path=path, query_vars=query_vars)
-    return compress_json_to_tuples(result, condensed)
+    return compress_json_to_tsv(result) if tsv else result

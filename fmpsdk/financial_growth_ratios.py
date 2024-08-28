@@ -3,17 +3,16 @@ import os
 from decimal import Decimal, ROUND_HALF_UP
 from .settings import DEFAULT_LIMIT
 from .url_methods import __return_json_v3, __validate_period
-from .data_compression import compress_json_to_tuples, apply_precision
+from .data_compression import compress_json_to_tsv, apply_precision
 
 API_KEY = os.getenv('FMP_API_KEY')
-
 
 def income_statement_growth(
     symbol: str,
     limit: int = DEFAULT_LIMIT,
-    condensed: bool = True,
+    tsv: bool = True,
     precision: typing.Optional[int] = 5
-) -> typing.Union[typing.List[typing.Dict], typing.Tuple[typing.Tuple[str, ...], ...]]:
+) -> typing.Union[typing.List[typing.Dict], str]:
     """
     Retrieve income statement growth metrics for a company.
 
@@ -22,7 +21,7 @@ def income_statement_growth(
 
     :param symbol: Company ticker (e.g., 'AAPL').
     :param limit: Number of records to retrieve. Default is DEFAULT_LIMIT.
-    :param condensed: If True, return compact tuple format. Defaults to True.
+    :param tsv: If True, return data in TSV format. Defaults to True.
     :param precision: Decimal places for rounding. None for full precision.
     :return: Income statement growth data or None if request fails.
     :example: income_statement_growth('AAPL', limit=5, precision=3)
@@ -34,15 +33,15 @@ def income_statement_growth(
     if result:
         result = apply_precision(result, precision)
     
-    return compress_json_to_tuples(result, condensed)
-
+    fields = tuple(result[0].keys()) if result else None
+    return compress_json_to_tsv(result, fields) if tsv else result
 
 def balance_sheet_statement_growth(
     symbol: str,
     limit: int = DEFAULT_LIMIT,
-    condensed: bool = True,
+    tsv: bool = True,
     precision: typing.Optional[int] = 5
-) -> typing.Union[typing.List[typing.Dict], typing.Tuple[typing.Tuple[str, ...], ...]]:
+) -> typing.Union[typing.List[typing.Dict], str]:
     """
     Retrieve balance sheet statement growth metrics for a company.
 
@@ -51,7 +50,7 @@ def balance_sheet_statement_growth(
 
     :param symbol: Company ticker (e.g., 'AAPL').
     :param limit: Number of records to retrieve. Default is DEFAULT_LIMIT.
-    :param condensed: If True, return compact tuple format. Defaults to True.
+    :param tsv: If True, return data in TSV format. Defaults to True.
     :param precision: Decimal places for rounding. None for full precision.
     :return: Balance sheet growth data or None if request fails.
     :example: balance_sheet_statement_growth('AAPL', limit=5, precision=3)
@@ -63,15 +62,15 @@ def balance_sheet_statement_growth(
     if result:
         result = apply_precision(result, precision)
     
-    return compress_json_to_tuples(result, condensed)
-
+    fields = tuple(result[0].keys()) if result else None
+    return compress_json_to_tsv(result, fields) if tsv else result
 
 def cash_flow_statement_growth(
     symbol: str,
     limit: int = DEFAULT_LIMIT,
-    condensed: bool = True,
+    tsv: bool = True,
     precision: typing.Optional[int] = 5
-) -> typing.Union[typing.List[typing.Dict], typing.Tuple[typing.Tuple[str, ...], ...]]:
+) -> typing.Union[typing.List[typing.Dict], str]:
     """
     Retrieve cash flow statement growth metrics for a company.
 
@@ -80,7 +79,7 @@ def cash_flow_statement_growth(
 
     :param symbol: Company ticker (e.g., 'AAPL').
     :param limit: Number of records to retrieve. Default is DEFAULT_LIMIT.
-    :param condensed: If True, return compact tuple format. Defaults to True.
+    :param tsv: If True, return data in TSV format. Defaults to True.
     :param precision: Decimal places for rounding. None for full precision.
     :return: Cash flow statement growth data or None if request fails.
     :example: cash_flow_statement_growth('AAPL', limit=5, precision=3)
@@ -92,14 +91,14 @@ def cash_flow_statement_growth(
     if result:
         result = apply_precision(result, precision)
     
-    return compress_json_to_tuples(result, condensed)
-
+    fields = tuple(result[0].keys()) if result else None
+    return compress_json_to_tsv(result, fields) if tsv else result
 
 def financial_ratios_ttm(
     symbol: str,
-    condensed: bool = True,
+    tsv: bool = True,
     precision: typing.Optional[int] = 5
-) -> typing.Union[typing.List[typing.Dict], typing.Tuple[typing.Tuple[str, ...], ...]]:
+) -> typing.Union[typing.List[typing.Dict], str]:
     """
     Retrieve trailing twelve months (TTM) financial ratios for a company.
 
@@ -107,7 +106,7 @@ def financial_ratios_ttm(
     for comparing with industry averages and identifying areas for improvement.
 
     :param symbol: Company ticker (e.g., 'AAPL').
-    :param condensed: If True, return compact tuple format. Defaults to True.
+    :param tsv: If True, return data in TSV format. Defaults to True.
     :param precision: Decimal places for rounding. None for full precision.
     :return: TTM financial ratios data or None if request fails.
     :example: financial_ratios_ttm('AAPL', precision=3)
@@ -119,16 +118,16 @@ def financial_ratios_ttm(
     if result:
         result = apply_precision(result, precision)
     
-    return compress_json_to_tuples(result, condensed)
-
+    fields = tuple(result[0].keys()) if result else None
+    return compress_json_to_tsv(result, fields) if tsv else result
 
 def financial_ratios(
     symbol: str,
     period: str = "annual",
     limit: int = DEFAULT_LIMIT,
-    condensed: bool = True,
+    tsv: bool = True,
     precision: typing.Optional[int] = 5
-) -> typing.Union[typing.List[typing.Dict], typing.Tuple[typing.Tuple[str, ...], ...]]:
+) -> typing.Union[typing.List[typing.Dict], str]:
     """
     Retrieve financial ratios for a company.
 
@@ -139,11 +138,10 @@ def financial_ratios(
     :param symbol: Company ticker (e.g., 'AAPL' for Apple Inc.)
     :param period: The period of the data. Can be 'annual' or 'quarter' (default is 'annual')
     :param limit: The number of results to return (default is DEFAULT_LIMIT)
-    :param condensed: If True, return data as a tuple of tuples. Defaults to True.
+    :param tsv: If True, return data in TSV format. Defaults to True.
     :param precision: The number of decimal places to round numeric values to (default is 5).
                       If None, returns full precision.
-    :return: A list of dictionaries or tuple of tuples containing financial ratios data,
-             or None if the request fails
+    :return: Financial ratios data or None if request fails.
     :example: financial_ratios('AAPL', period='quarter', limit=4, precision=5)
     """
     path = f"ratios/{symbol}"
@@ -157,16 +155,16 @@ def financial_ratios(
     if result:
         result = apply_precision(result, precision)
     
-    return compress_json_to_tuples(result, condensed)
-
+    fields = tuple(result[0].keys()) if result else None
+    return compress_json_to_tsv(result, fields) if tsv else result
 
 def financial_growth(
     symbol: str,
     period: str = "annual",
     limit: int = DEFAULT_LIMIT,
-    condensed: bool = True,
+    tsv: bool = True,
     precision: typing.Optional[int] = 5
-) -> typing.Union[typing.List[typing.Dict], typing.Tuple[typing.Tuple[str, ...], ...]]:
+) -> typing.Union[typing.List[typing.Dict], str]:
     """
     Retrieve financial growth metrics for a company.
 
@@ -177,7 +175,7 @@ def financial_growth(
     :param symbol: Company ticker (e.g., 'AAPL').
     :param period: Reporting period ('annual' or 'quarter'). Default is 'annual'.
     :param limit: Number of records to retrieve. Default is DEFAULT_LIMIT.
-    :param condensed: If True, return compact tuple format. Defaults to True.
+    :param tsv: If True, return data in TSV format. Defaults to True.
     :param precision: Decimal places for rounding. None for full precision.
     :return: Financial growth data or None if request fails.
     :example: financial_growth('AAPL', period='quarter', limit=5, precision=3)
@@ -193,4 +191,5 @@ def financial_growth(
     if result:
         result = apply_precision(result, precision)
     
-    return compress_json_to_tuples(result, condensed)
+    fields = tuple(result[0].keys()) if result else None
+    return compress_json_to_tsv(result, fields) if tsv else result

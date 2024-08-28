@@ -19,6 +19,7 @@ from .available_data import (
     available_etfs,
     available_euronext,
     available_mutual_funds,
+    cryptocurrencies_list
 )
 
 from .alternative_data import (

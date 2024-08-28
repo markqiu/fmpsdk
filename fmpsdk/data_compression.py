@@ -1,5 +1,9 @@
 import typing
 from decimal import Decimal, ROUND_HALF_UP
+import csv
+import io
+import json
+from typing import List, Dict, Any, Tuple
 
 def compress_json_to_tuples(
     result: typing.List[typing.Dict],
@@ -69,3 +73,44 @@ def apply_precision(
         return {key: round_value(value) for key, value in data.items()}
     else:
         return data
+
+def compress_json_to_tsv(json_data: List[Dict[str, Any]], 
+                         fields: Tuple[str, ...] = None) -> str:
+    """
+    Compress JSON data into TSV format for efficient LLM consumption.
+    
+    Args:
+    json_data (List[Dict[str, Any]]): List of dictionaries containing the data.
+    fields (Tuple[str, ...]): Tuple of field names to include in the output. If None, all fields are included.
+    
+    Returns:
+    str: TSV formatted string of the compressed data.
+    """
+    if not json_data:
+        return ""
+
+    # Use specified fields if provided, otherwise use all keys from the first dictionary
+    fieldnames = fields if fields else list(json_data[0].keys())
+
+    # Create a StringIO object to write TSV data
+    output = io.StringIO()
+    writer = csv.DictWriter(output, fieldnames=fieldnames, 
+                            delimiter='\t', extrasaction='ignore', 
+                            lineterminator='\n')
+
+    # Write the header
+    writer.writeheader()
+
+    # Write the rows
+    for row in json_data:
+        writer.writerow({field: row.get(field, '') for field in fieldnames})
+
+    # Get the TSV string and remove any trailing newline
+    tsv_string = output.getvalue().rstrip('\n')
+    
+    return tsv_string
+
+# Example usage:
+# json_data = [{'date': '2025-07-30', 'eps': None, ...}, ...]
+# csv_output = compress_json_to_csv(json_data)
+# print(csv_output)

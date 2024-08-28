@@ -3,12 +3,11 @@ import os
 from .settings import DEFAULT_LIMIT
 from .url_methods import __return_json_v3, __return_json_v4
 from datetime import date
-from .data_compression import compress_json_to_tuples
+from .data_compression import compress_json_to_tsv
 
 API_KEY = os.getenv('FMP_API_KEY')
 
-def actives(condensed: bool = True) -> typing.Union[typing.List[typing.Dict], 
-                                                    typing.Tuple[typing.Tuple[str, ...], ...]]:
+def actives(tsv: bool = True) -> typing.Union[typing.List[typing.Dict], str]:
     """
     Retrieve a list of the most actively traded stocks on a given day.
 
@@ -16,8 +15,8 @@ def actives(condensed: bool = True) -> typing.Union[typing.List[typing.Dict],
     indicating high market interest or significant news events. This data
     can be used to identify liquid stocks and potential trading opportunities.
 
-    :param condensed: If True, return data as a tuple of tuples. Defaults to True.
-    :return: List of dicts or tuple of tuples with data on most active stocks.
+    :param tsv: If True, return data in TSV format. Defaults to True.
+    :return: List of dicts or TSV string with data on most active stocks.
     :example: actives()
 
     Each entry in the returned data contains details such as:
@@ -31,10 +30,9 @@ def actives(condensed: bool = True) -> typing.Union[typing.List[typing.Dict],
     path = f"actives"
     query_vars = {"apikey": API_KEY}
     result = __return_json_v3(path=path, query_vars=query_vars)
-    return compress_json_to_tuples(result, condensed)
+    return compress_json_to_tsv(result) if tsv else result
 
-def gainers(condensed: bool = True) -> typing.Union[typing.List[typing.Dict], 
-                                                    typing.Tuple[typing.Tuple[str, ...], ...]]:
+def gainers(tsv: bool = True) -> typing.Union[typing.List[typing.Dict], str]:
     """
     Retrieve a list of stocks that have gained the most value on a given day.
 
@@ -42,16 +40,16 @@ def gainers(condensed: bool = True) -> typing.Union[typing.List[typing.Dict],
     potential investment opportunities. Useful for traders looking for
     stocks with upward trends or significant price movements.
 
-    :param condensed: If True, return data as a tuple of tuples. Defaults to True.
-    :return: List of dicts or tuple of tuples with data on biggest gainers.
+    :param tsv: If True, return data in TSV format. Defaults to True.
+    :return: List of dicts or TSV string with data on biggest gainers.
     :example: gainers()
     """
     path = f"gainers"
     query_vars = {"apikey": API_KEY}
     result = __return_json_v3(path=path, query_vars=query_vars)
-    return compress_json_to_tuples(result, condensed)
+    return compress_json_to_tsv(result) if tsv else result
 
-def losers(condensed: bool = True) -> typing.Union[typing.List[typing.Dict], typing.Tuple[typing.Tuple[str, ...], ...]]:
+def losers(tsv: bool = True) -> typing.Union[typing.List[typing.Dict], str]:
     """
     Retrieve a list of stocks that have lost the most value on a given day.
 
@@ -60,38 +58,38 @@ def losers(condensed: bool = True) -> typing.Union[typing.List[typing.Dict], typ
     can be used to assess market sentiment and identify stocks that may
     continue to depreciate.
 
-    :param condensed: If True, return data as a tuple of tuples. Defaults to True.
-    :return: List of dicts or tuple of tuples with data on biggest losers.
+    :param tsv: If True, return data in TSV format. Defaults to True.
+    :return: List of dicts or TSV string with data on biggest losers.
     :example: losers()
     """
     path = f"losers"
     query_vars = {"apikey": API_KEY}
     result = __return_json_v3(path=path, query_vars=query_vars)
-    return compress_json_to_tuples(result, condensed)
+    return compress_json_to_tsv(result) if tsv else result
 
-def market_hours(condensed: bool = True) -> typing.Union[typing.Dict, typing.Tuple[str, ...]]:
+def market_hours(tsv: bool = True) -> typing.Union[typing.Dict, str]:
     """
     Retrieve information about market hours for various exchanges.
 
     Provides data on opening and closing times for different stock markets,
     helping traders plan their activities around market schedules.
 
-    :param condensed: If True, return data as a tuple of key-value pairs. Defaults to True.
-    :return: Dict or tuple of key-value pairs with market hours data.
+    :param tsv: If True, return data in TSV format. Defaults to True.
+    :return: Dict or TSV string with market hours data.
     :example: market_hours()
     """
     path = f"market-hours"
     query_vars = {"apikey": API_KEY}
     result = __return_json_v3(path=path, query_vars=query_vars)
     
-    if result is not None and condensed:
-        return tuple(result.items())
+    if result is not None and tsv:
+        return compress_json_to_tsv([result])
     return result
 
 def sectors_performance(
     limit: int = DEFAULT_LIMIT,
-    condensed: bool = True
-) -> typing.Union[typing.List[typing.Dict], typing.Tuple[typing.Tuple[str, ...], ...]]:
+    tsv: bool = True
+) -> typing.Union[typing.List[typing.Dict], str]:
     """
     Retrieve performance data for various market sectors.
 
@@ -99,23 +97,23 @@ def sectors_performance(
     identify trends and make informed decisions about sector allocation.
 
     :param limit: Number of records to retrieve. Default is DEFAULT_LIMIT.
-    :param condensed: If True, return data as a tuple of tuples. Defaults to True.
-    :return: List of dicts or tuple of tuples with sector performance data.
+    :param tsv: If True, return data in TSV format. Defaults to True.
+    :return: List of dicts or TSV string with sector performance data.
     :example: sectors_performance(limit=5)
     """
     path = f"sectors-performance"
     query_vars = {"apikey": API_KEY, "limit": limit}
     result = __return_json_v3(path=path, query_vars=query_vars)
-    return compress_json_to_tuples(result, condensed)
+    return compress_json_to_tsv(result) if tsv else result
 
-def fail_to_deliver(symbol: str, page: int = 0, condensed: bool = True) -> typing.Union[typing.List[typing.Dict], typing.Tuple[typing.Tuple[str, ...], ...]]:
+def fail_to_deliver(symbol: str, page: int = 0, tsv: bool = True) -> typing.Union[typing.List[typing.Dict], str]:
     """
     Query FMP /fail_to_deliver API for fail to deliver data.
 
     :param symbol: Company ticker symbol.
     :param page: Page number for pagination (default is 0).
-    :param condensed: If True, return data as a tuple of tuples. Defaults to True.
-    :return: List of dicts or tuple of tuples containing fail to deliver data.
+    :param tsv: If True, return data in TSV format. Defaults to True.
+    :return: List of dicts or TSV string containing fail to deliver data.
     :example: fail_to_deliver('AAPL', page=1)
     """
     path = "fail_to_deliver"
@@ -125,18 +123,17 @@ def fail_to_deliver(symbol: str, page: int = 0, condensed: bool = True) -> typin
         "page": page
     }
     result = __return_json_v4(path=path, query_vars=query_vars)
-    return compress_json_to_tuples(result, condensed)
+    return compress_json_to_tsv(result) if tsv else result
 
 def sector_pe_ratio(date: date, exchange: str = "NYSE", 
-                    condensed: bool = True) -> typing.Union[typing.List[typing.Dict], 
-                                                            typing.Tuple[typing.Tuple[str, ...], ...]]:
+                    tsv: bool = True) -> typing.Union[typing.List[typing.Dict], str]:
     """
     Query FMP /sector_price_earning_ratio API.
 
     :param date: The date for which to retrieve the sector PE ratios in 'yyyy-mm-dd' format.
     :param exchange: The stock exchange (default is NYSE).
-    :param condensed: If True, return data as a tuple of tuples. Defaults to True.
-    :return: List of dicts or tuple of tuples containing sector PE ratios.
+    :param tsv: If True, return data in TSV format. Defaults to True.
+    :return: List of dicts or TSV string containing sector PE ratios.
     :example: sector_pe_ratio('2023-01-01', exchange='NASDAQ')
     """
     path = f"sector_price_earning_ratio"
@@ -146,11 +143,10 @@ def sector_pe_ratio(date: date, exchange: str = "NYSE",
         "apikey": API_KEY
     }
     result = __return_json_v4(path=path, query_vars=query_vars)
-    return compress_json_to_tuples(result, condensed)
+    return compress_json_to_tsv(result) if tsv else result
 
 def industry_pe_ratio(date: str, exchange: str = "NYSE", 
-                      condensed: bool = True) -> typing.Union[typing.List[typing.Dict], 
-                                                              typing.Tuple[typing.Tuple[str, ...], ...]]:
+                      tsv: bool = True) -> typing.Union[typing.List[typing.Dict], str]:
     """
     Retrieve industry-specific price-to-earnings (PE) ratios.
 
@@ -161,8 +157,8 @@ def industry_pe_ratio(date: str, exchange: str = "NYSE",
 
     :param date: Date for which to retrieve industry PE ratios (format: 'YYYY-MM-DD').
     :param exchange: Stock exchange (default is NYSE).
-    :param condensed: If True, return data as a tuple of tuples. Defaults to True.
-    :return: List of dicts or tuple of tuples containing industry PE ratios.
+    :param tsv: If True, return data in TSV format. Defaults to True.
+    :return: List of dicts or TSV string containing industry PE ratios.
     :example: industry_pe_ratio('2024-08-01', exchange='NYSE')
 
     Data can be used to:
@@ -177,27 +173,26 @@ def industry_pe_ratio(date: str, exchange: str = "NYSE",
         "apikey": API_KEY
     }
     result = __return_json_v4(path=path, query_vars=query_vars)
-    return compress_json_to_tuples(result, condensed)
+    return compress_json_to_tsv(result) if tsv else result
 
 def batch_eod_prices(date: str, 
-                     condensed: bool = True) -> typing.Union[typing.List[typing.Dict], 
-                                                             typing.Tuple[typing.Tuple[str, ...], ...]]:
+                     tsv: bool = True) -> typing.Union[typing.List[typing.Dict], str]:
     """
     Get batch request that contains all end of day prices for a specific date.
 
     :param date: The date in format YYYY-MM-DD
-    :param condensed: If True, return data as a tuple of tuples. Defaults to True.
-    :return: List of dicts or tuple of tuples containing EOD prices for multiple stocks
+    :param tsv: If True, return data in TSV format. Defaults to True.
+    :return: List of dicts or TSV string containing EOD prices for multiple stocks
     """
     path = "batch-request-end-of-day-prices"
     query_vars = {"apikey": API_KEY, "date": date}
     result = __return_json_v4(path=path, query_vars=query_vars)
-    return compress_json_to_tuples(result, condensed)
+    return compress_json_to_tsv(result) if tsv else result
 
 def multiple_company_prices(
     symbols: typing.Union[str, typing.List[str]],
-    condensed: bool = True
-) -> typing.Union[typing.List[typing.Dict], typing.Tuple[typing.Tuple[str, ...], ...]]:
+    tsv: bool = True
+) -> typing.Union[typing.List[typing.Dict], str]:
     """
     Retrieve real-time price data for multiple companies in a single request.
 
@@ -207,8 +202,8 @@ def multiple_company_prices(
 
     :param symbols: Single stock symbol as string or list of stock symbols
                     (e.g., 'AAPL' or ['AAPL', 'MSFT'])
-    :param condensed: If True, return data as a tuple of tuples. Defaults to True.
-    :return: List of dicts or tuple of tuples with price information for the requested symbols
+    :param tsv: If True, return data in TSV format. Defaults to True.
+    :return: List of dicts or TSV string with price information for the requested symbols
     :example: multiple_company_prices('AAPL,MSFT')
               multiple_company_prices(['AAPL', 'MSFT'])
     """
@@ -216,12 +211,11 @@ def multiple_company_prices(
     path = f"quote/{symbols_str}"
     query_vars = {"apikey": API_KEY}
     result = __return_json_v3(path=path, query_vars=query_vars)
-    return compress_json_to_tuples(result, condensed)
+    return compress_json_to_tsv(result) if tsv else result
 
 def historical_sectors_performance(from_date: str, 
                                    to_date: str, 
-                                   condensed: bool = True) -> typing.Union[typing.List[typing.Dict], 
-                                                                           typing.Tuple[typing.Tuple[str, ...], ...]]:
+                                   tsv: bool = True) -> typing.Union[typing.List[typing.Dict], str]:
     """
     Retrieve historical performance data for stock market sectors.
 
@@ -231,8 +225,8 @@ def historical_sectors_performance(from_date: str,
 
     :param from_date: Start date in format YYYY-MM-DD.
     :param to_date: End date in format YYYY-MM-DD.
-    :param condensed: If True, return data as a tuple of tuples. Defaults to True.
-    :return: List of dicts or tuple of tuples with historical sector performance data,
+    :param tsv: If True, return data in TSV format. Defaults to True.
+    :return: List of dicts or TSV string with historical sector performance data,
              including date and performance for each sector.
     :example: historical_sectors_performance('2024-01-01', '2024-03-01')
     """
@@ -243,4 +237,4 @@ def historical_sectors_performance(from_date: str,
         "to": to_date
     }
     result = __return_json_v3(path=path, query_vars=query_vars)
-    return compress_json_to_tuples(result, condensed)
+    return compress_json_to_tsv(result) if tsv else result

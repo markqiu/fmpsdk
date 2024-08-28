@@ -2,18 +2,17 @@ import typing
 import os
 from .settings import DEFAULT_LIMIT
 from .url_methods import __return_json_v3
-from .data_compression import compress_json_to_tuples
+from .data_compression import compress_json_to_tsv
 
 API_KEY = os.getenv('FMP_API_KEY')
-
 
 def earning_calendar(
     from_date: str = None,
     to_date: str = None,
     estimate_required: bool = True,
-    condensed: bool = True,
-    revenue_minimum: float = 1000000000
-) -> typing.Union[typing.List[typing.Dict], typing.Tuple[typing.Tuple[str, ...], ...]]:
+    revenue_minimum: float = 1000000000,
+    tsv: bool = True
+) -> typing.Union[typing.List[typing.Dict], str]:
     """
     Retrieve a list of upcoming and past earnings announcements.
 
@@ -23,12 +22,13 @@ def earning_calendar(
     :param to_date: End date in 'YYYY-MM-DD' format.
     :param estimate_required: If True, exclude entries where either 'epsEstimated'
                               or 'revenueEstimated' is null. Defaults to True.
-    :param condensed: If True, return only key fields in each entry. Defaults to True.
     :param revenue_minimum: Minimum 'revenueEstimated' value to include an entry.
                             Defaults to 1,000,000,000 (1 billion).
-    :return: List of dicts with earnings data, or None if request fails.
+    :param tsv: If True, return data in TSV format. Defaults to True.
+    :return: List of dicts with earnings data, or TSV string if tsv is True.
+             Returns None if request fails.
     :example: earning_calendar('2023-01-01', '2023-12-31', estimate_required=True, 
-                                condensed=True, revenue_minimum=500000000)
+                                revenue_minimum=500000000, tsv=True)
     """
     path = "earning_calendar"
     query_vars = {"apikey": API_KEY}
@@ -52,17 +52,17 @@ def earning_calendar(
             if entry.get('revenueEstimated', 0) >= revenue_minimum
         ]
         
-        fields = ('date', 'symbol', 'eps', 'epsEstimated', 'revenue', 'revenueEstimated')
-        return compress_json_to_tuples(result, condensed, fields)
+        fields = ('date', 'symbol', 'eps', 'epsEstimated', 'revenue', 'revenueEstimated', "fiscalDateEnding")
+        
+        return compress_json_to_tsv(result, fields) if tsv else result
     
     return None
-
 
 def historical_earning_calendar(
     symbol: str,
     limit: int = DEFAULT_LIMIT,
-    condensed: bool = True
-) -> typing.Union[typing.List[typing.Dict], typing.Tuple[typing.Tuple[str, ...], ...]]:
+    tsv: bool = True
+) -> typing.Union[typing.List[typing.Dict], str]:
     """
     Retrieve historical and upcoming earnings announcements for a specific company.
 
@@ -72,9 +72,8 @@ def historical_earning_calendar(
 
     :param symbol: Ticker symbol of the company (e.g., 'AAPL').
     :param limit: Number of records to retrieve. Default is DEFAULT_LIMIT.
-    :param condensed: If True, return only key fields in each entry. Defaults to True.
-    :return: List of dicts with earnings data, including date, estimated EPS,
-             and actual EPS, or None if request fails.
+    :param tsv: If True, return data in TSV format. Defaults to True.
+    :return: List of dicts with earnings data, or TSV string if tsv is True.
     :example: historical_earning_calendar('AAPL', limit=10)
     """
     path = f"historical/earning_calendar/{symbol}"
@@ -86,14 +85,13 @@ def historical_earning_calendar(
     result = __return_json_v3(path=path, query_vars=query_vars)
     
     fields = ('date', 'symbol', 'eps', 'epsEstimated', 'revenue', 'revenueEstimated')
-    return compress_json_to_tuples(result, condensed, fields)
-
+    return compress_json_to_tsv(result, fields) if tsv else result
 
 def ipo_calendar(
     from_date: str = None,
     to_date: str = None,
-    condensed: bool = True
-) -> typing.Union[typing.List[typing.Dict], typing.Tuple[typing.Tuple[str, ...], ...]]:
+    tsv: bool = True
+) -> typing.Union[typing.List[typing.Dict], str]:
     """
     Retrieve a list of confirmed upcoming IPOs.
 
@@ -103,8 +101,8 @@ def ipo_calendar(
 
     :param from_date: Start date for IPO range (format: YYYY-MM-DD).
     :param to_date: End date for IPO range (format: YYYY-MM-DD).
-    :param condensed: If True, return only key fields in each entry. Defaults to True.
-    :return: List of dicts with IPO calendar data.
+    :param tsv: If True, return data in TSV format. Defaults to True.
+    :return: List of dicts with IPO calendar data, or TSV string if tsv is True.
     :example: ipo_calendar(from_date='2023-01-01', to_date='2023-12-31')
     """
     path = f"ipo_calendar"
@@ -116,14 +114,13 @@ def ipo_calendar(
     result = __return_json_v3(path=path, query_vars=query_vars)
     
     fields = ('date', 'symbol', 'exchange', 'name', 'ipoPrice', 'priceRange')
-    return compress_json_to_tuples(result, condensed, fields)
-
+    return compress_json_to_tsv(result, fields) if tsv else result
 
 def stock_split_calendar(
     from_date: str = None,
     to_date: str = None,
-    condensed: bool = True
-) -> typing.Union[typing.List[typing.Dict], typing.Tuple[typing.Tuple[str, ...], ...]]:
+    tsv: bool = True
+) -> typing.Union[typing.List[typing.Dict], str]:
     """
     Retrieve upcoming stock split data for publicly traded companies.
 
@@ -133,8 +130,8 @@ def stock_split_calendar(
 
     :param from_date: Start date for the split calendar (format: YYYY-MM-DD).
     :param to_date: End date for the split calendar (format: YYYY-MM-DD).
-    :param condensed: If True, return only key fields in each entry. Defaults to True.
-    :return: List of dicts with stock split calendar data.
+    :param tsv: If True, return data in TSV format. Defaults to True.
+    :return: List of dicts with stock split calendar data, or TSV string if tsv is True.
     :example: stock_split_calendar(from_date='2023-08-10', to_date='2023-10-10')
     """
     path = f"stock_split_calendar"
@@ -146,14 +143,13 @@ def stock_split_calendar(
     result = __return_json_v3(path=path, query_vars=query_vars)
     
     fields = ('date', 'symbol', 'numerator', 'denominator', 'fromFactor', 'toFactor')
-    return compress_json_to_tuples(result, condensed, fields)
-
+    return compress_json_to_tsv(result, fields) if tsv else result
 
 def dividend_calendar(
     from_date: str = None,
     to_date: str = None,
-    condensed: bool = True
-) -> typing.Union[typing.List[typing.Dict], typing.Tuple[typing.Tuple[str, ...], ...]]:
+    tsv: bool = True
+) -> typing.Union[typing.List[typing.Dict], str]:
     """
     Retrieve upcoming dividend payments for publicly traded companies.
 
@@ -163,10 +159,10 @@ def dividend_calendar(
 
     :param from_date: Start date for dividend calendar (format: YYYY-MM-DD).
     :param to_date: End date for dividend calendar (format: YYYY-MM-DD).
-    :param condensed: If True, return only key fields in each entry. Defaults to True.
-    :return: List of dicts with dividend calendar data.
-    :example: dividend_calendar(from_date='2023-10-01', to_date='2023-10-31')
+    :param tsv: If True, return data in TSV format. Defaults to True.
+    :return: List of dicts with dividend calendar data, or TSV string if tsv is True.
     Note: Maximum time interval between from_date and to_date is 3 months.
+    :example: dividend_calendar(from_date='2023-10-01', to_date='2023-10-31')
     """
     path = f"stock_dividend_calendar"
     query_vars = {"apikey": API_KEY}
@@ -177,17 +173,16 @@ def dividend_calendar(
     result = __return_json_v3(path=path, query_vars=query_vars)
     
     fields = ('date', 'symbol', 'dividend', 'recordDate', 'paymentDate', 'declarationDate')
-    return compress_json_to_tuples(result, condensed, fields)
-
+    return compress_json_to_tsv(result, fields) if tsv else result
 
 def economic_calendar(
     from_date: str = None,
     to_date: str = None,
-    condensed: bool = True,
-    impact_filter: typing.Union[str, typing.List[str]] = ['High', 'Medium'],
+    tsv: bool = True,
+    impact_filter: typing.Union[str, typing.List[str]] = ['High'],
     country_filter: typing.Union[str, typing.List[str]] = None,
     currency_filter: typing.Union[str, typing.List[str]] = None
-) -> typing.Optional[typing.Union[typing.List[typing.Dict], typing.Tuple[typing.Tuple[str, ...], ...]]]:
+) -> typing.Optional[typing.Union[typing.List[typing.Dict], str]]:
     """
     Retrieve economic calendar events with flexible filtering options.
 
@@ -196,12 +191,12 @@ def economic_calendar(
 
     :param from_date: Start date in 'YYYY-MM-DD' format.
     :param to_date: End date in 'YYYY-MM-DD' format.
-    :param condensed: If True, return compact tuple format. Defaults to True.
+    :param tsv: If True, return data in TSV format. Defaults to True.
     :param impact_filter: Filter by impact level ('Low', 'Medium', 'High' or list).
     :param country_filter: Filter by country code(s) (e.g., 'US', 'EU' or list).
     :param currency_filter: Filter by currency code(s) (e.g., 'USD', 'EUR' or list).
-    :return: If condensed, tuple of tuples ((field_names), (event1_data), ...).
-             Otherwise, list of dicts with full event details. None if request fails.
+    :return: List of dicts with economic calendar data, or TSV string if tsv is True.
+             Returns None if request fails.
     :example: economic_calendar('2024-08-20', '2024-08-21', impact_filter=['High', 'Medium'],
               country_filter=['US', 'EU'], currency_filter=['USD', 'EUR'])
     """
@@ -232,6 +227,6 @@ def economic_calendar(
         
         fields = ('date', 'event', 'country', 'actual', 'previous', 'change',
                   'changePercentage', 'estimate', 'impact')
-        return compress_json_to_tuples(result, condensed, fields)
+        return compress_json_to_tsv(result, fields) if tsv else result
     
     return None

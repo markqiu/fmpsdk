@@ -2,65 +2,52 @@ import typing
 import os
 from .settings import DEFAULT_LIMIT
 from .url_methods import __return_json_v3
-from .data_compression import compress_json_to_tuples
+from .data_compression import compress_json_to_tsv
 
 API_KEY = os.getenv('FMP_API_KEY')
 
-
-def financial_statement_symbol_lists(
-    condensed: bool = True
-) -> typing.Union[typing.List[typing.Dict], typing.Tuple[typing.Tuple[str, ...], ...]]:
+def financial_statement_symbol_lists() -> typing.Union[typing.List[typing.Dict], str]:
     """
     Retrieve a list of symbols with available financial statements.
 
     Useful for identifying companies with accessible financial data for analysis.
 
-    :param condensed: If True, return compact tuple format. Defaults to True.
-    :return: List of dicts or tuple of tuples with symbols and their available
-             financial statements.
+    :return: List of dicts or TSV string with symbols and their available financial statements.
     :example: financial_statement_symbol_lists()
     """
     path = "financial-statement-symbol-lists"
     query_vars = {"apikey": API_KEY}
-    result = __return_json_v3(path=path, query_vars=query_vars)
-    return compress_json_to_tuples(result, condensed)
+    return __return_json_v3(path=path, query_vars=query_vars)
 
-
-def symbols_list(
-    condensed: bool = True
-) -> typing.Union[typing.List[typing.Dict], typing.Tuple[typing.Tuple[str, ...], ...]]:
+def symbols_list(tsv: bool = True) -> typing.Union[typing.List[typing.Dict], str]:
     """
     Retrieve a list of all available stock symbols.
 
     Useful for exploring and analyzing a wide range of stocks.
 
-    :param condensed: If True, return compact tuple format. Defaults to True.
-    :return: List of dicts or tuple of tuples with stock symbols data.
+    :param tsv: If True, return data in TSV format. Defaults to True.
+    :return: List of dicts or TSV string with stock symbols data.
     :example: symbols_list()
     """
     path = f"stock/list"
     query_vars = {"apikey": API_KEY}
     result = __return_json_v3(path=path, query_vars=query_vars)
-    return compress_json_to_tuples(result, condensed)
+    return compress_json_to_tsv(result) if tsv else result
 
-
-def etf_list(
-    condensed: bool = True
-) -> typing.Union[typing.List[typing.Dict], typing.Tuple[typing.Tuple[str, ...], ...]]:
+def etf_list(tsv: bool = True) -> typing.Union[typing.List[typing.Dict], str]:
     """
     Retrieve a list of all available ETF symbols.
 
     Useful for exploring and analyzing a wide range of ETFs.
 
-    :param condensed: If True, return compact tuple format. Defaults to True.
-    :return: List of dicts or tuple of tuples with ETF symbols data.
+    :param tsv: If True, return data in TSV format. Defaults to True.
+    :return: List of dicts or TSV string with ETF symbols data.
     :example: etf_list()
     """
     path = "etf/list"
     query_vars = {"apikey": API_KEY}
     result = __return_json_v3(path=path, query_vars=query_vars)
-    return compress_json_to_tuples(result, condensed)
-
+    return compress_json_to_tsv(result) if tsv else result
 
 def available_traded_list(
 ) -> typing.List[str]:
@@ -75,7 +62,6 @@ def available_traded_list(
     path = "available-traded/list"
     query_vars = {"apikey": API_KEY}
     return __return_json_v3(path=path, query_vars=query_vars)
-
 
 def delisted_companies(
     limit: int = DEFAULT_LIMIT,
@@ -93,7 +79,6 @@ def delisted_companies(
     query_vars = {"apikey": API_KEY, "limit": limit}
     return __return_json_v3(path=path, query_vars=query_vars)
 
-
 def available_mutual_funds(
 ) -> typing.List[str]:
     """
@@ -105,7 +90,6 @@ def available_mutual_funds(
     query_vars = {"apikey": API_KEY}
     return __return_json_v3(path=path, query_vars=query_vars)
 
-
 def available_tsx(
 ) -> typing.List[str]:
     """
@@ -116,7 +100,6 @@ def available_tsx(
     path = f"symbol/available-tsx"
     query_vars = {"apikey": API_KEY}
     return __return_json_v3(path=path, query_vars=query_vars)
-
 
 def available_forex(
 ) -> typing.List[str]:
@@ -133,22 +116,19 @@ def available_forex(
     query_vars = {"apikey": API_KEY}
     return __return_json_v3(path=path, query_vars=query_vars)
 
-def cryptocurrencies_list(
-    condensed: bool = True
-) -> typing.Union[typing.List[typing.Dict], typing.Tuple[typing.Tuple[str, ...], ...]]:
+def cryptocurrencies_list(tsv: bool = True) -> typing.Union[typing.List[typing.Dict], str]:
     """
     Query FMP /quotes/crypto API
 
-    :param condensed: If True, return compact tuple format. Defaults to True.
-    :return: List of dicts or tuple of tuples containing full quotes for all cryptocurrencies.
+    :param tsv: If True, return data in TSV format. Defaults to True.
+    :return: List of dicts or TSV string containing full quotes for all cryptocurrencies.
     :example: cryptocurrencies_list()
     :endpoint: https://financialmodelingprep.com/api/v3/quotes/crypto
     """
     path = "quotes/crypto"
     query_vars = {"apikey": API_KEY}
     result = __return_json_v3(path=path, query_vars=query_vars)
-    return compress_json_to_tuples(result, condensed)
-
+    return compress_json_to_tsv(result) if tsv else result
 
 def all_countries(
 ) -> typing.List[str]:
@@ -164,7 +144,6 @@ def all_countries(
     query_vars = {"apikey": API_KEY}
     return __return_json_v3(path=path, query_vars=query_vars)
 
-
 def available_etfs(
 ) -> typing.List[str]:
     """
@@ -178,7 +157,6 @@ def available_etfs(
     query_vars = {"apikey": API_KEY}
     return __return_json_v3(path=path, query_vars=query_vars)
 
-
 def available_commodities(
 ) -> typing.List[str]:
     """
@@ -191,8 +169,6 @@ def available_commodities(
     query_vars = {"apikey": API_KEY}
     return __return_json_v3(path=path, query_vars=query_vars)
 
-
-
 def available_sectors(
 ) -> typing.List[str]:
     """
@@ -200,14 +176,12 @@ def available_sectors(
 
     Useful for exploring and analyzing data across various sectors.
 
-    :param condensed: If True, return compact tuple format. Defaults to True.
     :return: List of sector names or tuple of tuples with sector names.
     :example: available_sectors()
     """
     path = "sectors-list"
     query_vars = {"apikey": API_KEY}
     return __return_json_v3(path=path, query_vars=query_vars)
-
 
 def available_industries(
 ) -> typing.List[str]:
@@ -223,7 +197,6 @@ def available_industries(
     query_vars = {"apikey": API_KEY}
     return __return_json_v3(path=path, query_vars=query_vars)
 
-
 def available_exchanges(
 ) -> typing.List[str]:
     """
@@ -238,53 +211,44 @@ def available_exchanges(
     query_vars = {"apikey": API_KEY}
     return __return_json_v3(path=path, query_vars=query_vars)
 
-
-def available_cryptocurrencies(
-    condensed: bool = True
-) -> typing.Union[typing.List[typing.Dict], typing.Tuple[typing.Tuple[str, ...], ...]]:
+def available_cryptocurrencies(tsv: bool = True) -> typing.Union[typing.List[typing.Dict], str]:
     """
     Query FMP /symbol/available-cryptocurrencies API
 
-    :param condensed: If True, return compact tuple format. Defaults to True.
-    :return: List of dicts or tuple of tuples containing available cryptocurrencies.
+    :param tsv: If True, return data in TSV format. Defaults to True.
+    :return: List of dicts or TSV string containing available cryptocurrencies.
     :example: available_cryptocurrencies()
     :endpoint: https://financialmodelingprep.com/api/v3/symbol/available-cryptocurrencies
     """
     path = "symbol/available-cryptocurrencies"
     query_vars = {"apikey": API_KEY}
     result = __return_json_v3(path=path, query_vars=query_vars)
-    return compress_json_to_tuples(result, condensed)
+    return compress_json_to_tsv(result) if tsv else result
 
-
-def available_euronext(
-    condensed: bool = True
-) -> typing.Union[typing.List[typing.Dict], typing.Tuple[typing.Tuple[str, ...], ...]]:
+def available_euronext(tsv: bool = True) -> typing.Union[typing.List[typing.Dict], str]:
     """
     Query FMP /symbol/available-euronext API
 
     Get a list of available Euronext stocks.
 
-    :param condensed: If True, return compact tuple format. Defaults to True.
-    :return: List of dicts or tuple of tuples containing available Euronext stocks.
+    :param tsv: If True, return data in TSV format. Defaults to True.
+    :return: List of dicts or TSV string containing available Euronext stocks.
     :example: available_euronext()
-    :endpoint: https://financialmodelingprep.com/api/v3/symbol/available-euronext
     """
     path = "symbol/available-euronext"
     query_vars = {"apikey": API_KEY}
     result = __return_json_v3(path=path, query_vars=query_vars)
-    return compress_json_to_tuples(result, condensed)
+    return compress_json_to_tsv(result) if tsv else result
 
-
-def available_indexes(
-    condensed: bool = True
-) -> typing.Union[typing.List[typing.Dict], typing.Tuple[typing.Tuple[str, ...], ...]]:
+def available_indexes(tsv: bool = True) -> typing.Union[typing.List[typing.Dict], str]:
     """
     Query FMP /symbol/available-indexes/ API
 
-    :param condensed: If True, return compact tuple format. Defaults to True.
-    :return: List of dicts or tuple of tuples containing available indexes.
+    :param tsv: If True, return data in TSV format. Defaults to True.
+    :return: List of dicts or TSV string containing available indexes.
+    :example: available_indexes()
     """
-    path = f"symbol/available-indexes"
+    path = "symbol/available-indexes"
     query_vars = {"apikey": API_KEY}
     result = __return_json_v3(path=path, query_vars=query_vars)
-    return compress_json_to_tuples(result, condensed)
+    return compress_json_to_tsv(result) if tsv else result

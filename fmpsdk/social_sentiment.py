@@ -1,6 +1,6 @@
 import typing
 from .url_methods import __return_json_v4
-from .data_compression import compress_json_to_tuples
+from .data_compression import compress_json_to_tsv
 import os
 
 API_KEY = os.getenv('FMP_API_KEY')
@@ -9,8 +9,8 @@ API_KEY = os.getenv('FMP_API_KEY')
 def historical_social_sentiment(
     symbol: str,
     page: int = 0,
-    condensed: bool = True
-) -> typing.Union[typing.List[typing.Dict], typing.Tuple[typing.Tuple[str, ...], ...]]:
+    tsv: bool = True
+) -> typing.Union[typing.List[typing.Dict], str]:
     """
     Retrieve historical social sentiment data for a company.
 
@@ -23,21 +23,26 @@ def historical_social_sentiment(
 
     :param symbol: The stock symbol (e.g., 'AAPL')
     :param page: The page number for pagination (default: 0)
-    :param condensed: If True, return data as a tuple of tuples. Defaults to True.
-    :return: List of dicts or tuple of tuples with historical social sentiment data,
+    :param tsv: If True, return data in TSV format. Defaults to True.
+    :return: List of dicts or TSV string with historical social sentiment data,
              or None if request fails
     """
     path = "historical/social-sentiment"
     query_vars = {"apikey": API_KEY, "symbol": symbol, "page": page}
     result = __return_json_v4(path=path, query_vars=query_vars)
-    return compress_json_to_tuples(result, condensed)
+    
+    fields = ('date', 'symbol', 'stocktwitsPosts', 'twitterPosts', 'stocktwitsComments',
+              'twitterComments', 'stocktwitsLikes', 'twitterLikes', 'stocktwitsImpressions',
+              'twitterImpressions', 'stocktwitsSentiment', 'twitterSentiment')
+    
+    return compress_json_to_tsv(result, fields) if tsv else result
 
 
 def trending_social_sentiment(
     sentiment_type: str = "bullish",
     source: str = "stocktwits",
-    condensed: bool = True
-) -> typing.Union[typing.List[typing.Dict], typing.Tuple[typing.Tuple[str, ...], ...]]:
+    tsv: bool = True
+) -> typing.Union[typing.List[typing.Dict], str]:
     """
     Retrieve trending social sentiment data for stocks.
 
@@ -50,21 +55,26 @@ def trending_social_sentiment(
                            Options: 'bullish' or 'bearish'
     :param source: Source of sentiment data (default: 'stocktwits')
                    Options: 'stocktwits' or 'twitter'
-    :param condensed: If True, return data as a tuple of tuples. Defaults to True.
-    :return: List of dicts or tuple of tuples with trending social sentiment data,
+    :param tsv: If True, return data in TSV format. Defaults to True.
+    :return: List of dicts or TSV string with trending social sentiment data,
              or None if request fails
     """
     path = "social-sentiments/trending"
     query_vars = {"apikey": API_KEY, "type": sentiment_type, "source": source}
     result = __return_json_v4(path=path, query_vars=query_vars)
-    return compress_json_to_tuples(result, condensed)
+    
+    fields = ('symbol', 'name', 'stocktwitsPosts', 'twitterPosts', 'stocktwitsComments',
+              'twitterComments', 'stocktwitsLikes', 'twitterLikes', 'stocktwitsImpressions',
+              'twitterImpressions', 'stocktwitsSentiment', 'twitterSentiment')
+    
+    return compress_json_to_tsv(result, fields) if tsv else result
 
 
 def social_sentiment_changes(
     sentiment_type: str = "bullish",
     source: str = "stocktwits",
-    condensed: bool = True
-) -> typing.Union[typing.List[typing.Dict], typing.Tuple[typing.Tuple[str, ...], ...]]:
+    tsv: bool = True
+) -> typing.Union[typing.List[typing.Dict], str]:
     """
     Retrieve changes in social sentiment data over time for various stocks.
 
@@ -77,11 +87,17 @@ def social_sentiment_changes(
                            Options: 'bullish' or 'bearish'
     :param source: Source of sentiment data (default: 'stocktwits')
                    Options: 'stocktwits' or 'twitter'
-    :param condensed: If True, return data as a tuple of tuples. Defaults to True.
-    :return: List of dicts or tuple of tuples with social sentiment changes data,
+    :param tsv: If True, return data in TSV format. Defaults to True.
+    :return: List of dicts or TSV string with social sentiment changes data,
              or None if request fails
     """
     path = "social-sentiments/change"
     query_vars = {"apikey": API_KEY, "type": sentiment_type, "source": source}
     result = __return_json_v4(path=path, query_vars=query_vars)
-    return compress_json_to_tuples(result, condensed)
+    
+    fields = ('symbol', 'name', 'change', 'stocktwitsPosts', 'twitterPosts',
+              'stocktwitsComments', 'twitterComments', 'stocktwitsLikes',
+              'twitterLikes', 'stocktwitsImpressions', 'twitterImpressions',
+              'stocktwitsSentiment', 'twitterSentiment')
+    
+    return compress_json_to_tsv(result, fields) if tsv else result

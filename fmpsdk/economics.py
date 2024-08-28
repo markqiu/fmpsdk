@@ -1,7 +1,7 @@
 import typing
 import os
 from .url_methods import __return_json_v3, __return_json_v4
-from .data_compression import compress_json_to_tuples
+from .data_compression import compress_json_to_tsv
 
 API_KEY = os.getenv('FMP_API_KEY')
 
@@ -9,9 +9,8 @@ API_KEY = os.getenv('FMP_API_KEY')
 def treasury_rates(
     from_date: str = None,
     to_date: str = None,
-    condensed: bool = True
-) -> typing.Union[typing.List[typing.Dict], 
-                  typing.Tuple[typing.Tuple[str, ...], ...]]:
+    tsv: bool = True
+) -> typing.Union[typing.List[typing.Dict], str]:
     """
     Retrieve real-time and historical Treasury rates for all maturities.
 
@@ -21,8 +20,8 @@ def treasury_rates(
 
     :param from_date: Optional start date in YYYY-MM-DD format
     :param to_date: Optional end date in YYYY-MM-DD format
-    :param condensed: If True, return data as a tuple of tuples. Defaults to True.
-    :return: List of dicts or tuple of tuples with Treasury rates data, including date and rates
+    :param tsv: If True, return data in TSV format. Defaults to True.
+    :return: List of dicts or TSV string with Treasury rates data, including date and rates
              for various maturities (e.g., month1, month2, month3, etc.)
     :example: treasury_rates()
     :example: treasury_rates('2023-01-01', '2023-12-31')
@@ -34,16 +33,15 @@ def treasury_rates(
     if to_date:
         query_vars["to"] = to_date
     result = __return_json_v4(path=path, query_vars=query_vars)
-    return compress_json_to_tuples(result, condensed)
+    return compress_json_to_tsv(result) if tsv else result
 
 
 def economic_indicators(
     name: str,
     from_date: str = None,
     to_date: str = None,
-    condensed: bool = True
-) -> typing.Union[typing.List[typing.Dict], 
-                  typing.Tuple[typing.Tuple[str, ...], ...]]:
+    tsv: bool = True
+) -> typing.Union[typing.List[typing.Dict], str]:
     """
     Retrieve real-time and historical data for various economic indicators.
 
@@ -54,8 +52,8 @@ def economic_indicators(
     :param name: Name of the economic indicator (e.g., 'GDP', 'CPI', 'unemploymentRate').
     :param from_date: Optional start date in YYYY-MM-DD format.
     :param to_date: Optional end date in YYYY-MM-DD format.
-    :param condensed: If True, return data as a tuple of tuples. Defaults to True.
-    :return: List of dicts or tuple of tuples with economic indicator data.
+    :param tsv: If True, return data in TSV format. Defaults to True.
+    :return: List of dicts or TSV string with economic indicator data.
     :example: economic_indicators('GDP')
     :example: economic_indicators('CPI', '2023-01-01', '2023-12-31')
     """
@@ -66,14 +64,13 @@ def economic_indicators(
     if to_date:
         query_vars["to"] = to_date
     result = __return_json_v4(path=path, query_vars=query_vars)
-    return compress_json_to_tuples(result, condensed)
+    return compress_json_to_tsv(result) if tsv else result
 
 
 def market_risk_premium(
     country: str = None,
-    condensed: bool = True
-) -> typing.Union[typing.List[typing.Dict], 
-                  typing.Tuple[typing.Tuple[str, ...], ...]]:
+    tsv: bool = True
+) -> typing.Union[typing.List[typing.Dict], str]:
     """
     Retrieve market risk premium data for a given date.
 
@@ -82,8 +79,8 @@ def market_risk_premium(
     financial modeling, asset pricing, and investment decision-making.
 
     :param country: Optional country name to filter results.
-    :param condensed: If True, return data as a tuple of tuples. Defaults to True.
-    :return: List of dicts or tuple of tuples with market risk premium data, including date
+    :param tsv: If True, return data in TSV format. Defaults to True.
+    :return: List of dicts or TSV string with market risk premium data, including date
              and premium value.
     :example: market_risk_premium()
     :example: market_risk_premium('United States')
@@ -93,4 +90,4 @@ def market_risk_premium(
     if country:
         query_vars["country"] = country
     result = __return_json_v4(path=path, query_vars=query_vars)
-    return compress_json_to_tuples(result, condensed)
+    return compress_json_to_tsv(result) if tsv else result

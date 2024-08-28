@@ -10,15 +10,15 @@ from .url_methods import (
     __validate_period,
     __validate_sector,
 )
-from .data_compression import compress_json_to_tuples, apply_precision
+from .data_compression import compress_json_to_tsv, apply_precision
 
 API_KEY = os.getenv('FMP_API_KEY')
 
 
 def company_profile(
     symbol: str,
-    condensed: bool = True
-) -> typing.Union[typing.List[typing.Dict], typing.Tuple[typing.Tuple[str, ...], ...]]:
+    tsv: bool = True
+) -> typing.Union[typing.List[typing.Dict], str]:
     """
     Retrieve a comprehensive overview of a company.
 
@@ -28,20 +28,20 @@ def company_profile(
     and conducting competitive research.
 
     :param symbol: Ticker symbol of the company (e.g., 'AAPL').
-    :param condensed: If True, return data as a tuple of tuples. Defaults to True.
-    :return: Company profile data as list of dicts or tuple of tuples if condensed.
-    :example: company_profile('AAPL', condensed=True)
+    :param tsv: If True, return data in TSV format. Defaults to True.
+    :return: Company profile data as list of dicts or TSV string if tsv is True.
+    :example: company_profile('AAPL', tsv=True)
     """
     path = f"profile/{symbol}"
     query_vars = {"apikey": API_KEY}
     result = __return_json_v3(path=path, query_vars=query_vars)
-    return compress_json_to_tuples(result, condensed)
+    return compress_json_to_tsv(result) if tsv else result
 
 
 def key_executives(
     symbol: str,
-    condensed: bool = True
-) -> typing.Union[typing.List[typing.Dict], typing.Tuple[typing.Tuple[str, ...], ...]]:
+    tsv: bool = True
+) -> typing.Union[typing.List[typing.Dict], str]:
     """
     Retrieve standardized data for key executives from SEC filings.
 
@@ -49,42 +49,42 @@ def key_executives(
     comparing compensation across companies.
 
     :param symbol: Ticker symbol of the company (e.g., 'AAPL').
-    :param condensed: If True, return data as a tuple of tuples. Defaults to True.
-    :return: Key executives data as list of dicts or tuple of tuples if condensed.
-    :example: key_executives('AAPL', condensed=True)
+    :param tsv: If True, return data in TSV format. Defaults to True.
+    :return: Key executives data as list of dicts or TSV string if tsv is True.
+    :example: key_executives('AAPL', tsv=True)
     """
     path = f"key-executives/{symbol}"
     query_vars = {"apikey": API_KEY}
     result = __return_json_v3(path=path, query_vars=query_vars)
-    return compress_json_to_tuples(result, condensed)
+    return compress_json_to_tsv(result) if tsv else result
 
 
 def company_core_information(
     symbol: str,
-    condensed: bool = True
-) -> typing.Union[typing.List[typing.Dict], typing.Tuple[typing.Tuple[str, ...], ...]]:
+    tsv: bool = True
+) -> typing.Union[typing.List[typing.Dict], str]:
     """
     Retrieve core information for a company.
 
     Provides a comprehensive overview of a company's basic information.
 
     :param symbol: Company ticker (e.g., 'AAPL').
-    :param condensed: If True, return compact tuple format. Defaults to True.
-    :return: List of dicts or tuple of tuples with company core information data.
+    :param tsv: If True, return data in TSV format. Defaults to True.
+    :return: List of dicts or TSV string with company core information data.
     :example: company_core_information('AAPL')
     """
     path = "company-core-information"
     query_vars = {"apikey": API_KEY, "symbol": symbol}
     result = __return_json_v4(path=path, query_vars=query_vars)
-    return compress_json_to_tuples(result, condensed)
+    return compress_json_to_tsv(result) if tsv else result
 
 
 def enterprise_values(
     symbol: str,
     period: str = "annual",
     limit: int = DEFAULT_LIMIT,
-    condensed: bool = True
-) -> typing.Union[typing.List[typing.Dict], typing.Tuple[typing.Tuple[str, ...], ...]]:
+    tsv: bool = True
+) -> typing.Union[typing.List[typing.Dict], str]:
     """
     Retrieve enterprise value data for a company.
 
@@ -94,8 +94,8 @@ def enterprise_values(
     :param symbol: Company ticker (e.g., 'AAPL').
     :param period: Reporting period ('annual' or 'quarter'). Default is 'annual'.
     :param limit: Number of records to retrieve. Default is DEFAULT_LIMIT.
-    :param condensed: If True, return compact tuple format. Defaults to True.
-    :return: List of dicts or tuple of tuples with enterprise value data.
+    :param tsv: If True, return data in TSV format. Defaults to True.
+    :return: List of dicts or TSV string with enterprise value data.
     :example: enterprise_values('AAPL', period='quarter', limit=5)
     """
     path = f"enterprise-values/{symbol}"
@@ -105,15 +105,15 @@ def enterprise_values(
         "limit": limit,
     }
     result = __return_json_v3(path=path, query_vars=query_vars)
-    return compress_json_to_tuples(result, condensed)
+    return compress_json_to_tsv(result) if tsv else result
 
 
 def key_metrics_ttm(
     symbol: str,
     limit: int = DEFAULT_LIMIT,
-    condensed: bool = True,
+    tsv: bool = True,
     precision: typing.Optional[int] = 5
-) -> typing.Union[typing.List[typing.Dict], typing.Tuple[typing.Tuple[str, ...], ...]]:
+) -> typing.Union[typing.List[typing.Dict], str]:
     """
     Retrieve trailing twelve months (TTM) key metrics for a company.
 
@@ -121,9 +121,9 @@ def key_metrics_ttm(
 
     :param symbol: Company ticker (e.g., 'AAPL').
     :param limit: Number of records to retrieve. Default is DEFAULT_LIMIT.
-    :param condensed: If True, return compact tuple format. Defaults to True.
+    :param tsv: If True, return data in TSV format. Defaults to True.
     :param precision: Decimal places for rounding. None for full precision. Default is 5.
-    :return: List of dicts or tuple of tuples with TTM key metrics data.
+    :return: List of dicts or TSV string with TTM key metrics data.
     :example: key_metrics_ttm('AAPL', limit=5, precision=3)
     """
     path = f"key-metrics-ttm/{symbol}"
@@ -131,16 +131,16 @@ def key_metrics_ttm(
     result = __return_json_v3(path=path, query_vars=query_vars)
     if result:
         result = apply_precision(result, precision)
-    return compress_json_to_tuples(result, condensed)
+    return compress_json_to_tsv(result) if tsv else result
 
 
 def key_metrics(
     symbol: str,
     period: str = "annual",
     limit: int = DEFAULT_LIMIT,
-    condensed: bool = True,
+    tsv: bool = True,
     precision: typing.Optional[int] = 5
-) -> typing.Union[typing.List[typing.Dict], typing.Tuple[typing.Tuple[str, ...], ...]]:
+) -> typing.Union[typing.List[typing.Dict], str]:
     """
     Retrieve key financial metrics for a company's performance assessment.
 
@@ -150,9 +150,9 @@ def key_metrics(
     :param symbol: Company ticker (e.g., 'AAPL').
     :param period: Reporting period ('annual' or 'quarter'). Default is 'annual'.
     :param limit: Number of records to retrieve. Default is DEFAULT_LIMIT.
-    :param condensed: If True, return compact tuple format. Defaults to True.
+    :param tsv: If True, return data in TSV format. Defaults to True.
     :param precision: Decimal places for rounding. None for full precision. Default is 5.
-    :return: List of dicts or tuple of tuples with key financial metrics.
+    :return: List of dicts or TSV string with key financial metrics.
     :example: key_metrics('AAPL', period='quarter', limit=5, precision=3)
     """
     path = f"key-metrics/{symbol}"
@@ -164,24 +164,24 @@ def key_metrics(
     result = __return_json_v3(path=path, query_vars=query_vars)
     if result:
         result = apply_precision(result, precision)
-    return compress_json_to_tuples(result, condensed)
+    return compress_json_to_tsv(result) if tsv else result
 
 
 def company_outlook(
     symbol: str,
-    condensed: bool = True
-) -> typing.Union[typing.Dict, typing.Tuple[typing.Tuple[str, ...], ...]]:
+    tsv: bool = True
+) -> typing.Union[typing.Dict, str]:
     """
     Retrieve the company outlook for a specific company.
 
     Provides insights into a company's future outlook and expectations.
 
     :param symbol: Company ticker (e.g., 'AAPL').
-    :param condensed: If True, return compact tuple format. Defaults to True.
-    :return: Company outlook data as dict or tuple of tuples if condensed.
+    :param tsv: If True, return data in TSV format. Defaults to True.
+    :return: Company outlook data as dict or TSV string if tsv is True.
     :example: company_outlook('AAPL')
     """
     path = "company-outlook"
     query_vars = {"apikey": API_KEY, "symbol": symbol}
     result = __return_json_v4(path=path, query_vars=query_vars)
-    return compress_json_to_tuples([result], condensed) if result else None
+    return compress_json_to_tsv([result]) if result and tsv else result

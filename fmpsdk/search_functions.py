@@ -14,6 +14,7 @@ API_KEY = os.getenv('FMP_API_KEY')
 def search(query: str = "", limit: int = DEFAULT_LIMIT, exchange: str = "") -> typing.Optional[typing.List[typing.Dict]]:
     """
     Search for companies, stocks, ETFs, and other financial instruments.
+    NOTE: This is NOT a general search function. It is only for financial instruments.
 
     Supports over 85,000 symbols including stocks, ETFs, cryptocurrencies,
     forex, and indexes. Results include company name, ticker, and exchange.
