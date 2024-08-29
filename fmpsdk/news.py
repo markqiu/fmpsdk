@@ -9,7 +9,7 @@ API_KEY = os.getenv('FMP_API_KEY')
 
 def fmp_articles(
     page: int = 0,
-    size: int = DEFAULT_LIMIT,
+    size: int = 25,
     tsv: bool = True
 ) -> typing.Union[typing.List[typing.Dict], str]:
     """
@@ -19,7 +19,7 @@ def fmp_articles(
     Useful for staying updated on market trends, company news, and financial insights.
 
     :param page: Page number for pagination (default: 0).
-    :param size: Number of articles per page (default: 10).
+    :param size: Number of articles per page (default: 25).
     :param tsv: If True, return data in TSV format. Defaults to True.
     :return: List of dicts or TSV string with article data.
     :example: fmp_articles(page=1, size=5)
@@ -32,7 +32,7 @@ def fmp_articles(
 
 
 def general_news(
-    page: int = 0,
+    page: typing.Union[int, typing.List[int]] = range(0, 20),
     tsv: bool = True
 ) -> typing.Union[typing.List[typing.Dict], str]:
     """
@@ -42,20 +42,33 @@ def general_news(
     Useful for staying informed on current events and market trends.
     Each article includes headline, snippet, and publication URL.
 
-    :param page: Page number for pagination (default: 0).
+    :param page: Page number(s) for pagination. Can be an int or a list of ints.
+                 If a list is provided, results from all specified pages will be combined.
+                 Default is range(0, 20).
     :param tsv: If True, return data in TSV format. Defaults to True.
     :return: List of dicts or TSV string with general news data.
     :example: general_news(page=1)
+              general_news(page=[0, 1, 2])
     """
     path = "general_news"
-    query_vars = {"apikey": API_KEY, "page": page}
-    result = __return_json_v4(path=path, query_vars=query_vars)
-    return compress_json_to_tsv(result) if tsv else result
+    
+    if isinstance(page, int):
+        pages = [page]
+    else:
+        pages = page
+
+    all_results = []
+    for p in pages:
+        query_vars = {"apikey": API_KEY, "page": p}
+        result = __return_json_v4(path=path, query_vars=query_vars)
+        all_results.extend(result)
+
+    return compress_json_to_tsv(all_results) if tsv else all_results
 
 
 def stock_news(
     tickers: typing.Union[str, typing.List] = "",
-    limit: int = DEFAULT_LIMIT,
+    limit: int = 25,
     page: int = 0,
     from_date: str = "",
     to_date: str = "",
@@ -69,7 +82,7 @@ def stock_news(
     offer the most current stock market news.
 
     :param tickers: Ticker symbol(s) (e.g., 'AAPL' or ['AAPL', 'FB']).
-    :param limit: Number of results per page (default: DEFAULT_LIMIT).
+    :param limit: Number of results per page (default: 25).
     :param page: Page number for pagination (default: 0).
     :param from_date: Start date for news articles (format: YYYY-MM-DD).
     :param to_date: End date for news articles (format: YYYY-MM-DD).
