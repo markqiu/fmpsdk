@@ -32,7 +32,7 @@ def fmp_articles(
 
 
 def general_news(
-    page: typing.Union[int, typing.List[int]] = range(0, 20),
+    pages: int = 20,
     tsv: bool = True
 ) -> typing.Union[typing.List[typing.Dict], str]:
     """
@@ -42,24 +42,16 @@ def general_news(
     Useful for staying informed on current events and market trends.
     Each article includes headline, snippet, and publication URL.
 
-    :param page: Page number(s) for pagination. Can be an int or a list of ints.
-                 If a list is provided, results from all specified pages will be combined.
-                 Default is range(0, 20).
+    :param pages: Number of pages to retrieve. Default is 20.
     :param tsv: If True, return data in TSV format. Defaults to True.
     :return: List of dicts or TSV string with general news data.
-    :example: general_news(page=1)
-              general_news(page=[0, 1, 2])
+    :example: general_news(pages=5)
     """
     path = "general_news"
-    
-    if isinstance(page, int):
-        pages = [page]
-    else:
-        pages = page
-
     all_results = []
-    for p in pages:
-        query_vars = {"apikey": API_KEY, "page": p}
+
+    for page in range(pages):
+        query_vars = {"apikey": API_KEY, "page": page}
         result = __return_json_v4(path=path, query_vars=query_vars)
         all_results.extend(result)
 
