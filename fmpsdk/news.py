@@ -42,7 +42,8 @@ def general_news(
     Useful for staying informed on current events and market trends.
     Each article includes headline, snippet, and publication URL.
 
-    :param pages: Number of pages to retrieve. Default is 20.
+    :param pages: Number of pages to retrieve. Default is 20 which will 
+    typically cover 24 hours of news.
     :param tsv: If True, return data in TSV format. Defaults to True.
     :return: List of dicts or TSV string with general news data.
     :example: general_news(pages=5)

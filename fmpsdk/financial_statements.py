@@ -416,6 +416,7 @@ def sec_filings_data(
     :param symbol: Company ticker (e.g., 'AAPL').
     :param filing_type: SEC filing type (e.g., '10-K', '10-Q', '8-K'). Default is all types.
     :param limit: Number of records to retrieve. Default is 1.
+    NOTE to LLM's: Limit to 2 record at a time.
     :param tsv: If True, return data in TSV format. Defaults to True.
     :return: List of dicts or TSV string with SEC filings data, including the content.
     :example: sec_filings_data('AAPL', filing_type='10-K', limit=2)
