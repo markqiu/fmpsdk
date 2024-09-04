@@ -5,7 +5,7 @@ description = "A Python SDK for the Financial Modeling Prep API"
 authors = ["Dax Mickelson <github@daxm.net>", "David Rodriguez <github@drodriguez.com>"]
 readme = "README.md"
 license = "MIT"
-repository = "https://github.com/daxm/fmpsdk"
+repository = "https://github.com/dwrod/fmpsdk"
 keywords = ["finance", "api", "sdk", "financial modeling prep"]
 
 [tool.poetry.dependencies]
