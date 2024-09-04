@@ -201,9 +201,6 @@ from .valuation_metrics import (
     historical_daily_discounted_cash_flow,
     market_capitalization,
     historical_market_capitalization,
-    discounted_cash_flow,
-    advanced_discounted_cash_flow,
-    historical_daily_discounted_cash_flow,
 )
 
 attribution: str = "Data provided by Financial Modeling Prep"
@@ -249,7 +246,6 @@ __all__ = [
     "company_profile",
     "compensation_benchmark",
     "crowdfunding_by_cik",
-    "crowdfunding_offerings",
     "crowdfunding_rss_feed",
     "crowdfunding_search",
     "cryptocurrencies_list",
@@ -284,9 +280,9 @@ __all__ = [
     "fmp_articles",
     "form_13f",
     "forex",
+    "forex_historical",
     "forex_list",
     "forex_quote",
-    "forex_historical",
     "gainers",
     "general_news",
     "historical_chart",
