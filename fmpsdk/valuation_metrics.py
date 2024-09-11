@@ -2,13 +2,13 @@ import typing
 import os
 from .settings import DEFAULT_LIMIT
 from .url_methods import __return_json_v3, __return_json_v4
-from .data_compression import compress_json_to_tsv
+from .data_compression import format_output
 
 API_KEY = os.getenv('FMP_API_KEY')
 
 def discounted_cash_flow(
     symbol: str,
-    tsv: bool = True
+    output: str = 'markdown'
 ) -> typing.Union[typing.List[typing.Dict], str]:
     """
     Retrieve discounted cash flow (DCF) valuation data for a company.
@@ -18,18 +18,18 @@ def discounted_cash_flow(
     overvalued companies.
 
     :param symbol: Company ticker (e.g., 'AAPL').
-    :param tsv: If True, return data in TSV format. Defaults to True.
-    :return: DCF valuation data or TSV string.
+    :param output: Output format ('tsv', 'json', or 'markdown'). Defaults to 'markdown'.
+    :return: DCF valuation data.
     :example: discounted_cash_flow('AAPL')
     """
     path = f"discounted-cash-flow/{symbol}"
     query_vars = {"apikey": API_KEY}
     result = __return_json_v3(path=path, query_vars=query_vars)
-    return compress_json_to_tsv(result) if tsv else result
+    return format_output(result, output)
 
 def advanced_discounted_cash_flow(
     symbol: str,
-    tsv: bool = True
+    output: str = 'markdown'
 ) -> typing.Union[typing.List[typing.Dict], str]:
     """
     Retrieve advanced discounted cash flow (DCF) valuation data for a company.
@@ -39,19 +39,19 @@ def advanced_discounted_cash_flow(
     or overvalued companies.
 
     :param symbol: Company ticker (e.g., 'AAPL').
-    :param tsv: If True, return data in TSV format. Defaults to True.
-    :return: Advanced DCF valuation data or TSV string.
+    :param output: Output format ('tsv', 'json', or 'markdown'). Defaults to 'markdown'.
+    :return: Advanced DCF valuation data.
     :example: advanced_discounted_cash_flow('AAPL')
     """
     path = f"advanced_discounted_cash_flow"
     query_vars = {"apikey": API_KEY, "symbol": symbol}
     result = __return_json_v4(path=path, query_vars=query_vars)
-    return compress_json_to_tsv(result) if tsv else result
+    return format_output(result, output)
 
 def historical_daily_discounted_cash_flow(
     symbol: str,
     limit: int = DEFAULT_LIMIT,
-    tsv: bool = True
+    output: str = 'markdown'
 ) -> typing.Union[typing.List[typing.Dict], str]:
     """
     Retrieve daily historical discounted cash flow (DCF) valuation data for a company.
@@ -62,16 +62,19 @@ def historical_daily_discounted_cash_flow(
 
     :param symbol: Company ticker.
     :param limit: Number of rows to return. Default is DEFAULT_LIMIT.
-    :param tsv: If True, return data in TSV format. Defaults to True.
-    :return: Daily historical DCF valuation data or TSV string.
+    :param output: Output format ('tsv', 'json', or 'markdown'). Defaults to 'markdown'.
+    :return: Daily historical DCF valuation data.
     :example: historical_daily_discounted_cash_flow('AAPL', limit=5)
     """
     path = f"historical-daily-discounted-cash-flow/{symbol}"
     query_vars = {"apikey": API_KEY, "limit": limit}
     result = __return_json_v3(path=path, query_vars=query_vars)
-    return compress_json_to_tsv(result) if tsv else result
+    return format_output(result, output)
 
-def market_capitalization(symbol: str) -> typing.Optional[typing.List[typing.Dict]]:
+def market_capitalization(
+    symbol: str,
+    output: str = 'markdown'
+) -> typing.Union[typing.List[typing.Dict], str]:
     """
     Retrieve a company's current market capitalization.
 
@@ -79,17 +82,19 @@ def market_capitalization(symbol: str) -> typing.Optional[typing.List[typing.Dic
     identifying large-cap, mid-cap, or small-cap companies.
 
     :param symbol: Company ticker.
-    :return: List of dicts with market capitalization data or None if request fails.
+    :param output: Output format ('tsv', 'json', or 'markdown'). Defaults to 'markdown'.
+    :return: Market capitalization data.
     :example: market_capitalization('AAPL')
     """
     path = f"market-capitalization/{symbol}"
     query_vars = {"apikey": API_KEY}
-    return __return_json_v3(path=path, query_vars=query_vars)
+    result = __return_json_v3(path=path, query_vars=query_vars)
+    return format_output(result, output)
 
 def historical_market_capitalization(
     symbol: str,
     limit: int = DEFAULT_LIMIT,
-    tsv: bool = True
+    output: str = 'markdown'
 ) -> typing.Union[typing.List[typing.Dict], str]:
     """
     Retrieve historical market capitalization data for a company.
@@ -100,9 +105,8 @@ def historical_market_capitalization(
 
     :param symbol: Company ticker (e.g., 'AAPL').
     :param limit: Number of records to retrieve. Default is DEFAULT_LIMIT.
-    :param tsv: If True, return data in TSV format. Defaults to True.
-    :return: List of dicts with historical market cap data, or TSV string if tsv is True.
-             Returns None if request fails.
+    :param output: Output format ('tsv', 'json', or 'markdown'). Defaults to 'markdown'.
+    :return: Historical market cap data.
     :example: historical_market_capitalization('AAPL', limit=100)
     """
     path = f"historical-market-capitalization/{symbol}"
@@ -110,13 +114,13 @@ def historical_market_capitalization(
     result = __return_json_v3(path=path, query_vars=query_vars)
     
     if result is not None:
-        return compress_json_to_tsv(result) if tsv else result
+        return format_output(result, output)
     
     return None
 
 def discounted_cash_flow(
     symbol: str,
-    tsv: bool = True
+    output: str = 'markdown'
 ) -> typing.Union[typing.List[typing.Dict], str]:
     """
     Retrieve discounted cash flow (DCF) valuation data for a company.
@@ -126,19 +130,19 @@ def discounted_cash_flow(
     overvalued companies.
 
     :param symbol: Company ticker (e.g., 'AAPL').
-    :param tsv: If True, return data in TSV format. Defaults to True.
-    :return: DCF valuation data or TSV string.
+    :param output: Output format ('tsv', 'json', or 'markdown'). Defaults to 'markdown'.
+    :return: DCF valuation data.
     :example: discounted_cash_flow('AAPL')
     """
     path = f"discounted-cash-flow/{symbol}"
     query_vars = {"apikey": API_KEY}
     result = __return_json_v3(path=path, query_vars=query_vars)
-    return compress_json_to_tsv(result) if tsv else result
+    return format_output(result, output)
 
 
 def advanced_discounted_cash_flow(
     symbol: str,
-    tsv: bool = True
+    output: str = 'markdown'
 ) -> typing.Union[typing.List[typing.Dict], str]:
     """
     Retrieve advanced discounted cash flow (DCF) valuation data for a company.
@@ -148,20 +152,20 @@ def advanced_discounted_cash_flow(
     or overvalued companies.
 
     :param symbol: Company ticker (e.g., 'AAPL').
-    :param tsv: If True, return data in TSV format. Defaults to True.
-    :return: Advanced DCF valuation data or TSV string.
+    :param output: Output format ('tsv', 'json', or 'markdown'). Defaults to 'markdown'.
+    :return: Advanced DCF valuation data.
     :example: advanced_discounted_cash_flow('AAPL')
     """
     path = f"advanced_discounted_cash_flow"
     query_vars = {"apikey": API_KEY, "symbol": symbol}
     result = __return_json_v4(path=path, query_vars=query_vars)
-    return compress_json_to_tsv(result) if tsv else result
+    return format_output(result, output)
 
 
 def historical_daily_discounted_cash_flow(
     symbol: str,
     limit: int = DEFAULT_LIMIT,
-    tsv: bool = True
+    output: str = 'markdown'
 ) -> typing.Union[typing.List[typing.Dict], str]:
     """
     Retrieve daily historical discounted cash flow (DCF) valuation data for a company.
@@ -172,11 +176,11 @@ def historical_daily_discounted_cash_flow(
 
     :param symbol: Company ticker.
     :param limit: Number of rows to return. Default is DEFAULT_LIMIT.
-    :param tsv: If True, return data in TSV format. Defaults to True.
-    :return: Daily historical DCF valuation data or TSV string.
+    :param output: Output format ('tsv', 'json', or 'markdown'). Defaults to 'markdown'.
+    :return: Daily historical DCF valuation data.
     :example: historical_daily_discounted_cash_flow('AAPL', limit=5)
     """
     path = f"historical-daily-discounted-cash-flow/{symbol}"
     query_vars = {"apikey": API_KEY, "limit": limit}
     result = __return_json_v3(path=path, query_vars=query_vars)
-    return compress_json_to_tsv(result) if tsv else result
+    return format_output(result, output)

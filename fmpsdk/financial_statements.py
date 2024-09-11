@@ -5,7 +5,6 @@ import logging
 from bs4 import BeautifulSoup
 
 from .settings import (
-    FINANCIAL_STATEMENT_FILENAME,
     INCOME_STATEMENT_FILENAME,
     BALANCE_SHEET_STATEMENT_FILENAME,
     CASH_FLOW_STATEMENT_FILENAME,
@@ -22,7 +21,7 @@ from .url_methods import (
     __validate_period,
     __validate_sector,
 )
-from .data_compression import compress_json_to_tsv
+from .data_compression import format_output, clean_html_content
 
 API_KEY = os.getenv('FMP_API_KEY')
 SEC_USER_AGENT = os.getenv('SEC_USER_AGENT')
@@ -33,7 +32,7 @@ def income_statement(
     limit: int = DEFAULT_LIMIT,
     download: bool = False,
     filename: str = INCOME_STATEMENT_FILENAME,
-    tsv: bool = True
+    output: str = 'markdown'
 ) -> typing.Union[typing.List[typing.Dict], str, None]:
     """
     Retrieve income statement data for a company.
@@ -47,9 +46,8 @@ def income_statement(
     :param limit: Number of statements to retrieve. Default is 10.
     :param download: If True, download data as CSV. Default is False.
     :param filename: Name of saved file. Default is INCOME_STATEMENT_FILENAME.
-    :param limit: Number of rows to return. Default is DEFAULT_LIMIT.
-    :param tsv: If True, return data in TSV format. Defaults to True.
-    :return: List of dicts, TSV string, or None if download is True.
+    :param output: Output format ('tsv', 'json', or 'markdown'). Defaults to 'markdown'.
+    :return: List of dicts, formatted string, or None if download is True.
     :example: income_statement('AAPL', period='quarter', limit=5)
     """
     path = f"income-statement/{symbol}"
@@ -62,7 +60,7 @@ def income_statement(
         return None
     else:
         result = __return_json_v3(path=path, query_vars=query_vars)
-        return compress_json_to_tsv(result) if tsv else result
+        return format_output(result, output)
 
 
 def balance_sheet_statement(
@@ -71,7 +69,7 @@ def balance_sheet_statement(
     limit: int = DEFAULT_LIMIT,
     download: bool = False,
     filename: str = BALANCE_SHEET_STATEMENT_FILENAME,
-    tsv: bool = True
+    output: str = 'markdown'
 ) -> typing.Union[typing.List[typing.Dict], str, None]:
     """
     Retrieve balance sheet data for a company.
@@ -85,8 +83,8 @@ def balance_sheet_statement(
     :param limit: Number of statements to retrieve. Default is 10.
     :param download: If True, download data as CSV. Default is False.
     :param filename: Name of saved file. Default is BALANCE_SHEET_STATEMENT_FILENAME.
-    :param tsv: If True, return data in TSV format. Defaults to True.
-    :return: List of dicts, TSV string, or None if download is True.
+    :param output: Output format ('tsv', 'json', or 'markdown'). Defaults to 'markdown'.
+    :return: List of dicts, formatted string, or None if download is True.
     :example: balance_sheet_statement('AAPL', period='quarter', limit=5)
     """
     path = f"balance-sheet-statement/{symbol}"
@@ -99,7 +97,7 @@ def balance_sheet_statement(
         return None
     else:
         result = __return_json_v3(path=path, query_vars=query_vars)
-        return compress_json_to_tsv(result) if tsv else result
+        return format_output(result, output)
 
 
 def cash_flow_statement(
@@ -108,7 +106,7 @@ def cash_flow_statement(
     limit: int = DEFAULT_LIMIT,
     download: bool = False,
     filename: str = CASH_FLOW_STATEMENT_FILENAME,
-    tsv: bool = True
+    output: str = 'markdown'
 ) -> typing.Union[typing.List[typing.Dict], str, None]:
     """
     Retrieve cash flow statement data for a company.
@@ -122,8 +120,8 @@ def cash_flow_statement(
     :param limit: Number of statements to retrieve. Default is 10.
     :param download: If True, download data as CSV. Default is False.
     :param filename: Name of saved file. Default is CASH_FLOW_STATEMENT_FILENAME.
-    :param tsv: If True, return data in TSV format. Defaults to True.
-    :return: List of dicts, TSV string, or None if download is True.
+    :param output: Output format ('tsv', 'json', or 'markdown'). Defaults to 'markdown'.
+    :return: List of dicts, formatted string, or None if download is True.
     :example: cash_flow_statement('AAPL', period='quarter', limit=5)
     """
     path = f"cash-flow-statement/{symbol}"
@@ -136,7 +134,7 @@ def cash_flow_statement(
         return None
     else:
         result = __return_json_v3(path=path, query_vars=query_vars)
-        return compress_json_to_tsv(result) if tsv else result
+        return format_output(result, output)
 
 
 def income_statement_as_reported(
@@ -145,7 +143,7 @@ def income_statement_as_reported(
     limit: int = DEFAULT_LIMIT,
     download: bool = False,
     filename: str = INCOME_STATEMENT_AS_REPORTED_FILENAME,
-    tsv: bool = True
+    output: str = 'markdown'
 ) -> typing.Union[typing.List[typing.Dict], str, None]:
     """
     Query FMP /income-statement-as-reported/ API for company's as-reported income statement.
@@ -155,8 +153,8 @@ def income_statement_as_reported(
     :param limit: Number of rows to return. Default is DEFAULT_LIMIT.
     :param download: If True, download data as CSV. Default is False.
     :param filename: Name of saved file. Default is INCOME_STATEMENT_AS_REPORTED_FILENAME.
-    :param tsv: If True, return data in TSV format. Defaults to True.
-    :return: List of dicts, TSV string, or None if download is True.
+    :param output: Output format ('tsv', 'json', or 'markdown'). Defaults to 'markdown'.
+    :return: List of dicts, formatted string, or None if download is True.
     :example: income_statement_as_reported('AAPL', period='quarter', limit=5)
     """
     path = f"income-statement-as-reported/{symbol}"
@@ -173,7 +171,7 @@ def income_statement_as_reported(
         return None
     else:
         result = __return_json_v3(path=path, query_vars=query_vars)
-        return compress_json_to_tsv(result) if tsv else result
+        return format_output(result, output)
 
 def balance_sheet_statement_as_reported(
     symbol: str,
@@ -181,7 +179,7 @@ def balance_sheet_statement_as_reported(
     limit: int = DEFAULT_LIMIT,
     download: bool = False,
     filename: str = BALANCE_SHEET_STATEMENT_AS_REPORTED_FILENAME,
-    tsv: bool = True
+    output: str = 'markdown'
 ) -> typing.Union[typing.List[typing.Dict], str, None]:
     """
     Query FMP /balance-sheet-statement-as-reported/ API for company's as-reported balance sheet.
@@ -191,8 +189,8 @@ def balance_sheet_statement_as_reported(
     :param limit: Number of rows to return. Default is DEFAULT_LIMIT.
     :param download: If True, download data as CSV. Default is False.
     :param filename: Name of saved file. Default is BALANCE_SHEET_STATEMENT_AS_REPORTED_FILENAME.
-    :param tsv: If True, return data in TSV format. Defaults to True.
-    :return: List of dicts, TSV string, or None if download is True.
+    :param output: Output format ('tsv', 'json', or 'markdown'). Defaults to 'markdown'.
+    :return: List of dicts, formatted string, or None if download is True.
     :example: balance_sheet_statement_as_reported('AAPL', period='quarter', limit=5)
     """
     path = f"balance-sheet-statement-as-reported/{symbol}"
@@ -209,7 +207,7 @@ def balance_sheet_statement_as_reported(
         return None
     else:
         result = __return_json_v3(path=path, query_vars=query_vars)
-        return compress_json_to_tsv(result) if tsv else result
+        return format_output(result, output)
 
 def cash_flow_statement_as_reported(
     symbol: str,
@@ -217,7 +215,7 @@ def cash_flow_statement_as_reported(
     limit: int = DEFAULT_LIMIT,
     download: bool = False,
     filename: str = CASH_FLOW_STATEMENT_AS_REPORTED_FILENAME,
-    tsv: bool = True
+    output: str = 'markdown'
 ) -> typing.Union[typing.List[typing.Dict], str, None]:
     """
     Query FMP /cash-flow-statement-as-reported/ API for company's as-reported cash flow statement.
@@ -227,8 +225,8 @@ def cash_flow_statement_as_reported(
     :param limit: Number of rows to return. Default is DEFAULT_LIMIT.
     :param download: If True, download data as CSV. Default is False.
     :param filename: Name of saved file. Default is CASH_FLOW_STATEMENT_AS_REPORTED_FILENAME.
-    :param tsv: If True, return data as a TSV string. Defaults to True.
-    :return: List of dicts, TSV string, or None if download is True.
+    :param output: Output format ('tsv', 'json', or 'markdown'). Defaults to 'markdown'.
+    :return: List of dicts, formatted string, or None if download is True.
     :example: cash_flow_statement_as_reported('AAPL', period='quarter', limit=5, download=True)
     """
     path = f"cash-flow-statement-as-reported/{symbol}"
@@ -245,31 +243,31 @@ def cash_flow_statement_as_reported(
         return None
     else:
         result = __return_json_v3(path=path, query_vars=query_vars)
-        return compress_json_to_tsv(result) if tsv else result
+        return format_output(result, output)
 
 
 def financial_statement_full_as_reported(
     symbol: str,
     period: str = "annual",
-    tsv: bool = True
+    output: str = 'markdown'
 ) -> typing.Union[typing.List[typing.Dict], str]:
     """
     Query FMP /financial-statement-full-as-reported/ API for company's full as-reported financial statement.
 
     :param symbol: Company ticker.
     :param period: 'quarter' or 'annual'. Default is 'annual'.
-    :param tsv: If True, return data in TSV format. Defaults to True.
-    :return: List of dicts or TSV string with full as-reported financial statement data.
+    :param output: Output format ('tsv', 'json', or 'markdown'). Defaults to 'markdown'.
+    :return: List of dicts or formatted string with full as-reported financial statement data.
     :example: financial_statement_full_as_reported('AAPL', period='quarter')
     """
     path = f"financial-statement-full-as-reported/{symbol}"
     query_vars = {"apikey": API_KEY, "period": __validate_period(value=period)}
     result = __return_json_v3(path=path, query_vars=query_vars)
-    return compress_json_to_tsv(result) if tsv else result
+    return format_output(result, output)
 
 def earnings_surprises(
     symbol: str,
-    tsv: bool = True
+    output: str = 'markdown'
 ) -> typing.Union[typing.List[typing.Dict], str]:
     """
     Retrieve earnings surprises for a company.
@@ -279,20 +277,20 @@ def earnings_surprises(
     impact stock prices and investor sentiment.
 
     :param symbol: Company ticker (e.g., 'AAPL').
-    :param tsv: If True, return data in TSV format. Defaults to True.
-    :return: List of dicts or TSV string with earnings surprises data.
+    :param output: Output format ('tsv', 'json', or 'markdown'). Defaults to 'markdown'.
+    :return: List of dicts or formatted string with earnings surprises data.
     :example: earnings_surprises('AAPL')
     """
     path = f"earnings-surprises/{symbol}"
     query_vars = {"apikey": API_KEY}
     result = __return_json_v3(path=path, query_vars=query_vars)
-    return compress_json_to_tsv(result) if tsv else result
+    return format_output(result, output)
 
 def earning_call_transcript(
     symbol: str,
     year: int,
     quarter: int,
-    tsv: bool = True
+    output: str = 'markdown'
 ) -> typing.Union[typing.List[typing.Dict], str]:
     """
     Retrieve the earning call transcript for a specific quarter and year.
@@ -302,20 +300,20 @@ def earning_call_transcript(
     :param symbol: Company ticker (e.g., 'AAPL').
     :param year: Year of the transcript (e.g., 2023).
     :param quarter: Quarter of the transcript (1-4).
-    :param tsv: If True, return data in TSV format. Defaults to True.
-    :return: List of dicts or TSV string with earning call transcript data.
+    :param output: Output format ('tsv', 'json', or 'markdown'). Defaults to 'markdown'.
+    :return: List of dicts or formatted string with earning call transcript data.
     :example: earning_call_transcript('AAPL', 2023, 1)
     """
     path = f"earning_call_transcript/{symbol}"
     query_vars = {"apikey": API_KEY, "year": year, "quarter": quarter}
     result = __return_json_v3(path=path, query_vars=query_vars)
-    return compress_json_to_tsv(result) if tsv else result
+    return format_output(result, output)
 
 
 def batch_earning_call_transcript(
     symbol: str,
     year: int,
-    tsv: bool = True
+    output: str = 'markdown'
 ) -> typing.Union[typing.List[typing.Dict], str]:
     """
     Retrieve batch earning call transcripts for a specific year.
@@ -325,14 +323,14 @@ def batch_earning_call_transcript(
 
     :param symbol: Company ticker (e.g., 'AAPL').
     :param year: Year of the transcripts (e.g., 2023).
-    :param tsv: If True, return data in TSV format. Defaults to True.
-    :return: List of dicts or TSV string with batch earning call transcript data.
+    :param output: Output format ('tsv', 'json', or 'markdown'). Defaults to 'markdown'.
+    :return: List of dicts or formatted string with batch earning call transcript data.
     :example: batch_earning_call_transcript('AAPL', 2023)
     """
     path = f"batch_earning_call_transcript/{symbol}"
     query_vars = {"apikey": API_KEY, "year": year}
     result = __return_json_v4(path=path, query_vars=query_vars)
-    return compress_json_to_tsv(result) if tsv else result
+    return format_output(result, output)
 
 
 def earning_call_transcripts_available_dates(
@@ -380,32 +378,11 @@ def sec_filings(
     return __return_json_v3(path=path, query_vars=query_vars)
 
 
-def clean_html_content(soup):
-    """
-    Clean HTML content by removing scripts, styles, and attributes.
-
-    :param soup: BeautifulSoup object containing HTML content.
-    :return: Cleaned text content.
-    """
-    for script in soup(["script", "style"]):
-        script.decompose()
-
-    for tag in soup.recursiveChildGenerator():
-        if hasattr(tag, 'attrs'):
-            tag.attrs = {}
-
-    text = soup.get_text()
-    lines = (line.strip() for line in text.splitlines())
-    chunks = (phrase.strip() for line in lines for phrase in line.split("  "))
-    text = '\n'.join(chunk for chunk in chunks if chunk)
-
-    return text
-
 def sec_filings_data(
     symbol: str,
     filing_type: str = "",
     limit: int = 1,
-    tsv: bool = True
+    output: str = 'markdown'
 ) -> typing.Union[typing.List[typing.Dict], str]:
     """
     Retrieve a company's SEC filings and fetch the content from 'finalLink'.
@@ -417,8 +394,8 @@ def sec_filings_data(
     :param filing_type: SEC filing type (e.g., '10-K', '10-Q', '8-K'). Default is all types.
     :param limit: Number of records to retrieve. Default is 1.
     NOTE to LLM's: Limit to 2 record at a time.
-    :param tsv: If True, return data in TSV format. Defaults to True.
-    :return: List of dicts or TSV string with SEC filings data, including the content.
+    :param output: Output format ('tsv', 'json', or 'markdown'). Defaults to 'markdown'.
+    :return: List of dicts or formatted string with SEC filings data, including the content.
     :example: sec_filings_data('AAPL', filing_type='10-K', limit=2)
     Note: This function returns unredacted full text of the filings and 
     may not be suitable for LLM processing without very long context windows.
@@ -442,4 +419,4 @@ def sec_filings_data(
             except requests.RequestException as e:
                 filing['content'] = f"Error fetching content: {str(e)}"
 
-    return compress_json_to_tsv(filings) if tsv else filings
+    return format_output(filings, output)

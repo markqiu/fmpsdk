@@ -2,52 +2,54 @@ import typing
 import os
 from .settings import DEFAULT_LIMIT
 from .url_methods import __return_json_v3
-from .data_compression import compress_json_to_tsv
+from .data_compression import format_output
 
 API_KEY = os.getenv('FMP_API_KEY')
 
-def financial_statement_symbol_lists() -> typing.Union[typing.List[typing.Dict], str]:
+def financial_statement_symbol_lists(output: str = 'markdown') -> typing.Union[typing.List[typing.Dict[str, typing.Any]], str]:
     """
     Retrieve a list of symbols with available financial statements.
 
     Useful for identifying companies with accessible financial data for analysis.
 
-    :return: List of dicts or TSV string with symbols and their available financial statements.
+    :param output: Output format ('tsv', 'json', or 'markdown'). Defaults to 'markdown'.
+    :return: List of dicts or formatted string with symbols and their available financial statements.
     :example: financial_statement_symbol_lists()
     """
     path = "financial-statement-symbol-lists"
     query_vars = {"apikey": API_KEY}
-    return __return_json_v3(path=path, query_vars=query_vars)
+    result = __return_json_v3(path=path, query_vars=query_vars)
+    return format_output(result, output)
 
-def symbols_list(tsv: bool = True) -> typing.Union[typing.List[typing.Dict], str]:
+def symbols_list(output: str = 'markdown') -> typing.Union[typing.List[typing.Dict[str, typing.Any]], str]:
     """
     Retrieve a list of all available stock symbols.
 
     Useful for exploring and analyzing a wide range of stocks.
 
-    :param tsv: If True, return data in TSV format. Defaults to True.
-    :return: List of dicts or TSV string with stock symbols data.
+    :param output: Output format ('tsv', 'json', or 'markdown'). Defaults to 'markdown'.
+    :return: List of dicts or formatted string with stock symbols data.
     :example: symbols_list()
     """
     path = f"stock/list"
     query_vars = {"apikey": API_KEY}
     result = __return_json_v3(path=path, query_vars=query_vars)
-    return compress_json_to_tsv(result) if tsv else result
+    return format_output(result, output)
 
-def etf_list(tsv: bool = True) -> typing.Union[typing.List[typing.Dict], str]:
+def etf_list(output: str = 'markdown') -> typing.Union[typing.List[typing.Dict[str, typing.Any]], str]:
     """
     Retrieve a list of all available ETF symbols.
 
     Useful for exploring and analyzing a wide range of ETFs.
 
-    :param tsv: If True, return data in TSV format. Defaults to True.
-    :return: List of dicts or TSV string with ETF symbols data.
+    :param output: Output format ('tsv', 'json', or 'markdown'). Defaults to 'markdown'.
+    :return: List of dicts or formatted string with ETF symbols data.
     :example: etf_list()
     """
     path = "etf/list"
     query_vars = {"apikey": API_KEY}
     result = __return_json_v3(path=path, query_vars=query_vars)
-    return compress_json_to_tsv(result) if tsv else result
+    return format_output(result, output)
 
 def available_traded_list(
 ) -> typing.List[str]:
@@ -116,19 +118,19 @@ def available_forex(
     query_vars = {"apikey": API_KEY}
     return __return_json_v3(path=path, query_vars=query_vars)
 
-def cryptocurrencies_list(tsv: bool = True) -> typing.Union[typing.List[typing.Dict], str]:
+def cryptocurrencies_list(output: str = 'markdown') -> typing.Union[typing.List[typing.Dict[str, typing.Any]], str]:
     """
     Query FMP /quotes/crypto API
 
-    :param tsv: If True, return data in TSV format. Defaults to True.
-    :return: List of dicts or TSV string containing full quotes for all cryptocurrencies.
+    :param output: Output format ('tsv', 'json', or 'markdown'). Defaults to 'markdown'.
+    :return: List of dicts or formatted string containing full quotes for all cryptocurrencies.
     :example: cryptocurrencies_list()
     :endpoint: https://financialmodelingprep.com/api/v3/quotes/crypto
     """
     path = "quotes/crypto"
     query_vars = {"apikey": API_KEY}
     result = __return_json_v3(path=path, query_vars=query_vars)
-    return compress_json_to_tsv(result) if tsv else result
+    return format_output(result, output)
 
 def all_countries(
 ) -> typing.List[str]:
@@ -211,44 +213,44 @@ def available_exchanges(
     query_vars = {"apikey": API_KEY}
     return __return_json_v3(path=path, query_vars=query_vars)
 
-def available_cryptocurrencies(tsv: bool = True) -> typing.Union[typing.List[typing.Dict], str]:
+def available_cryptocurrencies(output: str = 'markdown') -> typing.Union[typing.List[typing.Dict[str, typing.Any]], str]:
     """
     Query FMP /symbol/available-cryptocurrencies API
 
-    :param tsv: If True, return data in TSV format. Defaults to True.
-    :return: List of dicts or TSV string containing available cryptocurrencies.
+    :param output: Output format ('tsv', 'json', or 'markdown'). Defaults to 'markdown'.
+    :return: List of dicts or formatted string containing available cryptocurrencies.
     :example: available_cryptocurrencies()
     :endpoint: https://financialmodelingprep.com/api/v3/symbol/available-cryptocurrencies
     """
     path = "symbol/available-cryptocurrencies"
     query_vars = {"apikey": API_KEY}
     result = __return_json_v3(path=path, query_vars=query_vars)
-    return compress_json_to_tsv(result) if tsv else result
+    return format_output(result, output)
 
-def available_euronext(tsv: bool = True) -> typing.Union[typing.List[typing.Dict], str]:
+def available_euronext(output: str = 'markdown') -> typing.Union[typing.List[typing.Dict[str, typing.Any]], str]:
     """
     Query FMP /symbol/available-euronext API
 
     Get a list of available Euronext stocks.
 
-    :param tsv: If True, return data in TSV format. Defaults to True.
-    :return: List of dicts or TSV string containing available Euronext stocks.
+    :param output: Output format ('tsv', 'json', or 'markdown'). Defaults to 'markdown'.
+    :return: List of dicts or formatted string containing available Euronext stocks.
     :example: available_euronext()
     """
     path = "symbol/available-euronext"
     query_vars = {"apikey": API_KEY}
     result = __return_json_v3(path=path, query_vars=query_vars)
-    return compress_json_to_tsv(result) if tsv else result
+    return format_output(result, output)
 
-def available_indexes(tsv: bool = True) -> typing.Union[typing.List[typing.Dict], str]:
+def available_indexes(output: str = 'markdown') -> typing.Union[typing.List[typing.Dict[str, typing.Any]], str]:
     """
     Query FMP /symbol/available-indexes/ API
 
-    :param tsv: If True, return data in TSV format. Defaults to True.
-    :return: List of dicts or TSV string containing available indexes.
+    :param output: Output format ('tsv', 'json', or 'markdown'). Defaults to 'markdown'.
+    :return: List of dicts or formatted string containing available indexes.
     :example: available_indexes()
     """
     path = "symbol/available-indexes"
     query_vars = {"apikey": API_KEY}
     result = __return_json_v3(path=path, query_vars=query_vars)
-    return compress_json_to_tsv(result) if tsv else result
+    return format_output(result, output)

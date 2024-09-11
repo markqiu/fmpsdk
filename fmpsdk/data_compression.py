@@ -3,6 +3,7 @@ from decimal import Decimal, ROUND_HALF_UP
 import csv
 import io
 import json
+import re
 from typing import List, Dict, Any, Tuple
 
 def compress_json_to_tuples(
@@ -110,7 +111,98 @@ def compress_json_to_tsv(json_data: List[Dict[str, Any]],
     
     return tsv_string
 
-# Example usage:
-# json_data = [{'date': '2025-07-30', 'eps': None, ...}, ...]
-# csv_output = compress_json_to_csv(json_data)
-# print(csv_output)
+def clean_html_content(soup):
+    """
+    Clean HTML content by removing scripts, styles, attributes, and unrecognized characters.
+
+    :param soup: BeautifulSoup object containing HTML content.
+    :return: Cleaned text content.
+    """
+    for script in soup(["script", "style"]):
+        script.decompose()
+
+    for tag in soup.recursiveChildGenerator():
+        if hasattr(tag, 'attrs'):
+            tag.attrs = {}
+
+    text = soup.get_text()
+    
+    # Remove non-breaking spaces and other common unrecognized characters
+    text = text.replace('\xa0', ' ')
+    text = text.replace('\u200b', '')  # Zero-width space
+    text = text.replace('\u2028', '\n')  # Line separator
+    text = text.replace('\u2029', '\n\n')  # Paragraph separator
+
+    # Replace multiple spaces with a single space
+    text = ' '.join(text.split())
+
+    # Remove any remaining non-printable characters
+    text = ''.join(char for char in text if char.isprintable() or char in ['\n', '\t'])
+
+    # Clean up financial data formatting
+    text = re.sub(r'(\$?\d+(?:,\d{3})*(?:\.\d+)?)\s*', r'\1 ', text)
+    
+    # Remove any leftover Unicode characters
+    text = re.sub(r'[^\x00-\x7F]+', '', text)
+
+    # Clean up newlines and spaces
+    lines = (line.strip() for line in text.splitlines())
+    chunks = (phrase.strip() for line in lines for phrase in line.split("  "))
+    text = '\n'.join(chunk for chunk in chunks if chunk)
+
+    return text
+
+def compress_json_to_markdown(json_data: List[Dict[str, Any]],
+                              fields: Tuple[str, ...] = None) -> str:
+    """
+    Compress JSON data into markdown-formatted tables for efficient LLM consumption.
+    
+    Args:
+    json_data (List[Dict[str, Any]]): List of dictionaries containing the data.
+    fields (Tuple[str, ...]): Tuple of field names to include in the output. If None, all fields are included.
+    
+    Returns:
+    str: Markdown formatted string of the compressed data.
+    """
+    if not json_data:
+        return ""
+
+    # Use specified fields if provided, otherwise use all keys from the first dictionary
+    fieldnames = fields if fields else list(json_data[0].keys())
+
+    # Create the header row
+    header = "| " + " | ".join(fieldnames) + " |"
+    separator = "| " + " | ".join(["---" for _ in fieldnames]) + " |"
+
+    # Create the data rows
+    rows = []
+    for row in json_data:
+        row_data = [str(row.get(field, '')) for field in fieldnames]
+        rows.append("| " + " | ".join(row_data) + " |")
+
+    # Combine all parts of the markdown table
+    markdown_table = "\n".join([header, separator] + rows)
+
+    return markdown_table
+
+def format_output(data: List[Dict[str, Any]], output: str, 
+                  fields: Tuple[str, ...] = None) -> typing.Union[typing.List[typing.Dict], str, None]:
+    """
+    Format the output data based on the specified format.
+
+    Args:
+    data (List[Dict[str, Any]]): List of dictionaries containing the data.
+    output (str): Desired output format ('tsv', 'json', or 'markdown').
+    fields (Tuple[str, ...]): Optional tuple of field names to include in the output.
+
+    Returns:
+    str: Formatted output string.
+    """
+    if output == 'tsv':
+        return compress_json_to_tsv(data, fields)
+    elif output == 'markdown':
+        return compress_json_to_markdown(data, fields)
+    elif output == 'json':
+        return data
+    else:
+        raise ValueError(f"Unsupported output format: {output}. Supported formats are 'tsv', 'json', and 'markdown'.")

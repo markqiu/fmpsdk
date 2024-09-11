@@ -1,13 +1,13 @@
 import typing
 import os
 from .url_methods import __return_json_v3, __return_json_v4
-from .data_compression import compress_json_to_tsv
+from .data_compression import format_output
 
 API_KEY = os.getenv('FMP_API_KEY')
 
 def quote_short(
     symbol: str,
-    tsv: bool = True
+    output: str = 'markdown'
 ) -> typing.Union[typing.List[typing.Dict], str]:
     """
     Retrieve a simple, real-time stock quote.
@@ -17,7 +17,7 @@ def quote_short(
     calculating stock valuations, or making quick investment decisions.
 
     :param symbol: Company ticker (e.g., 'AAPL').
-    :param tsv: If True, return data in TSV format. Defaults to True.
+    :param output: Format of the output (e.g., 'markdown'). Defaults to 'markdown'.
     :return: Stock quote data or None if request fails.
     :example: quote_short('AAPL')
     """
@@ -25,11 +25,11 @@ def quote_short(
     query_vars = {"apikey": API_KEY}
     result = __return_json_v3(path=path, query_vars=query_vars)
     
-    return compress_json_to_tsv(result) if tsv else result
+    return format_output(result, output)
 
 def historical_stock_dividend(
     symbol: str,
-    tsv: bool = True
+    output: str = 'markdown'
 ) -> typing.Union[typing.List[typing.Dict], str]:
     """
     Retrieve historical dividend payments for a publicly traded company.
@@ -39,7 +39,7 @@ def historical_stock_dividend(
     history, identifying consistent dividend payers, and tracking dividend growth.
 
     :param symbol: Company ticker (e.g., 'AAPL').
-    :param tsv: If True, return data in TSV format. Defaults to True.
+    :param output: Format of the output (e.g., 'markdown'). Defaults to 'markdown'.
     :return: Historical dividend data or None if request fails.
     :example: historical_stock_dividend('AAPL')
     """
@@ -51,13 +51,13 @@ def historical_stock_dividend(
         result = result['historical']
     
     if result and isinstance(result, list):
-        return compress_json_to_tsv(result) if tsv else result
+        return format_output(result, output)
     else:
         return None
 
 def historical_stock_split(
     symbol: str,
-    tsv: bool = True
+    output: str = 'markdown'
 ) -> typing.Union[typing.List[typing.Dict], str]:
     """
     Retrieve historical stock splits for a publicly traded company.
@@ -67,7 +67,7 @@ def historical_stock_split(
     identifying rapidly growing companies, and understanding stock price trends.
 
     :param symbol: Company ticker (e.g., 'AAPL').
-    :param tsv: If True, return data in TSV format. Defaults to True.
+    :param output: Format of the output (e.g., 'markdown'). Defaults to 'markdown'.
     :return: Historical stock split data or None if request fails.
     :example: historical_stock_split('AAPL')
     """
@@ -84,7 +84,7 @@ def historical_stock_split(
             return None
         
         if isinstance(result, list):
-            return compress_json_to_tsv(result) if tsv else result
+            return format_output(result, output)
         else:
             print(f"Unexpected result format: {type(result)}")
             return None
@@ -95,7 +95,7 @@ def historical_price_full(
     symbol: typing.Union[str, typing.List[str]],
     from_date: str = None,
     to_date: str = None,
-    tsv: bool = True
+    output: str = 'markdown'
 ) -> typing.Union[typing.List[typing.Dict], str]:
     """
     Retrieve full historical price data for one or multiple symbols.
@@ -107,7 +107,7 @@ def historical_price_full(
     :param symbol: Company ticker or list of tickers (e.g., 'AAPL' or ['AAPL', 'GOOGL']).
     :param from_date: Start date in 'YYYY-MM-DD' format.
     :param to_date: End date in 'YYYY-MM-DD' format.
-    :param tsv: If True, return data in TSV format. Defaults to True.
+    :param output: Format of the output (e.g., 'markdown'). Defaults to 'markdown'.
     :return: Historical price data or None if request fails.
     :example: historical_price_full('AAPL', from_date='2023-01-01', to_date='2023-12-31')
     """
@@ -127,11 +127,11 @@ def historical_price_full(
     if result and 'historical' in result:
         result = result['historical']
     
-    return compress_json_to_tsv(result) if tsv else result
+    return format_output(result, output)
 
 def stock_dividend(
     symbol: str,
-    tsv: bool = True
+    output: str = 'markdown'
 ) -> typing.Union[typing.List[typing.Dict], str]:
     """
     Retrieve dividend information for a specific stock.
@@ -141,7 +141,7 @@ def stock_dividend(
     and analyzing a company's dividend policy.
 
     :param symbol: Company ticker (e.g., 'AAPL').
-    :param tsv: If True, return data in TSV format. Defaults to True.
+    :param output: Format of the output (e.g., 'markdown'). Defaults to 'markdown'.
     :return: Dividend data or None if request fails.
     :example: stock_dividend('AAPL')
     """
@@ -149,11 +149,11 @@ def stock_dividend(
     query_vars = {"apikey": API_KEY}
     result = __return_json_v4(path=path, query_vars=query_vars)
     
-    return compress_json_to_tsv(result) if tsv else result
+    return format_output(result, output)
 
 def stock_split(
     symbol: str,
-    tsv: bool = True
+    output: str = 'markdown'
 ) -> typing.Union[typing.List[typing.Dict], str]:
     """
     Retrieve stock split information for a specific stock.
@@ -163,7 +163,7 @@ def stock_split(
     historical data, and identifying growth patterns.
 
     :param symbol: Company ticker (e.g., 'AAPL').
-    :param tsv: If True, return data in TSV format. Defaults to True.
+    :param output: Format of the output (e.g., 'markdown'). Defaults to 'markdown'.
     :return: Stock split data or None if request fails.
     :example: stock_split('AAPL')
     """
@@ -171,4 +171,4 @@ def stock_split(
     query_vars = {"apikey": API_KEY}
     result = __return_json_v4(path=path, query_vars=query_vars)
     
-    return compress_json_to_tsv(result) if tsv else result
+    return format_output(result, output)

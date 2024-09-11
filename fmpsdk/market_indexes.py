@@ -10,41 +10,40 @@ from .settings import (
     BASE_URL_v3,
 )
 from .url_methods import __return_json_v3
-from .data_compression import compress_json_to_tsv
+from .data_compression import format_output
 
 API_KEY = os.getenv('FMP_API_KEY')
 
-def indexes(tsv: bool = True) -> typing.Union[typing.List[typing.Dict], str]:
+def indexes(output: str = 'markdown') -> typing.Union[typing.List[typing.Dict], str]:
     """
     Query FMP /quotes/index API for major stock market indices.
- 
+
     Retrieves a list of all major stock market indices, such as the S&P 500, 
     the Dow Jones Industrial Average, and the Nasdaq Composite Index and 
     returns their performance.
-
-    :param tsv: If True, return data in TSV format. Defaults to True.
-    :return: If tsv, TSV string. Otherwise, list of dictionaries containing index data.
-             None if request fails.
-    :example: indexes(tsv=True)
+ 
+    :param output: Output format ('tsv', 'json', or 'markdown'). Defaults to 'markdown'.
+    :return: Index data in the specified format.
+    :example: indexes(output='markdown')
     """
     path = "quotes/index"
     query_vars = {"apikey": API_KEY}
     result = __return_json_v3(path=path, query_vars=query_vars)
     
-    return compress_json_to_tsv(result) if tsv else result
+    return format_output(result, output)
 
 def sp500_constituent(
     download: bool = False,
     filename: str = SP500_CONSTITUENTS_FILENAME,
-    tsv: bool = True
+    output: str = 'markdown'
 ) -> typing.Union[typing.List[typing.Dict], str, None]:
     """
     Query FMP /sp500_constituent/ API
 
     :param download: True/False
     :param filename: Name of saved file.
-    :param tsv: If True, return data in TSV format. Defaults to True.
-    :return: A list of dictionaries or TSV string if tsv is True.
+    :param output: Output format ('tsv', 'json', or 'markdown'). Defaults to 'markdown'.
+    :return: SP500 constituent data in the specified format.
     """
     path = f"sp500_constituent"
     query_vars = {"apikey": API_KEY}
@@ -56,33 +55,32 @@ def sp500_constituent(
         return None
     else:
         result = __return_json_v3(path=path, query_vars=query_vars)
-        return compress_json_to_tsv(result) if tsv else result
+        return format_output(result, output)
 
-def historical_sp500_constituent(tsv: bool = True) -> typing.Union[typing.List[typing.Dict], 
-                                                                   str, None]:
+def historical_sp500_constituent(output: str = 'markdown') -> typing.Union[typing.List[typing.Dict], str, None]:
     """
     Query FMP /historical/sp500_constituent/ API.
 
-    :param tsv: If True, return data in TSV format. Defaults to True.
-    :return: A list of dictionaries or TSV string if tsv is True.
+    :param output: Output format ('tsv', 'json', or 'markdown'). Defaults to 'markdown'.
+    :return: Historical SP500 constituent data in the specified format.
     """
     path = f"historical/sp500_constituent"
     query_vars = {"apikey": API_KEY}
     result = __return_json_v3(path=path, query_vars=query_vars)
-    return compress_json_to_tsv(result) if tsv else result
+    return format_output(result, output)
 
 def nasdaq_constituent(
     download: bool = False,
     filename: str = NASDAQ_CONSTITUENTS_FILENAME,
-    tsv: bool = True
+    output: str = 'markdown'
 ) -> typing.Union[typing.List[typing.Dict], str, None]:
     """
     Query FMP /nasdaq_constituent/ API
 
     :param download: True/False
     :param filename: Name of saved file.
-    :param tsv: If True, return data in TSV format. Defaults to True.
-    :return: A list of dictionaries or TSV string if tsv is True.
+    :param output: Output format ('tsv', 'json', or 'markdown'). Defaults to 'markdown'.
+    :return: NASDAQ constituent data in the specified format.
     """
     path = f"nasdaq_constituent"
     query_vars = {"apikey": API_KEY}
@@ -94,32 +92,32 @@ def nasdaq_constituent(
         return None
     else:
         result = __return_json_v3(path=path, query_vars=query_vars)
-        return compress_json_to_tsv(result) if tsv else result
+        return format_output(result, output)
 
-def historical_nasdaq_constituent(tsv: bool = True) -> typing.Union[typing.List[typing.Dict], str, None]:
+def historical_nasdaq_constituent(output: str = 'markdown') -> typing.Union[typing.List[typing.Dict], str, None]:
     """
     Query FMP /historical/nasdaq_constituent/ API.
 
-    :param tsv: If True, return data in TSV format. Defaults to True.
-    :return: A list of dictionaries or TSV string if tsv is True.
+    :param output: Output format ('tsv', 'json', or 'markdown'). Defaults to 'markdown'.
+    :return: Historical NASDAQ constituent data in the specified format.
     """
     path = f"historical/nasdaq_constituent"
     query_vars = {"apikey": API_KEY}
     result = __return_json_v3(path=path, query_vars=query_vars)
-    return compress_json_to_tsv(result) if tsv else result
+    return format_output(result, output)
 
 def dowjones_constituent(
     download: bool = False,
     filename: str = DOWJONES_CONSTITUENTS_FILENAME,
-    tsv: bool = True
+    output: str = 'markdown'
 ) -> typing.Union[typing.List[typing.Dict], str, None]:
     """
     Query FMP /dowjones_constituent/ API
 
     :param download: True/False
     :param filename: Name of saved file.
-    :param tsv: If True, return data in TSV format. Defaults to True.
-    :return: A list of dictionaries or TSV string if tsv is True.
+    :param output: Output format ('tsv', 'json', or 'markdown'). Defaults to 'markdown'.
+    :return: Dow Jones constituent data in the specified format.
     """
     path = f"dowjones_constituent"
     query_vars = {"apikey": API_KEY}
@@ -131,17 +129,16 @@ def dowjones_constituent(
         return None
     else:
         result = __return_json_v3(path=path, query_vars=query_vars)
-        return compress_json_to_tsv(result) if tsv else result
+        return format_output(result, output)
 
-def historical_dowjones_constituent(tsv: bool = True) -> typing.Union[typing.List[typing.Dict], 
-                                                                      str, None]:
+def historical_dowjones_constituent(output: str = 'markdown') -> typing.Union[typing.List[typing.Dict], str, None]:
     """
     Query FMP /historical/dowjones_constituent/ API.
 
-    :param tsv: If True, return data in TSV format. Defaults to True.
-    :return: A list of dictionaries or TSV string if tsv is True.
+    :param output: Output format ('tsv', 'json', or 'markdown'). Defaults to 'markdown'.
+    :return: Historical Dow Jones constituent data in the specified format.
     """
     path = f"historical/dowjones_constituent"
     query_vars = {"apikey": API_KEY}
     result = __return_json_v3(path=path, query_vars=query_vars)
-    return compress_json_to_tsv(result) if tsv else result
+    return format_output(result, output)
