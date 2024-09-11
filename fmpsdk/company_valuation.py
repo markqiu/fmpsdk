@@ -103,7 +103,6 @@ def analyst_estimates(
 
 def sales_revenue_by_segments(
     symbol: str,
-    structure: str = "flat",
     period: str = "quarter",
     output: str = 'markdown'
 ) -> Union[List[Dict], str]:
@@ -114,17 +113,16 @@ def sales_revenue_by_segments(
     helping investors understand the company's revenue sources and business diversification.
 
     :param symbol: The stock symbol of the company (e.g., 'AAPL' for Apple Inc.)
-    :param structure: The structure of the data. Can be 'flat' or 'nested' (default is 'flat')
     :param period: The period of the data. Can be 'annual' or 'quarter' (default is 'quarter')
     :param output: Output format ('tsv', 'json', or 'markdown'). Defaults to 'markdown'.
     :return: Sales revenue by segments data in the specified format.
-    :example: sales_revenue_by_segments('AAPL', structure='nested', period='quarter')
+    :example: sales_revenue_by_segments('AAPL', period='quarter')
     """
     path = "revenue-product-segmentation"
     query_vars = {
         "apikey": API_KEY,
         "symbol": symbol,
-        "structure": structure,
+        "structure": "flat",
         "period": period
     }
     result = __return_json_v4(path=path, query_vars=query_vars)
@@ -141,7 +139,6 @@ def sales_revenue_by_segments(
 
 def revenue_geographic_segmentation(
     symbol: str,
-    structure: str = "flat",
     period: str = "quarter", 
     output: str = 'markdown'
 ) -> Union[List[Dict], str]:
@@ -152,17 +149,16 @@ def revenue_geographic_segmentation(
     helping investors understand the company's global market presence and diversification.
 
     :param symbol: The stock symbol of the company (e.g., 'AAPL' for Apple Inc.)
-    :param structure: The structure of the data. Can be 'flat' or 'nested' (default is 'flat')
     :param period: The period of the data. Can be 'annual' or 'quarter' (default is 'quarter')
     :param output: Output format ('tsv', 'json', or 'markdown'). Defaults to 'markdown'.
     :return: Revenue geographic segmentation data in the specified format.
-    :example: revenue_geographic_segmentation('AAPL', structure='nested', period='quarter')
+    :example: revenue_geographic_segmentation('AAPL', period='quarter')
     """
     path = f"revenue-geographic-segmentation/"
     query_vars = {
         "apikey": API_KEY,
         "symbol": symbol,
-        "structure": structure,
+        "structure": "flat",
         "period": period
     }
     result = __return_json_v4(path=path, query_vars=query_vars)
