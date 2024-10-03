@@ -1,15 +1,20 @@
+[build-system]
+build-backend = "poetry.core.masonry.api"
+
+requires = [ "poetry-core>=1" ]
+
 [tool.poetry]
 name = "fmpsdk"
 version = "20240827"
 description = "A Python SDK for the Financial Modeling Prep API"
-authors = ["Dax Mickelson <github@daxm.net>", "David Rodriguez <github@drodriguez.com>"]
+authors = [ "Dax Mickelson <github@daxm.net>", "David Rodriguez <github@drodriguez.com>" ]
 readme = "README.md"
 license = "MIT"
 repository = "https://github.com/dwrod/fmpsdk"
-keywords = ["finance", "api", "sdk", "financial modeling prep"]
+keywords = [ "finance", "api", "sdk", "financial modeling prep" ]
 
 [tool.poetry.dependencies]
-python = "^3.12"
+python = "^3.11"
 python-dotenv = "*"
 requests = "*"
 typing-extensions = "^4.0.0"
@@ -22,21 +27,22 @@ isort = "^5.0"
 flake8 = "^6.0"
 mypy = "^1.0"
 
-[build-system]
-requires = ["poetry-core>=1.0.0"]
-build-backend = "poetry.core.masonry.api"
+[tool.poetry.group.dev.dependencies]
+pre-commit = "^3.8.0"
+validate-pyproject = "^0.20.2"
+pyproject-fmt = "^2.2.4"
 
 [tool.black]
 line-length = 100
-target-version = ['py312']
+target-version = [ 'py312' ]
 
 [tool.isort]
 profile = "black"
 line_length = 100
 
+[tool.pytest.ini_options]
+testpaths = [ "tests" ]
+
 [tool.mypy]
 ignore_missing_imports = true
 strict = true
-
-[tool.pytest.ini_options]
-testpaths = ["tests"]

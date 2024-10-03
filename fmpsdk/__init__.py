@@ -1,31 +1,33 @@
 import logging
 
+from .alternative_data import (
+    commitment_of_traders_report,
+    commitment_of_traders_report_analysis,
+    commitment_of_traders_report_list,
+)
 from .available_data import (
-    financial_statement_symbol_lists,
-    symbols_list,
-    etf_list,
-    available_traded_list,
-    delisted_companies,
-    available_mutual_funds,
-    available_tsx,
-    available_forex,
-    available_indexes,
-    available_industries,
-    available_sectors,
-    available_exchanges,
     all_countries,
     available_commodities,
     available_cryptocurrencies,
     available_etfs,
     available_euronext,
+    available_exchanges,
+    available_forex,
+    available_indexes,
+    available_industries,
     available_mutual_funds,
-    cryptocurrencies_list
+    available_sectors,
+    available_traded_list,
+    available_tsx,
+    cryptocurrencies_list,
+    delisted_companies,
+    etf_list,
+    financial_statement_symbol_lists,
+    symbols_list,
 )
-
-from .alternative_data import (
-    commitment_of_traders_report,
-    commitment_of_traders_report_analysis,
-    commitment_of_traders_report_list,
+from .bulk import (
+    bulk_historical_eod,
+    bulk_profiles,
 )
 from .calendar_data import (
     dividend_calendar,
@@ -36,41 +38,39 @@ from .calendar_data import (
     stock_split_calendar,
 )
 from .company_profile import (
-    company_profile, 
-    key_executives, 
-    company_core_information, 
-    enterprise_values, 
-    key_metrics_ttm,
+    company_core_information,
+    company_outlook,
+    company_profile,
+    enterprise_values,
+    key_executives,
     key_metrics,
-    company_outlook
+    key_metrics_ttm,
 )
-
 from .company_valuation import (
-    rating,
-    historical_rating,
-    stock_peers,
     analyst_estimates,
-    sales_revenue_by_segments,
-    revenue_geographic_segmentation,
-    esg_score,
-    stock_grade,
-    financial_score,
-    owner_earnings,
-    upgrades_downgrades_consensus,
-    upgrades_downgrades_by_company,
-    search_mergers_acquisitions,
-    executive_compensation,
-    compensation_benchmark,
-    company_notes,
-    historical_employee_count,
-    employee_count,
     analyst_recommendation,
+    company_notes,
+    compensation_benchmark,
+    employee_count,
+    esg_score,
+    executive_compensation,
+    financial_score,
+    historical_employee_count,
+    historical_rating,
+    owner_earnings,
+    rating,
+    revenue_geographic_segmentation,
+    sales_revenue_by_segments,
+    search_mergers_acquisitions,
+    stock_grade,
+    stock_peers,
+    upgrades_downgrades_by_company,
+    upgrades_downgrades_consensus,
 )
-
 from .crowdfunding import (
-    crowdfunding_by_cik, 
-    crowdfunding_rss_feed, 
-    crowdfunding_search
+    crowdfunding_by_cik,
+    crowdfunding_rss_feed,
+    crowdfunding_search,
 )
 from .economics import (
     economic_indicators,
@@ -86,25 +86,25 @@ from .financial_growth_ratios import (
     income_statement_growth,
 )
 from .financial_statements import (
-    income_statement,
     balance_sheet_statement,
-    cash_flow_statement,
-    income_statement_as_reported,
     balance_sheet_statement_as_reported,
-    cash_flow_statement_as_reported,
-    financial_statement_full_as_reported,
-    earnings_surprises,
-    earning_call_transcript,
     batch_earning_call_transcript,
+    cash_flow_statement,
+    cash_flow_statement_as_reported,
+    earning_call_transcript,
     earning_call_transcripts_available_dates,
+    earnings_surprises,
+    financial_statement_full_as_reported,
+    income_statement,
+    income_statement_as_reported,
     sec_filings,
     sec_filings_data,
 )
 from .insider_trading import (
-    insider_trading, 
+    insider_trading,
     insider_trading_rss_feed,
+    mapper_cik_company,
     mapper_cik_name,
-    mapper_cik_company
 )
 from .institutional_fund import (
     cik,
@@ -129,13 +129,13 @@ from .market_indexes import (
     sp500_constituent,
 )
 from .news import (
-    fmp_articles, 
-    general_news, 
-    stock_news,
+    fmp_articles,
+    general_news,
     mergers_acquisitions_rss_feed,
-    upgrades_downgrades_rss_feed, 
+    press_releases,
+    stock_news,
     upgrades_downgrades,
-    press_releases
+    upgrades_downgrades_rss_feed,
 )
 from .price_target import (
     price_target_by_analyst_name,
@@ -145,22 +145,21 @@ from .price_target import (
     price_target_summary,
     price_targets,
 )
-
 from .quote import (
-    exchange_realtime,
-    cryptocurrency_quote,
-    commodity_price,
     commodities_list,
-    mutual_fund_list,
-    quote,
-    is_market_open,
-    tsx_list,
+    commodity_price,
+    cryptocurrency_quote,
+    exchange_realtime,
     forex,
     forex_historical,
     forex_list,
     forex_quote,
     historical_chart,
     historical_price_full,
+    is_market_open,
+    mutual_fund_list,
+    quote,
+    tsx_list,
 )
 from .search_functions import search, search_ticker
 from .senate import (
@@ -177,16 +176,16 @@ from .social_sentiment import (
 )
 from .stock_market import (
     actives,
+    batch_eod_prices,
+    fail_to_deliver,
     gainers,
+    historical_sectors_performance,
+    industry_pe_ratio,
     losers,
     market_hours,
-    sectors_performance,
-    fail_to_deliver,
-    sector_pe_ratio,
-    industry_pe_ratio,
-    batch_eod_prices,
     multiple_company_prices,
-    historical_sectors_performance,
+    sector_pe_ratio,
+    sectors_performance,
 )
 from .stock_screener import stock_screener
 from .stock_time_series import (
@@ -196,11 +195,11 @@ from .stock_time_series import (
 )
 from .technical_indicators import technical_indicators
 from .valuation_metrics import (
-    discounted_cash_flow,
     advanced_discounted_cash_flow,
+    discounted_cash_flow,
     historical_daily_discounted_cash_flow,
-    market_capitalization,
     historical_market_capitalization,
+    market_capitalization,
 )
 
 attribution: str = "Data provided by Financial Modeling Prep"
@@ -366,4 +365,6 @@ __all__ = [
     "upgrades_downgrades_by_company",
     "upgrades_downgrades_consensus",
     "upgrades_downgrades_rss_feed",
+    "bulk_historical_eod",
+    "bulk_profiles",
 ]
