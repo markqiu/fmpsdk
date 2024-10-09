@@ -1,0 +1,10 @@
+[openai]
+api_key = "xxx"
+model = "xxx"
+base_url = "xxx"
+
+
+[fmpsdk]
+api_key = "xxx"
+base_url = "xxx"
+doc_url = "xxx"

@@ -19,6 +19,8 @@ python-dotenv = "*"
 requests = "*"
 typing-extensions = "^4.0.0"
 beautifulsoup4 = "^4.9.3"
+dynaconf = "^3.2.6"
+rich = "^13.9.1"
 
 [tool.poetry.dev-dependencies]
 pytest = "^7.0"
@@ -31,6 +33,7 @@ mypy = "^1.0"
 pre-commit = "^3.8.0"
 validate-pyproject = "^0.20.2"
 pyproject-fmt = "^2.2.4"
+openai = "^1.51.0"
 
 [tool.black]
 line-length = 100
